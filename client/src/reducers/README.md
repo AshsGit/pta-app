@@ -1,1 +1,0 @@
-# This directory contains redux reducers (reducers are responsible for processing redux actions. Check docs online for more info)

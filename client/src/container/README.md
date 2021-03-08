@@ -1,1 +1,0 @@
-# this directory contains react components that interact with the redux store 

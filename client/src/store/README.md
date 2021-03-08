@@ -1,1 +1,0 @@
-# This directory contains the files necessary to initialize the store (there are probably more uses for this dir that I'm unaware of)
