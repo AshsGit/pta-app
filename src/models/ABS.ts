@@ -1,4 +1,4 @@
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
 
 const absSubSchema = new Schema({
     _id: Schema.Types.ObjectId,
@@ -18,8 +18,8 @@ const absSubSchema = new Schema({
         type: Number,
         required: true
     },
-    patients: {
-        type: mongoose.Schema.Types.ObjectId,
+    patient_id: {
+        type: Schema.Types.ObjectId,
         ref: 'Patient'
     }
 });
@@ -37,11 +37,11 @@ const absQuestionSchema = new Schema({
 });
 
 const absResSchema = new Schema({
-    submissions: {
+    submission_id: {
         type: Schema.Types.ObjectId,
         ref: 'ABSSubmission'
     },
-    abs_questions: {
+    abs_question_id: {
         type: Schema.Types.ObjectId,
         ref: 'ABSQuestion'
     },
