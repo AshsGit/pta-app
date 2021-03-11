@@ -1,14 +1,13 @@
-import mongoose from 'mongoose';
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+
 
 // Create Schema 
-const PatientSchema = new Schema({
+const PatientSchema = new mongoose.Schema({
+    _id: mongoose.Schema.Types.ObjectID,
     name: {
         type: String,
         required: true
     }
 });
 
-const Patient = mongoose.model('patient', PatientSchema);
-
-module.exports = Patient;
+module.exports = mongoose.model('Patient', PatientSchema);
