@@ -11,8 +11,6 @@ import { ABSForm } from './components/pages/ABSForm';
 function App() {
   return (
     <div className="App">
-      {/* <header className="App-header">
-      </header> */}
       <Router>
         <Route exact={true} path="/" component={Home} />
         <Route exact={true} path="/dashboard" component={PatientDashboard} />
