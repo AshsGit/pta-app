@@ -1,9 +1,8 @@
-const mongoose = require('mongoose');
-
+const Schema = mongoose.Schema;
 
 // Create Schema 
-const PatientSchema = new mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectID,
+const PatientSchema = new Schema({
+    _id: Schema.Types.ObjectID,
     name: {
         type: String,
         required: true

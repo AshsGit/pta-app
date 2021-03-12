@@ -1,13 +1,13 @@
-const Schema = mongoose.Schema;
-
 const absSubSchema = new Schema({
     _id: Schema.Types.ObjectId,
     date_of_injury: {
         type: Date,
+        max: Date.now,
         required: true
     },
     date_of_submission: {
         type: Date,
+        max: Date.now,
         required: true
     },
     total: {

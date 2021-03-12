@@ -1,7 +1,9 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
+const abs = require('./routes/ABS.ts');
+const wptas = require('./routes/WPTAS.ts');
 const patients = require('./routes/api/patients');
 
 const app = express();
