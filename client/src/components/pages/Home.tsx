@@ -33,4 +33,4 @@ export const Home = () => {
       <ExistingPatientDialog open={dialogState.existingDialog} onClose={closeExistingPatientDialog} />
     </div>
   )
-}
+}  
