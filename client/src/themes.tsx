@@ -1,8 +1,10 @@
 import { createMuiTheme } from "@material-ui/core";
+import { grey, deepOrange } from "@material-ui/core/colors";
 
 export const WPTASTheme = createMuiTheme({
     palette: {
-        type: 'light'
+        type: 'light',
+        secondary: deepOrange,
     },
     typography: {
         htmlFontSize: 16,
@@ -23,6 +25,18 @@ export const WPTASTheme = createMuiTheme({
         h3: {
             fontStyle: "normal",
             fontWeight: "bold",
+            fontSize: "1.125rem",
+            lineHeight: "1.313rem",
+        },
+        h4: {
+            fontStyle: "normal",
+            fontWeight: "bold",
+            fontSize: "0.875rem",
+            lineHeight: "1rem",
+        },
+        body1: {
+            fontStyle: "normal",
+            fontWeight: "lighter",
             fontSize: "1.125rem",
             lineHeight: "1.313rem",
         }
