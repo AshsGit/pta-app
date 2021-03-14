@@ -1,7 +1,8 @@
 import React, { FunctionComponent, useState } from 'react'
-import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, GridList, GridListTile, GridListTileBar, List, ListItem, ListItemText, Paper, Radio, Switch, TextField, Typography } from '@material-ui/core';
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, GridList, GridListTile, GridListTileBar, List, ListItem, ListItemText, Paper, Radio, Switch, TextField, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
 import { WPTASTheme } from '../../themes';
+import { DateTime } from 'luxon';
 
 
 const useStyles = makeStyles((theme: Theme) => (
@@ -43,88 +44,59 @@ const useStyles = makeStyles((theme: Theme) => (
       textTransform: "lowercase",
 
       color: theme.palette.secondary.main,
-
+    },
+    root: {
+      padding: "1rem",
+      margin: "1rem",
+      zIndex: 1,
     }
   })
 ));
 
 export const WPTASForm: FunctionComponent = () => {
-  const questions = {
-    1: {
+  const classes = useStyles()
+
+  const questions = [
+    {
       title: 'How old are you?',
       correct_answer: 5,
-      multi_choice: (ca => ca ? [ca-2, ca-1, ca, ca+1] : []) as MultiChoiceEval<number | null>,
-    }
-  }
+      multi_choice: (ca => ca ? [ca-2, ca-1, ca, ca+1] : []),
+    } as WPTASQuestionMarkup<number>,
+    {
+      title: 'What is your DOB?',
+      multi_choice: (dt => ['24/05/2020', '8/11/2019', ...(dt ? [dt] : [])]),
+      identifying: true,
+      input_component: "DatePicker",
+    } as WPTASQuestionMarkup<string>
+  ];
+
+  const generate_questions = generate_q_component as (question: WPTASQuestionMarkup<any>, index: number)=>JSX.Element;
   return (
     <ThemeProvider theme={WPTASTheme}>
-      <Paper>
-        <Question1 
-          index={1} 
-          title="title..." 
-          multi_choice={questions[1].multi_choice} 
-          correct_answer={questions[1].correct_answer} 
-          mutable_correct_answer={true} />
-      </Paper>
+      <Box className={classes.root}>{questions.map((q, index)=>generate_questions(q, index+1))}</Box>
     </ThemeProvider>
   ) 
 }
-/*
-type CorrectAnswer = undefined | string
-interface WPTASQuestionProps {
-  index: number,
+
+type WPTASQuestionMarkup<T> = {
   title: string,
-  multi_choice?: undefined,
-  correct_answer?: undefined | string,
-  mutable_correct_answer?: boolean,
+  multi_choice: MultiChoiceEval<T>,
+  correct_answer?: T,
+  identifying?: boolean,
+  input_component?: "TextField" | "DatePicker",
 }
 
-const WPTASQuestion: FunctionComponent<WPTASQuestionProps> = (
-  { 
-    index, 
-    title,
-    multi_choice: mc = false, 
-    correct_answer = undefined,
-    mutable_correct_answer: mca = false,
-  }) => {
-    const classes = useStyles()
-    const [multi_choice, set_multi_choice] = useState(mc)
-    const toggle_mc = () => set_multi_choice(!multi_choice)
-    
-    if (multi_choice) {
-      const question_section = (
-        <FormGroup>
+//const generate_q_components = <T, >(questions: (T extends WPTASQuestionMarkup<infer R> ? WPTASQuestionMarkup<R> : any)) => (
+const generate_q_component = <T, >(question: WPTASQuestionMarkup<T>, index: number): JSX.Element => (
+    <WPTASQuestion 
+      index={index} 
+      title={question.title}
+      correct_answer={question.correct_answer}
+      multi_choice={question.multi_choice}
+      identifying={question.identifying} />
+)
 
-        </FormGroup>
-      )
-    } else {
-      const question_section = (
-        <FormGroup>
-          <TextField id="patient-response" label="Patient Response" />
-          <TextField id="correct-answer" label="Correct Answer" />
-        </FormGroup>
-      )
-    }
-    return (
-      <Paper className={classes.question_root}>
-      <FormControl component="fieldset" fullWidth >
-        <FormGroup row className={classes.form_group_row}>
-          <Typography variant='h2'>
-            {`${index}. ${title}`}
-          </Typography>
-          <FormControlLabel
-            className={classes.multi_choice_toggle_label}
-            control={<Switch checked={multi_choice} onChange={toggle_mc} />}
-            label="Multiple Choice?" 
-            labelPlacement="start" />
-        </FormGroup>
-        
-        
-      </FormControl>
-      </Paper>
-    )
-}
-*/
+
 type MultiChoiceAnswers<T> = T[];
 type MultiChoiceEval<T> = (correct_answer: T) => MultiChoiceAnswers<T>;
 
@@ -132,29 +104,35 @@ type Question_props<T> = {
   index: number,
   title: string,
   multi_choice: MultiChoiceEval<T>,
-  correct_answer: T,
-  mutable_correct_answer: boolean, 
+  identifying?: boolean,
+  correct_answer?: T,
+  input_component?: "TextField" | "DatePicker",
 }
-const Question1: FunctionComponent<Question_props<number | null>> = (
+
+
+const WPTASQuestion = <T, >(
   { 
     index, 
     title,
     multi_choice: multi_choice_answers, 
-    correct_answer,
-    mutable_correct_answer: mca,
-  }) => {
+    identifying=false,
+    correct_answer=undefined,
+    input_component="TextField",
+  }: Question_props<T>) => {
     const classes = useStyles()
 
     const [mc, set_multi_choice] = useState(true);
-    const [mc_answers, set_mc_answers] = useState(multi_choice_answers(correct_answer));
-    const [selected_mc, set_selected_mc] = React.useState({
+    const [mc_answers, set_mc_answers] = useState<(T | null)[]>(
+      correct_answer === undefined ? [] : multi_choice_answers(correct_answer)
+    );
+    const [selected_mc, set_selected_mc] = useState({
       answer: null as string | null, 
       correct: null as string | null
     });
 
     const toggle_mc = () => set_multi_choice(!mc)
-    const add_mc_answer = (answer: number | null) => set_mc_answers([...mc_answers, answer]); 
-    const edit_mc_answer = (index: number, edit: number | null) => {
+    const add_mc_answer = (answer: T | null) => set_mc_answers([...mc_answers, answer]); 
+    const edit_mc_answer = (index: number, edit: T | null) => {
       const copy = [...mc_answers];
       copy[index] = edit;
       set_mc_answers(copy)
@@ -174,6 +152,8 @@ const Question1: FunctionComponent<Question_props<number | null>> = (
       });
     };
 
+    const text_field_type = input_component === "DatePicker" ? "date" : undefined;
+
     const question_section = (
       <FormGroup>
         {mc ? (  
@@ -188,7 +168,7 @@ const Question1: FunctionComponent<Question_props<number | null>> = (
                 </Grid>
               </Grid>
             </ListItem>
-            {mc_answers.map((option, index) => (
+            {(mc_answers.length === 0 ? [null] : mc_answers).map((option, index) => (
               <ListItem>
                 <Grid container direction='row'>
                   <Grid item xs={9}>
@@ -197,10 +177,14 @@ const Question1: FunctionComponent<Question_props<number | null>> = (
                       id={""+index} 
                       label="" 
                       defaultValue={option} 
-                      color="secondary" />
+                      color="secondary" 
+                      type={text_field_type} />
                   </Grid>
                   <Grid item xs={3}>
-                    <Checkbox value={index} checked={selected_mc.correct === ""+index} onClick={select_correct_mc} />
+                    <Checkbox 
+                      value={index} 
+                      checked={selected_mc.correct === ""+index} 
+                      onClick={select_correct_mc} />
                   </Grid>
                 </Grid>
               </ListItem>
@@ -211,8 +195,23 @@ const Question1: FunctionComponent<Question_props<number | null>> = (
         </List>
         ) : (
           <React.Fragment>
-            <TextField id="patient-response" label="Patient Response" />
-            <TextField id="correct-answer" label="Correct Answer" defaultValue={correct_answer} />
+            <TextField 
+              id="patient-response" 
+              label="Patient Response"
+              color="secondary"
+              type={text_field_type} />
+            {identifying && 
+              <TextField 
+                id="correct-answer" 
+                label="Correct Answer" 
+                defaultValue={correct_answer}
+                color="secondary"
+                type={text_field_type} />
+            }
+            <FormControlLabel
+              control={<Checkbox />}
+              label={<Typography variant="h4" color="textSecondary" >Correct?</Typography>} 
+              labelPlacement="start" />
           </React.Fragment>
         )}
       </FormGroup>
@@ -236,4 +235,3 @@ const Question1: FunctionComponent<Question_props<number | null>> = (
       </Paper>
     )
 }
-
