@@ -5,6 +5,9 @@ export const WPTASTheme = createMuiTheme({
     palette: {
         type: 'light',
         secondary: deepOrange,
+        background: {
+            default: "#e4f0e2"
+        }
     },
     typography: {
         htmlFontSize: 16,

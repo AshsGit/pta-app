@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from 'react'
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, GridList, GridListTile, GridListTileBar, List, ListItem, ListItemText, Paper, Radio, Switch, TextField, Typography } from '@material-ui/core';
+import { Box, Button, Checkbox, CssBaseline, FormControl, FormControlLabel, FormGroup, Grid, GridList, GridListTile, GridListTileBar, List, ListItem, ListItemText, Paper, Radio, Switch, TextField, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
 import { WPTASTheme } from '../../themes';
 import { DateTime } from 'luxon';
@@ -46,9 +46,28 @@ const useStyles = makeStyles((theme: Theme) => (
       color: theme.palette.secondary.main,
     },
     root: {
+      position: 'relative',
+    },
+    root_content: {
+      position: 'absolute',
+      top: "5%",
+      left: "5%", 
+      right: "5%",
+      minHeight: "90%",
+      margin: "5%",
       padding: "1rem",
-      margin: "1rem",
+      zIndex: 2
+    },
+    root_background: {
+      position: 'absolute',
+      left: 0,
+      top: 0,
+      height: '100%', 
+      width: '100%',
       zIndex: 1,
+      background: 'blue',
+      margin: 0, 
+      padding: 0,
     }
   })
 ));
@@ -66,24 +85,44 @@ export const WPTASForm: FunctionComponent = () => {
       title: 'What is your DOB?',
       multi_choice: (dt => ['24/05/2020', '8/11/2019', ...(dt ? [dt] : [])]),
       identifying: true,
+      input_component: "date",
+    } as WPTASQuestionMarkup<string>,
+    /*{
+      title: 'What month are we in?',
+      multi_choice: (dt => ['January', 'March', 'September'].filter(m=>m!==dt).concat(dt ? [dt] : [])),
+      identifying: true,
+      input_component: "Select",
+    } as WPTASQuestionMarkup<
+      |"January"|"February"|"March"|"April"|"May"|"June"
+      |"July"|"August"|"September"|"October"|"November"|"December">,
+    {
+      title: 'What is your DOB?',
+      multi_choice: (dt => ['24/05/2020', '8/11/2019', ...(dt ? [dt] : [])]),
+      identifying: true,
       input_component: "DatePicker",
-    } as WPTASQuestionMarkup<string>
+    } as WPTASQuestionMarkup<string>,*/
+    
   ];
 
   const generate_questions = generate_q_component as (question: WPTASQuestionMarkup<any>, index: number)=>JSX.Element;
   return (
     <ThemeProvider theme={WPTASTheme}>
-      <Box className={classes.root}>{questions.map((q, index)=>generate_questions(q, index+1))}</Box>
+      <CssBaseline />
+      <Paper variant='outlined' className={classes.root_content}>
+        {questions.map((q, index)=>generate_questions(q, index+1))}
+      </Paper>
     </ThemeProvider>
   ) 
 }
+
+type WPTASInputComponent = "text" | "date" | React.Component;
 
 type WPTASQuestionMarkup<T> = {
   title: string,
   multi_choice: MultiChoiceEval<T>,
   correct_answer?: T,
   identifying?: boolean,
-  input_component?: "TextField" | "DatePicker",
+  input_component?: WPTASInputComponent,
 }
 
 //const generate_q_components = <T, >(questions: (T extends WPTASQuestionMarkup<infer R> ? WPTASQuestionMarkup<R> : any)) => (
@@ -106,7 +145,7 @@ type Question_props<T> = {
   multi_choice: MultiChoiceEval<T>,
   identifying?: boolean,
   correct_answer?: T,
-  input_component?: "TextField" | "DatePicker",
+  input_component?: WPTASInputComponent,
 }
 
 
@@ -117,7 +156,7 @@ const WPTASQuestion = <T, >(
     multi_choice: multi_choice_answers, 
     identifying=false,
     correct_answer=undefined,
-    input_component="TextField",
+    input_component="text",
   }: Question_props<T>) => {
     const classes = useStyles()
 
@@ -152,7 +191,32 @@ const WPTASQuestion = <T, >(
       });
     };
 
-    const text_field_type = input_component === "DatePicker" ? "date" : undefined;
+    const inputComponent = ({value, ...props}: any) => 
+      input_component === "text" ? (
+        <TextField 
+          id={""+index} 
+          label="" 
+          defaultValue={value} 
+          color="secondary" 
+          type="text"
+          multiline 
+          rows={1} 
+          rowsMax={4} />
+      ) : input_component === "date" ? (
+        <TextField 
+          id={""+index} 
+          label="" 
+          defaultValue={value} 
+          color="secondary" 
+          type="date"
+          multiline 
+          rows={1} 
+          rowsMax={4} />
+      /*) : typeof input_component === React.Component ? (
+        input_component*/
+      ) : (
+        undefined
+      );
 
     const question_section = (
       <FormGroup>
@@ -178,6 +242,26 @@ const WPTASQuestion = <T, >(
                       label="" 
                       defaultValue={option} 
                       color="secondary" 
+                      type={input_component as string}
+                      multiline 
+                      rows={1} 
+                      rowsMax={4} />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Checkbox 
+                        value={index} 
+                        checked={selected_mc.correct === ""+index} 
+                        onClick={select_correct_mc} />
+                  </Grid>
+                </Grid>
+                {/*<Grid container direction='row'>
+                  <Grid item xs={9}>
+                    <Radio value={index} checked={selected_mc.answer === ""+index} onClick={select_mc} />
+                    <TextField 
+                      id={""+index} 
+                      label="" 
+                      defaultValue={option} 
+                      color="secondary" 
                       type={text_field_type} />
                   </Grid>
                   <Grid item xs={3}>
@@ -186,7 +270,7 @@ const WPTASQuestion = <T, >(
                       checked={selected_mc.correct === ""+index} 
                       onClick={select_correct_mc} />
                   </Grid>
-                </Grid>
+                </Grid>*/}
               </ListItem>
             ))}
             <ListItem>
@@ -199,14 +283,14 @@ const WPTASQuestion = <T, >(
               id="patient-response" 
               label="Patient Response"
               color="secondary"
-              type={text_field_type} />
+              type={input_component as string} />
             {identifying && 
               <TextField 
                 id="correct-answer" 
                 label="Correct Answer" 
                 defaultValue={correct_answer}
                 color="secondary"
-                type={text_field_type} />
+                type={input_component as string} />
             }
             <FormControlLabel
               control={<Checkbox />}
@@ -218,7 +302,6 @@ const WPTASQuestion = <T, >(
     )
     
     return (
-      <Paper className={classes.question_root}>
       <FormControl component="fieldset" fullWidth >
         <FormGroup row className={classes.form_group_row}>
           <Typography variant='h2'>
@@ -232,6 +315,5 @@ const WPTASQuestion = <T, >(
         </FormGroup>
         {question_section}
       </FormControl>
-      </Paper>
     )
 }
