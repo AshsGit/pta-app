@@ -1,8 +1,9 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { FunctionComponent, useState, ReactNode } from 'react'
 import { Box, Button, Checkbox, CssBaseline, FormControl, FormControlLabel, FormGroup, Grid, GridList, GridListTile, GridListTileBar, List, ListItem, ListItemText, Paper, Radio, Switch, TextField, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
 import { WPTASTheme } from '../../themes';
-import { DateTime } from 'luxon';
+import { DatePicker, DatePickerProps } from '@material-ui/pickers';
+import { ReactComponent } from '*.svg';
 
 
 const useStyles = makeStyles((theme: Theme) => (
@@ -87,15 +88,16 @@ export const WPTASForm: FunctionComponent = () => {
       identifying: true,
       input_component: "date",
     } as WPTASQuestionMarkup<string>,
-    /*{
-      title: 'What month are we in?',
-      multi_choice: (dt => ['January', 'March', 'September'].filter(m=>m!==dt).concat(dt ? [dt] : [])),
-      identifying: true,
-      input_component: "Select",
-    } as WPTASQuestionMarkup<
-      |"January"|"February"|"March"|"April"|"May"|"June"
-      |"July"|"August"|"September"|"October"|"November"|"December">,
     {
+      title: 'What month are we in?',
+      multi_choice: (dt => dt ? [dt] : []), //[].filter(m=>m!==dt).concat(dt ? [dt] : [])),
+      identifying: true,
+      input_component: <SimpleMonthPicker />,
+    } as WPTASQuestionMarkup<Date>, 
+    /*
+      |"January"|"February"|"March"|"April"|"May"|"June"
+      |"July"|"August"|"September"|"October"|"November"|"December"*/
+    /*{
       title: 'What is your DOB?',
       multi_choice: (dt => ['24/05/2020', '8/11/2019', ...(dt ? [dt] : [])]),
       identifying: true,
@@ -115,7 +117,7 @@ export const WPTASForm: FunctionComponent = () => {
   ) 
 }
 
-type WPTASInputComponent = "text" | "date" | React.Component;
+type WPTASInputComponent = "text" | "date" | React.ReactElement;
 
 type WPTASQuestionMarkup<T> = {
   title: string,
@@ -148,6 +150,17 @@ type Question_props<T> = {
   input_component?: WPTASInputComponent,
 }
 
+const SimpleMonthPicker = (props: { [P in keyof DatePickerProps]+? : DatePickerProps[P]}) => {
+  const [selectedDate, handleDateChange] = useState(props.value ?? new Date());
+
+  return (
+    <DatePicker
+      views={["year"]}
+      label="Year only"
+      value={selectedDate}
+      onChange={handleDateChange} 
+      {...props} />)
+}
 
 const WPTASQuestion = <T, >(
   { 
@@ -212,10 +225,8 @@ const WPTASQuestion = <T, >(
           multiline 
           rows={1} 
           rowsMax={4} />
-      /*) : typeof input_component === React.Component ? (
-        input_component*/
       ) : (
-        undefined
+        input_component
       );
 
     const question_section = (
