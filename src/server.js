@@ -1,6 +1,6 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
 const patients = require('./routes/api/patients');
 
@@ -9,16 +9,16 @@ const app = express();
 // bodyparser middleware
 app.use(bodyParser.json());
 
-//DB config
+// DB config
 const db = require('./config/keys').mongoURI;
 
-//Set mongoose flags to prevent depreciation warnings
+// Set mongoose flags to prevent depreciation warnings
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
-//Connect to Mongo 
+// Connect to Mongo 
 mongoose.connect(db)
     .then(() => console.log("MongoDB Connected..."))
     .catch(err => console.log(err));
