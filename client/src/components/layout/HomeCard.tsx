@@ -1,9 +1,9 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import PersonAdd from '@material-ui/icons/PersonAdd';
 import Backup from '@material-ui/icons/Backup';
 import { Styles } from '@material-ui/core/styles/withStyles';
 import { Theme, withStyles } from '@material-ui/core/styles';
+import { FilledButton } from './Buttons';
 
 const styles: Styles<Theme, any> = (theme: any) => ({
   card: {
@@ -38,15 +38,6 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     color: 'var(--color-primary)',
     fontSize: 80
   },
-  actionButton: {
-    backgroundColor: 'var(--color-accent)',
-    color: 'white',
-    textTransform: 'none',
-    '&:hover': {
-      backgroundColor: 'var(--color-accent)',
-      color: '#FFF'
-    }
-  },
 });
 
 const Card = withStyles(styles)((props: any) => {
@@ -55,14 +46,14 @@ const Card = withStyles(styles)((props: any) => {
   let icon, button;
   if (variant === 'new') {
     icon = <PersonAdd className={classes.icon}/>;
-    button = <Button className={classes.actionButton} variant="contained" onClick={() => { openDialogFn() }}>Create</Button>
+    button = <FilledButton variant="contained" onClick={() => { openDialogFn() }}>Create</FilledButton>
   } else if (variant === 'existing') {
     icon = <Backup className={classes.icon}/>;
-    button = <Button variant="contained" className={classes.actionButton} onClick={() => { openDialogFn() }}>Scan</Button>
+    button = <FilledButton variant="contained" onClick={() => { openDialogFn() }}>Scan</FilledButton>
   }
 
   return (
-    <div className={classes.card}>
+    <div {...other} className={classes.card}>
       <div className={classes.body}>
         {icon}
         <span className={classes.label}>

@@ -2,11 +2,11 @@ import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import DialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import CropFree from '@material-ui/icons/CropFree';
+import { OutlineButton } from '../layout/Buttons';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { Styles } from '@material-ui/core/styles/withStyles';
 import { LockOpen } from '@material-ui/icons';
@@ -43,10 +43,9 @@ const styles: Styles<Theme, any> = (theme: any) => ({
   }
 });
 
-const DialogTitle = withStyles(styles)((props: any) => {
-  const { children, classes, onClose, ...other } = props;
+const DialogTitle = withStyles(styles)(({ children, classes, onClose }: any) => {
   return (
-    <MuiDialogTitle {...other}>
+    <MuiDialogTitle>
       {children}
       {onClose ? (
         <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
@@ -68,7 +67,7 @@ const PatientCodeField = withStyles(styles)(({ classes }: any) => {
     <span style={{ marginBottom: "1rem" }}>Enter unique patient code</span>
     <form style={{ display: 'flex' }}>
       <TextField style={{ flexGrow: 1, marginRight: "1rem" }} label="Patient code" variant="outlined" />
-      <Button style={{ flexGrow: 0, color: 'var(--color-accent)', borderColor: 'var(--color-accent)'}} variant="outlined">Enter</Button>
+      <OutlineButton style={{ flexGrow: 0 }} variant="outlined">Enter</OutlineButton>
     </form>
   </div>)
 })
@@ -87,7 +86,7 @@ const Line = withStyles(styles)(({ classes }: any) => {
 
 export const ExistingPatientDialog = withStyles(styles)(({ classes, open, onClose }: any) => {
   return (
-    <Dialog fullWidth={true} open={open} onClose={onClose} aria-labelledby="simple-dialog-title">
+    <Dialog fullWidth={true} open={open} onClose={onClose} aria-label="Existing Patient Dialog">
       <DialogTitle onClose={onClose}>
         {/* Existing Patient */}
       </DialogTitle>

@@ -13,8 +13,8 @@ function App() {
     <div className="App">
       <Router>
         <Route exact={true} path="/" component={Home} />
-        <Route exact={true} path="/dashboard" component={PatientDashboard} />
-        <Route exact={true} path="/history" component={PatientHistory} />
+        <Route exact={true} path="/dashboard/:id" component={PatientDashboard} />
+        <Route exact={true} path="/history/:id" component={PatientHistory} />
         <Route exact={true} path="/WPTAS" component={WPTASForm} />
         <Route exact={true} path="/ABS" component={ABSForm} />
       </Router>
