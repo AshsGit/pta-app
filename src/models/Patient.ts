@@ -3,12 +3,11 @@ const Schema = mongoose.Schema;
 
 // Create Schema 
 const PatientSchema = new Schema({
+    _id: Schema.Types.ObjectID,
     name: {
         type: String,
         required: true
     }
 });
 
-const Patient = mongoose.model('patient', PatientSchema);
-
-module.exports = Patient;
+module.exports = mongoose.model('Patient', PatientSchema);
