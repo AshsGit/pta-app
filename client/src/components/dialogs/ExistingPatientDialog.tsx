@@ -88,7 +88,6 @@ export const ExistingPatientDialog = withStyles(styles)(({ classes, open, onClos
   return (
     <Dialog fullWidth={true} open={open} onClose={onClose} aria-label="Existing Patient Dialog">
       <DialogTitle onClose={onClose}>
-        {/* Existing Patient */}
       </DialogTitle>
       <DialogContent>
         <div className={classes.container}>

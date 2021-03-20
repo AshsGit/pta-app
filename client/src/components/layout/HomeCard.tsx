@@ -7,8 +7,6 @@ import { FilledButton } from './Buttons';
 
 const styles: Styles<Theme, any> = (theme: any) => ({
   card: {
-    backgroundColor: "white",
-    borderRadius: "10px",
     width: "50%",
     minWidth: "200px",
     maxWidth: "300px",
@@ -21,8 +19,6 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     alignItems: "stretch",
     fontSize: "20px",
     fontWeight: 500,
-    padding: "1.5rem",
-    boxShadow: "0 40px 30px -20px rgba(0,0,0,0.25)"
   },
   body: {
     flexGrow: 1,
@@ -53,7 +49,7 @@ const Card = withStyles(styles)((props: any) => {
   }
 
   return (
-    <div {...other} className={classes.card}>
+    <div {...other} className={`card ${classes.card}`}>
       <div className={classes.body}>
         {icon}
         <span className={classes.label}>
@@ -65,8 +61,8 @@ const Card = withStyles(styles)((props: any) => {
   );
 });
 
-export const HomeCard = ({ variant, openDialogFn }: { variant: 'new' | 'existing', openDialogFn: Function }) => {
+export const HomeCard = withStyles(styles)(({ classes, variant, openDialogFn }: any) => {
   return (
-    <Card variant={variant} openDialogFn={openDialogFn}></Card>
+      <Card variant={variant} openDialogFn={openDialogFn}></Card>
   )
-}
+});

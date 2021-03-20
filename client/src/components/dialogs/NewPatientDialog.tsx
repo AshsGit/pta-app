@@ -9,6 +9,7 @@ import { FilledButton, OutlineButton } from '../layout/Buttons';
 import qr_code from '../../assets/Example_QR_Code.png';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CheckIcon from '@material-ui/icons/Check';
+import { useHistory } from 'react-router-dom';
 
 const styles: Styles<Theme, any> = (theme: any) => ({
   container: {
@@ -101,6 +102,13 @@ const DialogTitle = withStyles(styles)(({ children, classes, onClose }: any) => 
 });
 
 const NewPatient = withStyles(styles)(({ classes, id }: any) => {
+  const history = useHistory();
+
+  const navigateToDashboard = () => {
+    // TODO start a WPTAS test for patient
+    history.push(`/dashboard/${id}`);
+  };
+
   return (<div className={classes.createPatientContainer}>
     {id === null ? (
       <div>
@@ -114,9 +122,7 @@ const NewPatient = withStyles(styles)(({ classes, id }: any) => {
           <span>{`Unique patient code: ${id}`}</span>,
           <div className={classes.buttonsContainer}>
             <FilledButton onClick={() => { /* Save QR code */ }}>Save QR code</FilledButton>
-            <a href={`/dashboard/${id}`}>
-              <FilledButton style={{width: "100%"}}>Patient dashboard</FilledButton>
-            </a>
+            <FilledButton style={{width: "100%"}} onClick={navigateToDashboard}>Patient dashboard</FilledButton>
           </div>
         ]
       )}
