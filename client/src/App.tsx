@@ -4,7 +4,7 @@ import './App.css';
 import { Home } from './components/pages/Home';
 import { PatientDashboard } from './components/pages/PatientDashboard';
 import { PatientHistory } from './components/pages/PatientHistory';
-import { WPTASForm } from './components/pages/WPTASForm';
+import { WPTASForm } from './components/pages/WPTAS/WPTASForm';
 import { ABSForm } from './components/pages/ABSForm';
 // import { Home } from './components/pages/Home';
 
