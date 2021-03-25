@@ -9,17 +9,7 @@ router.get('/', (req, res) => {
     Patient.find()
         .then((patients: any) => res.json(patients))
 });
- 
-// @route   POST api/items
-// @desc    Create an item
-// @access  Public
-router.post('/', (req, res) => {
-    const newItem = new Patient({
-        name: req.body.name
-    });
 
-    newItem.save().then(res.json);
-});
 
 // @route   DELETE api/items
 // @desc    Delete an item
@@ -44,10 +34,7 @@ router.delete('/:id', (req, res) => {
 router.post('/', (req: any, res: any) => {
     let newPatientDetails = req.body;
     newPatientDetails._id = new mongoose.Types.ObjectId();
-    let patient = new Patient({
-        _id: newPatientDetails._id,
-        name: newPatientDetails.name
-    });
+    let patient = new Patient(newPatientDetails);
     patient.save(function(err) {
         console.log('Done');
         res.json(patient);

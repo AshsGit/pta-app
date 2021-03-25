@@ -6,6 +6,8 @@ const abs = require('./routes/ABS.ts');
 const wptas = require('./routes/WPTAS.ts');
 const patients = require('./routes/api/patients');
 
+
+
 const app = express();
 
 // bodyparser middleware
@@ -27,6 +29,7 @@ mongoose.connect(db)
 
 // Use routes
 app.use('/api/patients', patients);
+app.use('/api/WPTAS', wptas)
 
 const port = process.env.PORT || 5000;
 

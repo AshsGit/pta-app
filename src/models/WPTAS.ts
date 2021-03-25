@@ -1,4 +1,4 @@
-const wptasSubSchema = new Schema({
+export const wptasSubSchema = new Schema({
     _id: Schema.Types.ObjectId,
     date_of_injury: {
         type: Date,
@@ -22,18 +22,18 @@ const wptasSubSchema = new Schema({
         type: String,
         required: true
     },
-    patient_id: {
+    patients: {
         type: Schema.Types.Objectid,
         ref: 'Patient'
     }
 });
 
-const wptasResSchema = new Schema({
-    submission_id: {
+export const wptasResSchema = new Schema({
+    submissions: {
         type: Schema.Types.ObjectId,
         ref: 'WPTASSubmission'
     },
-    wptas_question_id: {
+    wptas_questions: {
         type: Schema.Types.ObjectId,
         ref: 'WPTASQuestion'
     },
@@ -56,7 +56,7 @@ const wptasResSchema = new Schema({
     }
 });
 
-const wptasQuesSchema = new Schema({
+export const wptasQuesSchema = new Schema({
     _id: Schema.Types.ObjectId,
     question_text: {
         type: String,
@@ -72,9 +72,9 @@ const wptasQuesSchema = new Schema({
     }
 });
 
-const wptasImageSchema = new Schema({
+export const wptasImageSchema = new Schema({
     _id: Schema.Types.ObjectId,
-    wptas_question_id: {
+    wptas_questions: {
         type: Schema.Types.ObjectId,
         ref: 'WPTASQuestion'
     },
