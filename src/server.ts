@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const abs = require('./routes/ABS.ts');
-const wptas = require('./routes/WPTAS.ts');
+const abs = require('./routes/abs.ts');
+const wptas = require('./routes/wptas.ts');
 const patients = require('./routes/api/patients');
 
 
@@ -29,7 +29,7 @@ mongoose.connect(db)
 
 // Use routes
 app.use('/api/patients', patients);
-app.use('/api/WPTAS', wptas)
+app.use('/api/wptas', wptas)
 
 const port = process.env.PORT || 5000;
 

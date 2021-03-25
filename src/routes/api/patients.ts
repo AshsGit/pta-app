@@ -5,7 +5,7 @@ const Patient = require('../../models/Patient');
 // @route   GET api/items
 // @desc    Get all items
 // @access  Public
-router.get('/', (req, res) => {
+router.get('/', (req: any, res: any) => {
     Patient.find()
         .then((patients: any) => res.json(patients))
 });
@@ -14,10 +14,10 @@ router.get('/', (req, res) => {
 // @route   DELETE api/items
 // @desc    Delete an item
 // @access  Public
-router.delete('/:id', (req, res) => {
+router.delete('/:id', (req: any, res: any) => {
     Patient.findById(req.params.id)
-        .then(patient => patient.remove().then(() => res.json({success: true})))
-        .catch(err => res.status(404).json({success: false, error: err}))
+        .then((patient: any) => patient.remove().then(() => res.json({success: true})))
+        .catch((err: any) => res.status(404).json({success: false, error: err}))
 })
 
 // @route   DELETE api/items/
@@ -35,7 +35,7 @@ router.post('/', (req: any, res: any) => {
     let newPatientDetails = req.body;
     newPatientDetails._id = new mongoose.Types.ObjectId();
     let patient = new Patient(newPatientDetails);
-    patient.save(function(err) {
+    patient.save(function(err: any) {
         console.log('Done');
         res.json(patient);
     });

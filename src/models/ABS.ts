@@ -1,4 +1,4 @@
-const absSubSchema = new Schema({
+export const absSubSchema = new Schema({
     _id: Schema.Types.ObjectId,
     date_of_injury: {
         type: Date,
@@ -24,7 +24,7 @@ const absSubSchema = new Schema({
     }
 });
 
-const absQuestionSchema = new Schema({
+export const absQuestionSchema = new Schema({
     _id: Schema.Types.ObjectId,
     question_text: {
         type: String,
@@ -36,7 +36,7 @@ const absQuestionSchema = new Schema({
     }
 });
 
-const absResSchema = new Schema({
+export const absResSchema = new Schema({
     submissions: {
         type: Schema.Types.ObjectId,
         ref: 'ABSSubmission'

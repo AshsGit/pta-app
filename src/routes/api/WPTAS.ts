@@ -4,7 +4,7 @@ const { wptasQuesSchema } = require('../../models/WPTAS.ts');
 const { wptasImageSchema } = require('../../models/WPTAS.ts');
 
 
-// @route   GET api/WPTAS
+// @route   GET api/wptas/questions
 // @desc    Get all items
 // @access  Public
 router.get('/questions', (req, res) => {
@@ -17,6 +17,10 @@ router.get('/questions', (req, res) => {
     });
 });
 
+
+// @route POST api/wptas/questions
+// @desc Create a question
+// @access Public
 router.post('/questions', (req, res) => {
     let newQuestionDetails = req.body;
     wptasQuesSchema.create(newQuestionDetails, function(err, question) {
@@ -25,6 +29,9 @@ router.post('/questions', (req, res) => {
     });
 });
 
+// @route GET api/wptas/submission/:id
+// @desc Get a submission
+// @access Public
 router.get('/submission/:id', (req,res) => {
     wptasSubSchema.findOne({_id: req.params.id})
         .populate('patients')
@@ -36,6 +43,9 @@ router.get('/submission/:id', (req,res) => {
         });
 });
 
+// @route GET api/wptas/images
+// @desc get all images
+// @access Public
 router.get('/images', (req,res) => {
     wptasImageSchema.find((err, images) => {
         if (err) {
@@ -46,6 +56,9 @@ router.get('/images', (req,res) => {
     });
 });
 
+// @route GET api/wptas/images/:id
+// @desc get an images
+// @access Public
 router.get('/images/:id', (req, res) => {
     wptasImageSchema.findOne({_id: req.params.id})
         .populate('wptas_questions')
