@@ -1,6 +1,6 @@
 const { absSubSchema } = require('../../models/ABS.ts');
-const { absQuestionSchema } = require('../../models/WPTAS.ts');
-const { absResSchema } = require('../../models/WPTAS.ts');
+const { absQuestionSchema } = require('../../models/ABS.ts');
+const { absResSchema } = require('../../models/ABS.ts');
 
 // @route   GET api/abs/questions
 // @desc    Get all questions
