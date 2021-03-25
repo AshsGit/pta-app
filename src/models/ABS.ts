@@ -18,7 +18,7 @@ const absSubSchema = new Schema({
         type: Number,
         required: true
     },
-    patient_id: {
+    patients: {
         type: Schema.Types.ObjectId,
         ref: 'Patient'
     }
@@ -37,11 +37,11 @@ const absQuestionSchema = new Schema({
 });
 
 const absResSchema = new Schema({
-    submission_id: {
+    submissions: {
         type: Schema.Types.ObjectId,
         ref: 'ABSSubmission'
     },
-    abs_question_id: {
+    abs_questions: {
         type: Schema.Types.ObjectId,
         ref: 'ABSQuestion'
     },
