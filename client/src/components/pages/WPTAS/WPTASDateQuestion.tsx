@@ -57,7 +57,6 @@ const WPTASCustomViewDateQuestion = ({datePickerProps, props}: {datePickerProps:
                 okLabel={false}
                 cancelLabel={false}
                 clearable
-                
                 {...datePickerProps} />),
         new_multi_choice: null,
         ...props,

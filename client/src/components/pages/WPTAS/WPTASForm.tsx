@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState, ReactNode } from 'react'
-import { Box, Button, Checkbox, CssBaseline, FormControl, FormControlLabel, FormGroup, Grid, GridList, GridListTile, GridListTileBar, List, ListItem, ListItemText, Paper, Radio, Switch, TextField, Typography } from '@material-ui/core';
-import { createStyles, makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
+import { Box, Button, Checkbox, CssBaseline, Fab, FormControl, FormControlLabel, FormGroup, Grid, GridList, GridListTile, GridListTileBar, List, ListItem, ListItemText, Paper, Radio, Switch, TextField, Typography } from '@material-ui/core';
+import { createStyles, makeStyles, Theme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import { WPTASTheme } from '../../../themes';
 import { DatePicker, DatePickerProps, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { ReactComponent } from '*.svg';
@@ -8,6 +8,8 @@ import { WPTASNumberQuestion, WPTASTextQuestion } from './WPTASTextFieldQuestion
 import { WPTASDateQuestion, WPTASDayOnlyQuestion, WPTASMonthOnlyQuestion, WPTASYearOnlyQuestion } from './WPTASDateQuestion';
 import DateFnsUtils from '@date-io/date-fns';
 import { WPTASTimeQuestion } from './WPTASTimeQuestion';
+import { ArrowLeft } from '@material-ui/icons';
+
 
 
 
@@ -20,13 +22,42 @@ export const useStyles = makeStyles((theme: Theme) => (
       right: "5%",
       minHeight: "90%",
       margin: "5%",
-      padding: "1rem",
-      zIndex: 2
+      padding: "2.875rem",
+      zIndex: 2,
+      "&>*": {
+        marginBottom: "5.625rem"
+      }
     },
+    background: {
+      position: "relative",
+      width: "100%",
+      height: "18rem",
+      top: "0",
+      backgroundColor: "#455EA0",
+      overflowY: "hidden",
+      scrollBehavior: 'unset',
+    }
   })
 ));
 
-
+const BackButtonFAB: FunctionComponent = withStyles({
+  root: {
+    backgroundColor: "transparent",
+  }
+})(({ classes })=>(
+  <Fab aria-label="back" className={classes.root} >
+    <ArrowLeft />
+  </Fab>
+));
+const Background: FunctionComponent = () => {
+  const classes = useStyles();
+  
+  return (
+    <React.Fragment>
+      <Box className={classes.background} />
+    </React.Fragment>
+  )
+}
 
 export const WPTASForm: FunctionComponent = () => {
   const classes = useStyles()
@@ -100,7 +131,7 @@ export const WPTASForm: FunctionComponent = () => {
     }),
     WPTASTextQuestion({
       index: 12,
-      title: 'Picture ii.',
+      title: 'Picture iii.',
       multi_choice: _=>[],
       correct_answer_component: null,
     }),
@@ -110,24 +141,16 @@ export const WPTASForm: FunctionComponent = () => {
     <ThemeProvider theme={WPTASTheme}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <CssBaseline />
+        <Background />
         <Paper variant='outlined' className={classes.root_content}>
+          
+          <Typography variant="h1" color="textPrimary">WPTAS</Typography>
           {questions}
-          {/*questions.map((q, index)=>generate_questions(q, index+1))*/}
         </Paper>
       </MuiPickersUtilsProvider>
     </ThemeProvider>
   ) 
 }
 
-/*
-//const generate_q_components = <T, >(questions: (T extends WPTASQuestionMarkup<infer R> ? WPTASQuestionMarkup<R> : any)) => (
-const generate_q_component = <T, >(question: WPTASQuestionMarkup<T>, index: number): JSX.Element => (
-    <WPTASQuestion 
-      index={index} 
-      title={question.title}
-      correct_answer={question.correct_answer}
-      multi_choice={question.multi_choice}
-      identifying={question.identifying} />
-)
-*/
+
 

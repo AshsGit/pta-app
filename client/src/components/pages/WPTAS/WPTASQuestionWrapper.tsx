@@ -46,6 +46,15 @@ const useStyles = makeStyles((theme: Theme) => (
 
       color: theme.palette.secondary.main,
     },
+    formControlLabel: {
+      paddingLeft: "1.5625rem",
+      paddingRight: "1.5625rem",
+      fontStyle: "normal",
+      fontWeight: "bold",
+      fontSize: "1.125rem",
+      lineHeight: "1.3125rem",
+    },
+    
   })
 ));
 
@@ -109,10 +118,10 @@ export const WPTASQuestion = <T, >(
                 <ListItem>
                 <Grid container direction='row'>
                     <Grid item xs={9}>
-                    <Typography variant='h3' color="textSecondary">Pick patient's response</Typography>
+                      <Typography variant='h3' color="textSecondary">Pick patient's response</Typography>
                     </Grid>
                     <Grid item xs={3}>
-                    <Typography variant='h3' color="textSecondary">Correct answer</Typography>
+                      <Typography variant='h3' color="textSecondary">Correct answer</Typography>
                     </Grid>
                 </Grid>
                 </ListItem>
@@ -120,7 +129,7 @@ export const WPTASQuestion = <T, >(
                     <ListItem>
                         <Grid container direction='row'>
                         <Grid item xs={9}>
-                            <Radio value={index} checked={selected_mc.answer === ""+index} onClick={select_mc} />
+                            <Radio value={index} checked={selected_mc.answer === ""+index} onClick={select_mc} />                           
                             {multi_choice_option_component(index, option)}
                         </Grid>
                         <Grid item xs={3}>
@@ -139,11 +148,14 @@ export const WPTASQuestion = <T, >(
             ) : (
             <React.Fragment>
                 {given_answer_component}
+                <br />
                 {correct_answer_component}
+                <br />
                 <FormControlLabel
                     control={<Checkbox />}
-                    label={<Typography variant="h4" color="textSecondary" >Correct?</Typography>} 
-                    labelPlacement="start" />
+                    label={
+                      <Typography className={classes.formControlLabel} variant="h3" color="textSecondary" >Answered correctly?</Typography>} 
+                    labelPlacement="end" />
             </React.Fragment>
             )}
         </FormGroup>
