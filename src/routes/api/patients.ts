@@ -5,8 +5,8 @@ const mongoose = require('mongoose');
 
 const Patient = require('../../models/Patient');
 
-// @route   GET api/items
-// @desc    Get all items
+// @route   GET api/patients
+// @desc    Get all patients
 // @access  Public
 router.get('/', (req: any, res: any) => {
     Patient.find()
@@ -14,8 +14,8 @@ router.get('/', (req: any, res: any) => {
 });
 
 
-// @route   DELETE api/items
-// @desc    Delete an item
+// @route   DELETE api/patients
+// @desc    Delete a patient
 // @access  Public
 router.delete('/:id', (req: any, res: any) => {
     Patient.findById(req.params.id)

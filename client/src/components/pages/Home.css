@@ -1,0 +1,13 @@
+.home-wrapper >:not(:last-child) {
+    margin-right: 1rem;
+}
+
+@media only screen and (max-width: 600px) {
+  .home-wrapper {
+    flex-direction: column
+  }
+  .home-wrapper >:not(:last-child) {
+    margin-bottom: 1rem;
+    margin-right: 0;
+  }
+}

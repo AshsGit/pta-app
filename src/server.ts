@@ -1,7 +1,7 @@
 export {}
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const abs = require('./routes/api/abs');
 const wptas = require('./routes/api/wptas');
 const patients = require('./routes/api/patients');
@@ -11,16 +11,16 @@ const app = express();
 // bodyparser middleware
 app.use(bodyParser.json());
 
-//DB config
+// DB config
 const db = require('./config/keys').mongoURI;
 
-//Set mongoose flags to prevent depreciation warnings
+// Set mongoose flags to prevent depreciation warnings
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
-//Connect to Mongo 
+// Connect to Mongo 
 mongoose.connect(db)
     .then(() => console.log("MongoDB Connected..."))
     .catch(err => console.log(err));
