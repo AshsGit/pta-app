@@ -1,12 +1,10 @@
+export {}
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
-const abs = require('./routes/abs.ts');
-const wptas = require('./routes/wptas.ts');
+const abs = require('./routes/api/abs');
+const wptas = require('./routes/api/wptas');
 const patients = require('./routes/api/patients');
-
-
 
 const app = express();
 
@@ -29,7 +27,8 @@ mongoose.connect(db)
 
 // Use routes
 app.use('/api/patients', patients);
-app.use('/api/wptas', wptas)
+app.use('/api/wptas', wptas);
+app.use('/api/abs', abs);
 
 const port = process.env.PORT || 5000;
 

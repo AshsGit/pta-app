@@ -1,4 +1,8 @@
-export const absSubSchema = new Schema({
+export {}
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+const absSubSchema = new Schema({
     _id: Schema.Types.ObjectId,
     date_of_injury: {
         type: Date,
@@ -24,7 +28,7 @@ export const absSubSchema = new Schema({
     }
 });
 
-export const absQuestionSchema = new Schema({
+const absQuestionSchema = new Schema({
     _id: Schema.Types.ObjectId,
     question_text: {
         type: String,
@@ -36,7 +40,7 @@ export const absQuestionSchema = new Schema({
     }
 });
 
-export const absResSchema = new Schema({
+const absResSchema = new Schema({
     submissions: {
         type: Schema.Types.ObjectId,
         ref: 'ABSSubmission'
@@ -55,6 +59,12 @@ export const absResSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('ABSSubmission', absSubSchema);
-module.exports = mongoose.model('ABSQuestion', absQuestionSchema);
-module.exports = mongoose.model('ABSResponse', absResSchema);
+const ABSSub = mongoose.model('ABSSubmission', absSubSchema);
+const ABSQues = mongoose.model('ABSQuestion', absQuestionSchema)
+const ABSRes = mongoose.model('ABSResponse', absResSchema);
+
+module.exports = {
+    ABSSub: ABSSub,
+    ABSQues: ABSQues,
+    ABSRes: ABSRes
+};

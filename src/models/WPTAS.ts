@@ -1,3 +1,7 @@
+export {}
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
 export const wptasSubSchema = new Schema({
     _id: Schema.Types.ObjectId,
     date_of_injury: {
@@ -23,7 +27,7 @@ export const wptasSubSchema = new Schema({
         required: true
     },
     patients: {
-        type: Schema.Types.Objectid,
+        type: Schema.Types.ObjectId,
         ref: 'Patient'
     }
 });
@@ -67,7 +71,7 @@ export const wptasQuesSchema = new Schema({
         required: true
     },
     img_src: {
-        type: Schema.Types.Objectid,
+        type: Schema.Types.ObjectId,
         ref: 'WPTASImage'
     }
 });
@@ -84,7 +88,15 @@ export const wptasImageSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('WPTASSubmission', wptasSubSchema);
-module.exports = mongoose.model('WPTASResponse', wptasResSchema);
-module.exports = mongoose.model('WPTASQuestion', wptasQuesSchema);
-module.exports = mongoose.model('WPTASImage', wptasImageSchema);
+
+const WPTASSub = mongoose.model('WPTASSubmission', wptasSubSchema);
+const WPTASRes = mongoose.model('WPTASResponse', wptasResSchema);
+const WPTASQues = mongoose.model('WPTASQuestion', wptasQuesSchema);
+const WPTASImage = mongoose.model('WPTASImage', wptasImageSchema);
+
+module.exports = {
+    WPTASSub: WPTASSub,
+    WPTASRes: WPTASRes,
+    WPTASQues: WPTASQues,
+    WPTASImage: WPTASImage
+};

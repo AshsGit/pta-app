@@ -1,12 +1,17 @@
-const { absSubSchema } = require('../../models/ABS.ts');
-const { absQuestionSchema } = require('../../models/ABS.ts');
-const { absResSchema } = require('../../models/ABS.ts');
+export {}
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
+
+const { ABSSub } = require('../../models/ABS');
+const { ABSQues } = require('../../models/ABS');
+const { ABSRes } = require('../../models/ABS');
 
 // @route   GET api/abs/questions
 // @desc    Get all questions
 // @access  Public
 router.get('/questions', (req: any, res: any) => {
-    absQuestionSchema.find(function (err: any, questions: any) {
+    ABSQues.find(function (err: any, questions: any) {
         if (err) {
             return res.json(err);
         } else {
@@ -20,8 +25,10 @@ router.get('/questions', (req: any, res: any) => {
 // @access Public
 router.post('/questions', (req: any, res: any) => {
     let newQuestionDetails = req.body;
-    absQuestionSchema.create(newQuestionDetails, function(err: any, question: any) {
-        if (err) return res.status(400).json(err);
+    newQuestionDetails._id = new mongoose.Types.ObjectId();
+    let question = new ABSQues(newQuestionDetails);
+    question.save(function(err: any) {
+        console.log('Done');
         res.json(question);
     });
 });
@@ -30,7 +37,7 @@ router.post('/questions', (req: any, res: any) => {
 // @desc get a submission
 // @access Public
 router.get('/submissions/:id', (req: any, res: any) => {
-    absSubSchema.findOne({_id: req.params.id})
+    ABSSub.findOne({_id: req.params.id})
         .populate('patients')
         .exec(function (err, submission) {
             if (err) return res.status(400).json(err);
@@ -39,3 +46,5 @@ router.get('/submissions/:id', (req: any, res: any) => {
             res.json(submission);
         });
 });
+
+module.exports = router;

@@ -1,14 +1,19 @@
-const { wptasSubSchema } = require('../../models/WPTAS.ts');
-const { wptasResSchema } = require('../../models/WPTAS.ts');
-const { wptasQuesSchema } = require('../../models/WPTAS.ts');
-const { wptasImageSchema } = require('../../models/WPTAS.ts');
+export {}
+const mongoose = require('mongoose');
+const express = require('express');
+const router = express.Router();
+
+const { WPTASSub } = require('../../models/WPTAS');
+const { WPTASRes } = require('../../models/WPTAS');
+const { WPTASQues } = require('../../models/WPTAS');
+const { WPTASImage } = require('../../models/WPTAS');
 
 
 // @route   GET api/wptas/questions
 // @desc    Get all items
 // @access  Public
 router.get('/questions', (req, res) => {
-    wptasQuesSchema.find(function (err, questions) {
+    WPTASQues.find(function (err, questions) {
         if (err) {
             return res.json(err);
         } else {
@@ -23,9 +28,13 @@ router.get('/questions', (req, res) => {
 // @access Public
 router.post('/questions', (req, res) => {
     let newQuestionDetails = req.body;
-    wptasQuesSchema.create(newQuestionDetails, function(err, question) {
-        if (err) return res.status(400).json(err);
-        res.json(question);
+    newQuestionDetails._id = new mongoose.Types.ObjectId();
+    let question = new WPTASQues(newQuestionDetails);
+    question.save(function(err: any) {
+        question.save(function(err: any) {
+            console.log('Done');
+            res.json(question);
+        });
     });
 });
 
@@ -33,7 +42,7 @@ router.post('/questions', (req, res) => {
 // @desc Get a submission
 // @access Public
 router.get('/submission/:id', (req,res) => {
-    wptasSubSchema.findOne({_id: req.params.id})
+    WPTASSub.findOne({_id: req.params.id})
         .populate('patients')
         .exec(function(err, submission) {
             if (err) return res.status(400).json(err);
@@ -47,7 +56,7 @@ router.get('/submission/:id', (req,res) => {
 // @desc get all images
 // @access Public
 router.get('/images', (req,res) => {
-    wptasImageSchema.find((err, images) => {
+    WPTASImage.find((err, images) => {
         if (err) {
             return res.json(err);
         } else {
@@ -60,7 +69,7 @@ router.get('/images', (req,res) => {
 // @desc get an images
 // @access Public
 router.get('/images/:id', (req, res) => {
-    wptasImageSchema.findOne({_id: req.params.id})
+    WPTASImage.findOne({_id: req.params.id})
         .populate('wptas_questions')
         .exec(function (err, image) {
             if (err) return res.status(400).json(err);
@@ -69,3 +78,5 @@ router.get('/images/:id', (req, res) => {
             res.json(image);
         });
 });
+
+module.exports = router;

@@ -1,4 +1,7 @@
+export {}
+const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const Patient = require('../../models/Patient');
 
@@ -17,16 +20,8 @@ router.get('/', (req: any, res: any) => {
 router.delete('/:id', (req: any, res: any) => {
     Patient.findById(req.params.id)
         .then((patient: any) => patient.remove().then(() => res.json({success: true})))
-        .catch((err: any) => res.status(404).json({success: false, error: err}))
-})
-
-// @route   DELETE api/items/
-// @desc    Delete all item
-// @access  Public
-/*router.delete('/', (req, res) => {
-    Item.deleteMany((_: string)=>true);
-    res.json({success: true});
-})*/
+        .catch((err: any) => res.status(404).json({success: false, error: err}));
+});
 
 // @route POST api/patient/
 // @desc Create a patient
