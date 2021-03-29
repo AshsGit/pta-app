@@ -1,4 +1,8 @@
-const wptasSubSchema = new Schema({
+export {}
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+export const wptasSubSchema = new Schema({
     _id: Schema.Types.ObjectId,
     date_of_injury: {
         type: Date,
@@ -22,18 +26,18 @@ const wptasSubSchema = new Schema({
         type: String,
         required: true
     },
-    patient_id: {
-        type: Schema.Types.Objectid,
+    patients: {
+        type: Schema.Types.ObjectId,
         ref: 'Patient'
     }
 });
 
-const wptasResSchema = new Schema({
-    submission_id: {
+export const wptasResSchema = new Schema({
+    submissions: {
         type: Schema.Types.ObjectId,
         ref: 'WPTASSubmission'
     },
-    wptas_question_id: {
+    wptas_questions: {
         type: Schema.Types.ObjectId,
         ref: 'WPTASQuestion'
     },
@@ -56,7 +60,7 @@ const wptasResSchema = new Schema({
     }
 });
 
-const wptasQuesSchema = new Schema({
+export const wptasQuesSchema = new Schema({
     _id: Schema.Types.ObjectId,
     question_text: {
         type: String,
@@ -67,14 +71,14 @@ const wptasQuesSchema = new Schema({
         required: true
     },
     img_src: {
-        type: Schema.Types.Objectid,
+        type: Schema.Types.ObjectId,
         ref: 'WPTASImage'
     }
 });
 
-const wptasImageSchema = new Schema({
+export const wptasImageSchema = new Schema({
     _id: Schema.Types.ObjectId,
-    wptas_question_id: {
+    wptas_questions: {
         type: Schema.Types.ObjectId,
         ref: 'WPTASQuestion'
     },
@@ -84,7 +88,15 @@ const wptasImageSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('WPTASSubmission', wptasSubSchema);
-module.exports = mongoose.model('WPTASResponse', wptasResSchema);
-module.exports = mongoose.model('WPTASQuestion', wptasQuesSchema);
-module.exports = mongoose.model('WPTASImage', wptasImageSchema);
+
+const WPTASSub = mongoose.model('WPTASSubmission', wptasSubSchema);
+const WPTASRes = mongoose.model('WPTASResponse', wptasResSchema);
+const WPTASQues = mongoose.model('WPTASQuestion', wptasQuesSchema);
+const WPTASImage = mongoose.model('WPTASImage', wptasImageSchema);
+
+module.exports = {
+    WPTASSub: WPTASSub,
+    WPTASRes: WPTASRes,
+    WPTASQues: WPTASQues,
+    WPTASImage: WPTASImage
+};
