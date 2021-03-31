@@ -15,8 +15,8 @@ function App() {
         <Route exact={true} path="/" component={Home} />
         <Route exact={true} path="/dashboard/:id" component={PatientDashboard} />
         <Route exact={true} path="/history/:id" component={PatientHistory} />
-        <Route exact={true} path="/WPTAS" component={WPTASForm} />
-        <Route exact={true} path="/ABS" component={ABSForm} />
+        <Route exact={true} path="/wptas/:id" component={WPTASForm} />
+        <Route exact={true} path="/abs/:id" component={ABSForm} />
       </Router>
     </div>
   );
