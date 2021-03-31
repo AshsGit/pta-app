@@ -11,7 +11,7 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <Route exact={true} path="/" component={PatientDashboard} />
+        <Route exact={true} path="/:id" component={PatientDashboard} />
         {/* <Route exact={true} path="/dashboard/:id" component={PatientDashboard} /> */}
         <Route exact={true} path="/:id/history" component={PatientHistory} />
         <Route exact={true} path="/:id/wptas" component={WPTASForm} />

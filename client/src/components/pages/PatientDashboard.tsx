@@ -24,7 +24,8 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     backgroundColor: 'var(--color-primary)',
     height: 'var(--backdrop-height)',
     width: '100%',
-    position: 'absolute'
+    position: 'absolute',
+    top: 0
   },
   card: {
     display: 'flex',
@@ -56,9 +57,14 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     '&>.card:not(:last-child)': {
       marginBottom: '2rem'
     }
+  },
+  label: {
+    textAlign: 'left'
   }
 });
 
+
+// TO CHANGE
 const showQR = () => {
 
 }
@@ -140,15 +146,15 @@ export const PatientDashboard = withStyles(styles)(({ classes }: any) => {
   const { id } = useParams() as any;
 
   const WPTASTest = () => {
-    history.push(`/wptas/${id}`);
+    history.push(`/${id}/wptas`);
   };
 
   const ABSTest = () => {
-    history.push(`/abs/${id}`);
+    history.push(`/${id}/abs`);
   };
 
   const PatientHistory = () => {
-    history.push(`/history/${id}`);
+    history.push(`/${id}/history`);
   };
 
   return (
@@ -158,15 +164,15 @@ export const PatientDashboard = withStyles(styles)(({ classes }: any) => {
         <DashboardHeader />
         <DashboardButton onClick={WPTASTest}>
           <NoteAddIcon className={`${classes.icon} ${classes.wptasIcon}`} />
-          <span>Start WPTAS</span>
+          <span className={classes.label}>Start WPTAS</span>
         </DashboardButton>
         <DashboardButton onClick={ABSTest}>
           <NoteAddIcon className={`${classes.icon} ${classes.absIcon}`} />
-          <span>Start ABS</span>
+          <span className={classes.label}>Start ABS</span>
         </DashboardButton>
         <DashboardButton onClick={PatientHistory}>
           <HistoryIcon className={`${classes.icon} ${classes.historyIcon}`} />
-          <span>View Patient History</span>
+          <span className={classes.label}>View Patient History</span>
         </DashboardButton>
       </div>
     </div>
