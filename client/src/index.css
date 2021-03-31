@@ -6,6 +6,8 @@ html {
   --color-accent: #FB8C4D;
   /* --color-accent-light: #FF772B; */
   --color-accent-dark: #F3691B;
+  --max-app-width: 1140px;
+  --backdrop-height: 150px;
   font-family: 'Roboto', sans-serif;
 }
 *, *::before, *::after {
