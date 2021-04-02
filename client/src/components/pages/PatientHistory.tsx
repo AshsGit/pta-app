@@ -52,9 +52,6 @@ const styles: Styles<Theme, any> = (theme: any) => ({
   even: {
     '& td': { backgroundColor: 'white' },
   },
-  table: {
-    border: '2px solid #c4c4c4',
-  },
   tableContainer: {
     borderRadius: 0,
     boxShadow: 'none',
