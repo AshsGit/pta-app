@@ -65,7 +65,15 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
-  max-width: 600px
+  max-width: 600px;
+}
+
+.page.history {
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  max-width: 1000px;
+  width: 100%;
 }
 
 a {
