@@ -1,3 +1,0 @@
-
-export { WPTASDateQuestion } from "./WPTASDateQuestion";
-

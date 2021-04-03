@@ -107,7 +107,7 @@ export const ABSForm: FunctionComponent = () => {
     setErrors({...errors, answerErrors: new_ans_errors});
 
     const temp = [...questionAnswers];
-    temp[question_index] = (event.target as HTMLInputElement).value;
+    temp[question_index] = event.target.value;
     setQuestionAnswers(temp);
   }
 
@@ -144,7 +144,7 @@ export const ABSForm: FunctionComponent = () => {
         periodOfObs_to: toDate as Date,
         periodOfObs_from: fromDate as Date,
         obsEnv,
-        answers: questionAnswers.map(parseInt)
+        answers: questionAnswers.map(Number)
       }
       submit(submission);
     }
@@ -175,6 +175,7 @@ export const ABSForm: FunctionComponent = () => {
                             format="dd/MM/yyyy"
                             value={fromDate}
                             onChange={fromDateOnChange}
+                            error={errors.fromDateError}
                             autoOk
                             okLabel={false}
                             clearable
@@ -195,6 +196,7 @@ export const ABSForm: FunctionComponent = () => {
                             format="dd/MM/yyyy"
                             value={toDate}
                             onChange={toDateOnChange}
+                            error={errors.toDateError}
                             autoOk
                             okLabel={false}
                             clearable
@@ -217,12 +219,14 @@ export const ABSForm: FunctionComponent = () => {
                   </Grid>
                 <Grid item>
                   <Typography variant="h3">Observation Environment</Typography>
-                  <Input 
-                    placeholder="e.g. hospital ward bed" 
-                    fullWidth 
-                    inputProps={{ 'aria-label': 'description' }} 
-                    onChange={obsEnvOnChange} 
-                    error={errors.obsEnvError}/>
+                  <FormControl component="fieldset" fullWidth error={errors.obsEnvError}>
+                    <Input 
+                      placeholder="e.g. hospital ward bed" 
+                      fullWidth 
+                      inputProps={{ 'aria-label': 'description' }} 
+                      onChange={obsEnvOnChange} />
+                    <FormHelperText>{errors.obsEnvError ? 'This field is compulsory!' : ' '}</FormHelperText>
+                  </FormControl>
                 </Grid>
                 <Grid item>
                   <Typography variant="body2">
