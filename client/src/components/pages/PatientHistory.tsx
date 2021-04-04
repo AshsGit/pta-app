@@ -16,6 +16,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import { OutlineButton } from '../layout/Buttons';
 
 import '../../App.css';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -26,7 +27,12 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     textAlign: 'center',
     fontSize: '11px',
     color: 'white',
-    backgroundColor: 'var(--color-primary-muted) !important',
+    '&.wptas': {
+      backgroundColor: 'var(--color-primary-muted) !important',
+    },
+    '&.abs': {
+      backgroundColor: 'var(--color-accent-muted) !important',
+    },
   },
   cell: {
     fontSize: '13px',
@@ -41,10 +47,15 @@ const styles: Styles<Theme, any> = (theme: any) => ({
   },
   questionCell: {
     textAlign: 'left',
-    minWidth: '140px',
     position: 'sticky',
     left: 0,
     paddingLeft: '8px',
+    '&.wptas': {
+      minWidth: '140px',
+    },
+    '&.abs': {
+      minWidth: '170px',
+    },
   },
   odd: {
     '& td': { backgroundColor: '#EDEDED' },
@@ -55,6 +66,24 @@ const styles: Styles<Theme, any> = (theme: any) => ({
   tableContainer: {
     borderRadius: 0,
     boxShadow: 'none',
+  },
+  historyHeader: {
+    '& th': {
+      padding: '0.5rem 1rem',
+      color: 'white',
+    },
+    '&.wptas': {
+      backgroundColor: 'var(--color-primary-muted) !important',
+    },
+    '&.abs': {
+      backgroundColor: 'var(--color-accent-muted) !important',
+    },
+  },
+  btnCell: {
+    display: 'flex',
+    '& button': {
+      width: '100%',
+    },
   },
   header: {
     display: 'flex',
@@ -98,7 +127,7 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     display: 'flex',
     justifyContent: 'flex-start',
     backgroundColor: 'white',
-    padding: '1.5rem',
+    padding: '1rem',
     textTransform: 'none',
     fontSize: '20px',
     boxShadow: '0px 25px 25px -20px rgba(0, 0, 0, 0.25)',
@@ -110,6 +139,21 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     minWidth: '30px',
     width: '30px',
     padding: 0,
+  },
+  page: {
+    paddingBottom: '2rem',
+  },
+  historyContainer: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    justifyContent: 'flex-start',
+    '& h4': {
+      textAlign: 'center',
+      margin: 0,
+      marginBottom: '1rem',
+    },
   },
 });
 
@@ -214,16 +258,18 @@ const Header = withStyles(styles)(({ testType, setTestType, classes }: any) => {
   );
 });
 
-const ResultsCard = withStyles(styles)(({ classes, children }: any) => {
-  return (
-    <div className={`card ${classes.card}`}>
-      {children}
-      {/* <div className={`card ${classes.card}`}> */}
+const ResultsCard = withStyles(styles)(
+  ({ classes, children, ...other }: any) => {
+    return (
+      <div {...other} className={`card ${classes.card}`}>
+        {children}
+        {/* <div className={`card ${classes.card}`}> */}
 
-      {/* </div> */}
-    </div>
-  );
-});
+        {/* </div> */}
+      </div>
+    );
+  }
+);
 
 function capitalise(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -232,16 +278,16 @@ function capitalise(string) {
 const WPTASTable = withStyles(styles)(({ classes }: any) => {
   return (
     <TableContainer className={classes.tableContainer} component={Paper}>
-      <Table className={classes.table} size='small' aria-label='WPTAS table'>
+      <Table size='small' aria-label='WPTAS table'>
         <TableHead>
           <TableRow>
-            {Object.keys(rows[0]).map((key, i) => (
+            {Object.keys(wptasRows[0]).map((key, i) => (
               <TableCell
                 className={`${classes.cell} ${
                   i === 0 ? classes.questionCell : ''
-                } ${i === rows.length - 1 ? classes.footerCell : ''} ${
+                } ${i === wptasRows.length - 1 ? classes.footerCell : ''} ${
                   classes.headCell
-                }`}
+                } wptas`}
                 key={key}
               >
                 {capitalise(key)}
@@ -250,25 +296,25 @@ const WPTASTable = withStyles(styles)(({ classes }: any) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, i) => (
+          {wptasRows.map((row, i) => (
             <TableRow
               className={`${i % 2 === 0 ? classes.even : classes.odd}`}
               key={row.question}
             >
               <TableCell
                 className={`${classes.cell} ${
-                  i === rows.length - 1 ? classes.footerCell : ''
-                } ${classes.questionCell}`}
+                  i === wptasRows.length - 1 ? classes.footerCell : ''
+                } ${classes.questionCell} wptas`}
               >
                 {row.question}
               </TableCell>
               {
-                Object.keys(rows[0])
+                Object.keys(wptasRows[0])
                   .filter((key) => key !== 'question')
                   .map((key: string) => (
                     <TableCell
                       className={`${classes.cell} ${
-                        i === rows.length - 1
+                        i === wptasRows.length - 1
                           ? classes.footerCell
                           : classes.tableCell
                       }`}
@@ -278,7 +324,8 @@ const WPTASTable = withStyles(styles)(({ classes }: any) => {
                       {row[key]}
                     </TableCell>
                   ))
-                // .map((key: string) => (<TableCell classes={{ root: classes.root, footer: classes.footer, head: classes.head, body: classes.body }} variant={i === rows.length - 1 ? 'footer' : 'body'} key={key} align="center">{row[key]}</TableCell>))
+                // .map((key: string) => (<TableCell classes={{ root: classes.root, footer: classes.footer, head: classes.head, body: classes.body }} variant={i === wptasRows
+                // .length - 1 ? 'footer' : 'body'} key={key} align="center">{row[key]}</TableCell>))
               }
             </TableRow>
           ))}
@@ -288,20 +335,19 @@ const WPTASTable = withStyles(styles)(({ classes }: any) => {
   );
 });
 
-// TODO
 const ABSTable = withStyles(styles)(({ classes }: any) => {
   return (
     <TableContainer className={classes.tableContainer} component={Paper}>
-      <Table className={classes.table} size='small' aria-label='WPTAS table'>
+      <Table size='small' aria-label='ABS table'>
         <TableHead>
           <TableRow>
-            {Object.keys(rows[0]).map((key, i) => (
+            {Object.keys(absRows[0]).map((key, i) => (
               <TableCell
                 className={`${classes.cell} ${
                   i === 0 ? classes.questionCell : ''
-                } ${i === rows.length - 1 ? classes.footerCell : ''} ${
+                } ${i === absRows.length - 1 ? classes.footerCell : ''} ${
                   classes.headCell
-                }`}
+                } abs`}
                 key={key}
               >
                 {capitalise(key)}
@@ -310,25 +356,25 @@ const ABSTable = withStyles(styles)(({ classes }: any) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, i) => (
+          {absRows.map((row, i) => (
             <TableRow
               className={`${i % 2 === 0 ? classes.even : classes.odd}`}
               key={row.question}
             >
               <TableCell
                 className={`${classes.cell} ${
-                  i === rows.length - 1 ? classes.footerCell : ''
-                } ${classes.questionCell}`}
+                  i === absRows.length - 1 ? classes.footerCell : ''
+                } ${classes.questionCell} abs`}
               >
                 {row.question}
               </TableCell>
               {
-                Object.keys(rows[0])
+                Object.keys(absRows[0])
                   .filter((key) => key !== 'question')
                   .map((key: string) => (
                     <TableCell
                       className={`${classes.cell} ${
-                        i === rows.length - 1
+                        i === absRows.length - 1
                           ? classes.footerCell
                           : classes.tableCell
                       }`}
@@ -338,32 +384,118 @@ const ABSTable = withStyles(styles)(({ classes }: any) => {
                       {row[key]}
                     </TableCell>
                   ))
-                // .map((key: string) => (<TableCell classes={{ root: classes.root, footer: classes.footer, head: classes.head, body: classes.body }} variant={i === rows.length - 1 ? 'footer' : 'body'} key={key} align="center">{row[key]}</TableCell>))
+                // .map((key: string) => (<TableCell classes={{ root: classes.root, footer: classes.footer, head: classes.head, body: classes.body }} variant={i === wptasRows
+                // .length - 1 ? 'footer' : 'body'} key={key} align="center">{row[key]}</TableCell>))
               }
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
+  );
+});
+
+const WPTASHistory = withStyles(styles)(({ classes }: any) => {
+  const history = useHistory();
+  const { id } = useParams() as any;
+
+  return (
+    <div className={classes.historyContainer}>
+      <h4>WPTAS Test History</h4>
+      <TableContainer className={classes.tableContainer} component={Paper}>
+        <Table aria-label='WPTAS history'>
+          <TableHead>
+            <TableRow className={`${classes.historyHeader} wptas`}>
+              <TableCell>Date</TableCell>
+              <TableCell>Examiner</TableCell>
+              <TableCell>Score</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {wptasHistoryRows.map((row, i) => (
+              <TableRow
+                className={`${i % 2 === 0 ? classes.even : classes.odd}`}
+                key={row.submissionId}
+              >
+                <TableCell style={{ fontWeight: 600 }}>
+                  {row.date.toDateString()}
+                </TableCell>
+                <TableCell>{row.examiner}</TableCell>
+                <TableCell>{row.score}</TableCell>
+                <TableCell className={classes.btnCell}>
+                  <OutlineButton
+                    onClick={() => {
+                      history.push(
+                        `/${id}/wptas?submission=${row.submissionId}`
+                      );
+                    }}
+                  >
+                    View
+                  </OutlineButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
+  );
+});
+
+const ABSHistory = withStyles(styles)(({ classes }: any) => {
+  const history = useHistory();
+  const { id } = useParams() as any;
+
+  return (
+    <div className={classes.historyContainer}>
+      <h4>ABS Test History</h4>
+      <TableContainer className={classes.tableContainer} component={Paper}>
+        <Table aria-label='ABS history'>
+          <TableHead>
+            <TableRow className={`${classes.historyHeader} abs`}>
+              <TableCell>Date</TableCell>
+              <TableCell>Examiner</TableCell>
+              <TableCell>Score</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {wptasHistoryRows.map((row, i) => (
+              <TableRow
+                className={`${i % 2 === 0 ? classes.even : classes.odd}`}
+                key={row.submissionId}
+              >
+                <TableCell style={{ fontWeight: 600 }}>
+                  {row.date.toDateString()}
+                </TableCell>
+                <TableCell>{row.examiner}</TableCell>
+                <TableCell>{row.score}</TableCell>
+                <TableCell className={classes.btnCell}>
+                  <OutlineButton
+                    onClick={() => {
+                      history.push(`/${id}/abs?submission=${row.submissionId}`);
+                    }}
+                  >
+                    View
+                  </OutlineButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
   );
 });
 
 export const PatientHistory = withStyles(styles)(({ classes }: any) => {
-  // const history = useHistory();
-  // TODO: make this persist over reloads in the same session
-
   const location = useLocation();
   let type = new URLSearchParams(location.search).get('type');
   if (!['wptas', 'abs'].includes(type || '')) {
     type = 'wptas';
   }
   const [testType, setTestType] = React.useState(type);
-
-  // history.listen((location: any, action: any) => {
-
-  //   console.log(action, location, location.pathname, location.state)
-
-  // })
 
   return (
     <div className='page-wrapper'>
@@ -372,11 +504,14 @@ export const PatientHistory = withStyles(styles)(({ classes }: any) => {
           classes[testType === 'wptas' ? 'wptasBackdrop' : 'absBackdrop']
         }`}
       ></div>
-      <div className={`page history`}>
+      <div className={`${classes.page} page history`}>
         <Header testType={testType} setTestType={setTestType} />
         <div style={{ padding: '0 1rem' }}>
-          <ResultsCard>
+          <ResultsCard style={{ marginBottom: '2rem' }}>
             {testType === 'wptas' ? <WPTASTable /> : <ABSTable />}
+          </ResultsCard>
+          <ResultsCard>
+            {testType === 'wptas' ? <WPTASHistory /> : <ABSHistory />}
           </ResultsCard>
         </div>
       </div>
@@ -384,7 +519,218 @@ export const PatientHistory = withStyles(styles)(({ classes }: any) => {
   );
 });
 
-const rows = [
+const absRows = [
+  {
+    question:
+      '1. Short attention span, easy distractability, inability to concentrate',
+    '31/10': 1,
+    '1/11': 1,
+    '2/11': 2,
+    '3/11': 1,
+    '4/11': 1,
+    '5/11': 4,
+    '6/11': 1,
+  },
+  {
+    question: '2. Impulsive, impatient, low tolerance for pain or frustration',
+    '31/10': 2,
+    '1/11': 1,
+    '2/11': 4,
+    '3/11': 1,
+    '4/11': 1,
+    '5/11': 2,
+    '6/11': 1,
+  },
+  {
+    question: '3. Uncooperative, resistant to care, demanding',
+    '31/10': 3,
+    '1/11': 1,
+    '2/11': 2,
+    '3/11': 1,
+    '4/11': 1,
+    '5/11': 4,
+    '6/11': 1,
+  },
+  {
+    question:
+      '4. Violent and / or threatening violence toward people or property',
+    '31/10': 4,
+    '1/11': 1,
+    '2/11': 3,
+    '3/11': 1,
+    '4/11': 1,
+    '5/11': 2,
+    '6/11': 1,
+  },
+  {
+    question: '5. Explosive and / or unpredictable anger',
+    '31/10': 2,
+    '1/11': 1,
+    '2/11': 3,
+    '3/11': 1,
+    '4/11': 1,
+    '5/11': 4,
+    '6/11': 1,
+  },
+  {
+    question: '6. Rocking, rubbing, moaning or other self-stimulating behavior',
+    '31/10': 3,
+    '1/11': 1,
+    '2/11': 2,
+    '3/11': 1,
+    '4/11': 1,
+    '5/11': 4,
+    '6/11': 1,
+  },
+  {
+    question: '7. Pulling at tubes, restraints, etc.',
+    '31/10': 4,
+    '1/11': 1,
+    '2/11': 3,
+    '3/11': 1,
+    '4/11': 1,
+    '5/11': 2,
+    '6/11': 1,
+  },
+  {
+    question: '8. Wandering from treatment areas',
+    '31/10': 2,
+    '1/11': 1,
+    '2/11': 3,
+    '3/11': 1,
+    '4/11': 4,
+    '5/11': 4,
+    '6/11': 1,
+  },
+  {
+    question: '9. Restlessness, pacing, excessive movement',
+    '31/10': 4,
+    '1/11': 1,
+    '2/11': 4,
+    '3/11': 2,
+    '4/11': 1,
+    '5/11': 3,
+    '6/11': 1,
+  },
+  {
+    question: '10. Repetitive behaviors, motor and / or verbal',
+    '31/10': 4,
+    '1/11': 1,
+    '2/11': 2,
+    '3/11': 1,
+    '4/11': 1,
+    '5/11': 3,
+    '6/11': 1,
+  },
+  {
+    question: '11. Rapid, loud or excessive talking',
+    '31/10': 3,
+    '1/11': 1,
+    '2/11': 4,
+    '3/11': 1,
+    '4/11': 1,
+    '5/11': 2,
+    '6/11': 1,
+  },
+  {
+    question: '12. Sudden changes of mood',
+    '31/10': 3,
+    '1/11': 1,
+    '2/11': 4,
+    '3/11': 1,
+    '4/11': 1,
+    '5/11': 2,
+    '6/11': 1,
+  },
+  {
+    question: '13. Easily initiated or excessive crying and / or laughter',
+    '31/10': 3,
+    '1/11': 1,
+    '2/11': 4,
+    '3/11': 1,
+    '4/11': 1,
+    '5/11': 2,
+    '6/11': 1,
+  },
+  {
+    question: '14. Self-abusiveness, physical and / or verbal',
+    '31/10': 3,
+    '1/11': 1,
+    '2/11': 4,
+    '3/11': 1,
+    '4/11': 1,
+    '5/11': 2,
+    '6/11': 1,
+  },
+  {
+    question: 'Total',
+    '31/10': 21,
+    '1/11': 32,
+    '2/11': 15,
+    '3/11': 12,
+    '4/11': 21,
+    '5/11': 26,
+    '6/11': 24,
+  },
+];
+
+// Sorted by descending date
+const wptasHistoryRows = [
+  {
+    submissionId: '123',
+    date: new Date(2020, 10, 3),
+    examiner: 'E.S',
+    score: 8,
+  },
+  {
+    submissionId: '234',
+    date: new Date(2020, 10, 2),
+    examiner: 'J.Z',
+    score: 9,
+  },
+  {
+    submissionId: '345',
+    date: new Date(2020, 10, 1),
+    examiner: 'T.S',
+    score: 8,
+  },
+  {
+    submissionId: '456',
+    date: new Date(2020, 9, 31),
+    examiner: 'E.S',
+    score: 7,
+  },
+];
+
+// Sorted by descending date
+const absHistoryRows = [
+  {
+    submissionId: '123',
+    date: new Date(2020, 10, 3),
+    examiner: 'E.S',
+    score: 8,
+  },
+  {
+    submissionId: '234',
+    date: new Date(2020, 10, 2),
+    examiner: 'J.Z',
+    score: 9,
+  },
+  {
+    submissionId: '345',
+    date: new Date(2020, 10, 1),
+    examiner: 'T.S',
+    score: 8,
+  },
+  {
+    submissionId: '456',
+    date: new Date(2020, 9, 31),
+    examiner: 'E.S',
+    score: 7,
+  },
+];
+
+const wptasRows = [
   {
     question: '1. How old are you?',
     '31/10': 0,
