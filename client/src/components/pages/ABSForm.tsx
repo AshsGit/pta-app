@@ -26,7 +26,6 @@ import {
 import { ABSTheme } from '../../themes';
 import {
   KeyboardDatePicker,
-  KeyboardDatePickerProps,
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -161,7 +160,7 @@ export const ABSForm: FunctionComponent = () => {
       newErrors.toDateError = true;
     if (obsEnv === '') newErrors.obsEnvError = true;
 
-    questionAnswers.map((val, index) => {
+    questionAnswers.forEach((val, index) => {
       if (val === '') newErrors.answerErrors[index] = true;
     });
 
@@ -314,7 +313,7 @@ export const ABSForm: FunctionComponent = () => {
               <br />
               <Grid item container spacing={8} direction='column'>
                 {questions.map((title, index) => (
-                  <Grid item>
+                  <Grid item key={index}>
                     {ABSQuestion({
                       index: index + 1,
                       title,
