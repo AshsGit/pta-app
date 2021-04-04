@@ -10,29 +10,47 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     textTransform: 'none',
     '&:hover': {
       backgroundColor: 'var(--color-accent-dark)',
-      color: 'white'
-    }
+      color: 'white',
+    },
   },
   outlineButton: {
     color: 'var(--color-accent)',
-    borderColor: 'var(--color-accent)',
-    backgroundColor: 'white',
+    border: '2px solid var(--color-accent)',
+    backgroundColor: 'transparent',
     textTransform: 'none',
     '&:hover': {
       backgroundColor: 'var(--color-accent)',
-      color: 'white'
-    }
+      color: 'white',
+    },
+  },
+});
+
+export const FilledButton = withStyles(styles)(
+  ({ children, classes, onClick, ...other }: any) => {
+    return (
+      <Button
+        className={classes.filledButton}
+        {...other}
+        onClick={onClick}
+        variant='contained'
+      >
+        {children}
+      </Button>
+    );
   }
-})
+);
 
-export const FilledButton = withStyles(styles)(({ children, classes, onClick, ...other }: any) => {
-  return <Button className={classes.filledButton} {...other} onClick={onClick} variant="contained">
-    {children}
-  </Button>
-});
-
-export const OutlineButton = withStyles(styles)(({ children, classes, onClick, ...other }: any) => {
-  return <Button className={classes.outlineButton} {...other} onClick={onClick} variant="outlined">
-    {children}
-  </Button>
-});
+export const OutlineButton = withStyles(styles)(
+  ({ children, classes, onClick, ...other }: any) => {
+    return (
+      <Button
+        className={classes.outlineButton}
+        {...other}
+        onClick={onClick}
+        variant='outlined'
+      >
+        {children}
+      </Button>
+    );
+  }
+);

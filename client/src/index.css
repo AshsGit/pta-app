@@ -2,8 +2,10 @@ html {
   box-sizing: border-box;
   --color-primary: #5C88F6;
   /* --color-primary-light: #5C88F6; */
+  --color-primary-muted: #7496EC;
   --color-primary-dark: #455EA0;
   --color-accent: #FB8C4D;
+  --color-accent-muted: #FB8C4D;
   /* --color-accent-light: #FF772B; */
   --color-accent-dark: #F3691B;
   --max-app-width: 1140px;

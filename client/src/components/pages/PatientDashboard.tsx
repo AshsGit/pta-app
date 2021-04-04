@@ -1,7 +1,7 @@
 import { Theme, withStyles } from '@material-ui/core';
 import { Styles } from '@material-ui/core/styles/withStyles';
-import React, { useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import React, { useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -17,14 +17,15 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '1rem 1rem',
-    color: 'white'
+    color: 'white',
   },
   menuIcon: { color: 'white' },
   backdrop: {
     backgroundColor: 'var(--color-primary)',
     height: 'var(--backdrop-height)',
     width: '100%',
-    position: 'absolute'
+    position: 'absolute',
+    top: 0,
   },
   card: {
     display: 'flex',
@@ -37,7 +38,7 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     borderRadius: '12px',
     '&:hover': {
       backgroundColor: '#EFEFEF',
-    }
+    },
   },
   icon: {
     fontSize: '60px',
@@ -50,26 +51,26 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     color: 'var(--color-accent-dark)',
   },
   historyIcon: {
-    color: '#777'
+    color: '#777',
   },
   page: {
     '&>.card:not(:last-child)': {
-      marginBottom: '2rem'
-    }
-  }
+      marginBottom: '2rem',
+    },
+  },
+  label: {
+    textAlign: 'left',
+  },
 });
 
-const showQR = () => {
+// TO CHANGE
+const showQR = () => {};
 
-}
-
-const navigateHome = () => {
-
-}
+const navigateHome = () => {};
 
 const options = [
-  { label: "Show QR code", callback: showQR },
-  { label: "Exit patient view", callback: navigateHome }
+  { label: 'Show QR code', callback: showQR },
+  { label: 'Exit patient view', callback: navigateHome },
 ];
 
 const PatientMenu = withStyles(styles)(({ classes }: any) => {
@@ -92,9 +93,9 @@ const PatientMenu = withStyles(styles)(({ classes }: any) => {
   return (
     <div>
       <IconButton
-        aria-label="more"
-        aria-controls="long-menu"
-        aria-haspopup="true"
+        aria-label='more'
+        aria-controls='long-menu'
+        aria-haspopup='true'
         onClick={handleMenuClick}
       >
         <MoreVertIcon classes={{ root: classes.menuIcon }} />
@@ -106,49 +107,56 @@ const PatientMenu = withStyles(styles)(({ classes }: any) => {
         onClose={handleMenuClose}
       >
         {options.map((option, index) => (
-          <MenuItem key={option.label} onClick={(event) => handleMenuItemClick(event, index)}>
+          <MenuItem
+            key={option.label}
+            onClick={(event) => handleMenuItemClick(event, index)}
+          >
             {option.label}
           </MenuItem>
         ))}
       </Menu>
     </div>
   );
-})
+});
 
 const DashboardHeader = withStyles(styles)(({ classes }: any) => {
   const { id } = useParams() as any;
 
-  return <div className={classes.header}>
-    <h2>{`Patient ${id}`}</h2>
-    <PatientMenu />
-  </div>
-});
-
-const DashboardButton = withStyles(styles)(({ classes, children, onClick }: any) => {
   return (
-    <Button className={`card ${classes.card}`} onClick={onClick}>
-      {children}
-      {/* <div className={`card ${classes.card}`}> */}
-
-      {/* </div> */}
-    </Button>
+    <div className={classes.header}>
+      <h2>{`Patient ${id}`}</h2>
+      <PatientMenu />
+    </div>
   );
 });
+
+const DashboardButton = withStyles(styles)(
+  ({ classes, children, onClick }: any) => {
+    return (
+      <Button className={`card ${classes.card}`} onClick={onClick}>
+        {children}
+        {/* <div className={`card ${classes.card}`}> */}
+
+        {/* </div> */}
+      </Button>
+    );
+  }
+);
 
 export const PatientDashboard = withStyles(styles)(({ classes }: any) => {
   const history = useHistory();
   const { id } = useParams() as any;
 
   const WPTASTest = () => {
-    history.push(`/wptas/${id}`);
+    history.push(`/${id}/wptas`);
   };
 
   const ABSTest = () => {
-    history.push(`/abs/${id}`);
+    history.push(`/${id}/abs`);
   };
 
   const PatientHistory = () => {
-    history.push(`/history/${id}`);
+    history.push(`/${id}/history`);
   };
 
   return (
@@ -158,17 +166,17 @@ export const PatientDashboard = withStyles(styles)(({ classes }: any) => {
         <DashboardHeader />
         <DashboardButton onClick={WPTASTest}>
           <NoteAddIcon className={`${classes.icon} ${classes.wptasIcon}`} />
-          <span>Start WPTAS</span>
+          <span className={classes.label}>Start WPTAS</span>
         </DashboardButton>
         <DashboardButton onClick={ABSTest}>
           <NoteAddIcon className={`${classes.icon} ${classes.absIcon}`} />
-          <span>Start ABS</span>
+          <span className={classes.label}>Start ABS</span>
         </DashboardButton>
         <DashboardButton onClick={PatientHistory}>
           <HistoryIcon className={`${classes.icon} ${classes.historyIcon}`} />
-          <span>View Patient History</span>
+          <span className={classes.label}>View Patient History</span>
         </DashboardButton>
       </div>
     </div>
-  )
+  );
 });
