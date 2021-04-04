@@ -38,27 +38,28 @@ const submit = (submission: ABSSubmission) =>
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root_content: {
-      position: 'absolute',
-      top: '5%',
-      left: '5%',
-      right: '5%',
-      minHeight: '90%',
-      margin: '5%',
+      // position: 'absolute',
+      // top: '5%',
+      // left: '5%',
+      // right: '5%',
+      // minHeight: '90%',
+
+      margin: '3rem 2rem 2rem 2rem',
       padding: '2.875rem',
       zIndex: 2,
-      '&>*': {
-        marginBottom: '5.625rem',
-      },
+      // '&>*': {
+      //   marginBottom: '5.625rem',
+      // },
       textAlign: 'left',
     },
     background: {
-      position: 'relative',
+      position: 'absolute',
       width: '100%',
       height: '18rem',
-      top: '0',
-      backgroundColor: '#F3691B',
-      overflowY: 'hidden',
-      scrollBehavior: 'unset',
+      top: 0,
+      backgroundColor: 'var(--color-accent-dark)',
+      // overflowY: 'hidden',
+      // scrollBehavior: 'unset',
     },
     backButton: {
       position: 'absolute',
@@ -184,158 +185,162 @@ export const ABSForm: FunctionComponent = () => {
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <CssBaseline />
         <Background />
-        <Paper variant='outlined' className={classes.root_content}>
-          <form onSubmit={handleSubmit}>
-            <Grid container direction='column' spacing={5}>
-              <IconButton aria-label='back' className={classes.backButton}>
-                <ArrowBackSharpIcon fontSize='large' />
-              </IconButton>
-              <Grid item>
-                <Typography variant='h1' color='textPrimary' align='center'>
-                  ABS
-                </Typography>
-              </Grid>
-              <Grid item container direction='column' spacing={5}>
-                <Grid item container direction='column'>
-                  <Typography variant='h3'>Period of Observation</Typography>
-                  <Grid
-                    item
-                    container
-                    direction='row'
-                    spacing={10}
-                    wrap='nowrap'
-                  >
-                    <Grid item xs={5}>
-                      <FormControl
-                        component='fieldset'
-                        fullWidth
-                        error={errors.fromDateError}
-                      >
-                        <KeyboardDatePicker
-                          margin='normal'
-                          format='dd/MM/yyyy'
-                          value={fromDate}
-                          onChange={fromDateOnChange}
-                          error={errors.fromDateError}
-                          autoOk
-                          okLabel={false}
-                          clearable
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position='start'>
-                                <Typography variant='h3'>From:</Typography>
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                        <FormHelperText>
-                          {errors.fromDateError
-                            ? 'This field is compulsory!'
-                            : ' '}
-                        </FormHelperText>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <FormControl
-                        component='fieldset'
-                        fullWidth
-                        error={errors.toDateError}
-                      >
-                        <KeyboardDatePicker
-                          margin='normal'
-                          format='dd/MM/yyyy'
-                          value={toDate}
-                          onChange={toDateOnChange}
-                          error={errors.toDateError}
-                          autoOk
-                          okLabel={false}
-                          clearable
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position='start'>
-                                <Typography variant='h3'>To:</Typography>
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                        <FormHelperText>
-                          {!errors.toDateError
-                            ? ' '
-                            : fromDate !== null &&
-                              toDate !== null &&
-                              fromDate > toDate
-                            ? "'To' date cannot be less than 'From' date!"
-                            : 'This field is compulsory!'}
-                        </FormHelperText>
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                </Grid>
+        <div className='page'>
+          <Paper variant='outlined' className={classes.root_content}>
+            <form onSubmit={handleSubmit}>
+              <Grid container direction='column' spacing={5}>
+                <IconButton aria-label='back' className={classes.backButton}>
+                  <ArrowBackSharpIcon fontSize='large' />
+                </IconButton>
                 <Grid item>
-                  <Typography variant='h3'>Observation Environment</Typography>
-                  <FormControl
-                    component='fieldset'
-                    fullWidth
-                    error={errors.obsEnvError}
-                  >
-                    <Input
-                      placeholder='e.g. hospital ward bed'
-                      fullWidth
-                      inputProps={{ 'aria-label': 'description' }}
-                      onChange={obsEnvOnChange}
-                    />
-                    <FormHelperText>
-                      {errors.obsEnvError ? 'This field is compulsory!' : ' '}
-                    </FormHelperText>
-                  </FormControl>
-                </Grid>
-                <Grid item>
-                  {/* TODO: type full description out */}
-                  <Typography variant='body2'>
-                    At the end of the observation period indicate whether the
-                    behavior described in each item was present and, if so, to
-                    what degree: slight, moderate or extreme. Use the following
-                    numerical values and criteria for your ratings.
-                    <br />
-                    <br />
-                    <b>1 = absent:</b> the behavior is not present. <br />
-                    <b>2 = present to a slight degree:</b> the behavior is
-                    present ...
-                    <br />
-                    <b>3 = present to a moderate degree:</b> the individual
-                    needs ot be redirected ...
-                    <br />
-                    <b>4 = present to an extreme degree:</b> the individual is
-                    not able to engage in ...
+                  <Typography variant='h1' color='textPrimary' align='center'>
+                    ABS
                   </Typography>
                 </Grid>
-              </Grid>
-              <br />
-              <Grid item container spacing={8} direction='column'>
-                {questions.map((title, index) => (
-                  <Grid item key={index}>
-                    {ABSQuestion({
-                      index: index + 1,
-                      title,
-                      onChange: getChangeHandle(index),
-                      error: questionError(index, errors),
-                    })}
+                <Grid item container direction='column' spacing={5}>
+                  <Grid item container direction='column'>
+                    <Typography variant='h3'>Period of Observation</Typography>
+                    <Grid
+                      item
+                      container
+                      direction='row'
+                      spacing={10}
+                      wrap='nowrap'
+                    >
+                      <Grid item xs={5}>
+                        <FormControl
+                          component='fieldset'
+                          fullWidth
+                          error={errors.fromDateError}
+                        >
+                          <KeyboardDatePicker
+                            margin='normal'
+                            format='dd/MM/yyyy'
+                            value={fromDate}
+                            onChange={fromDateOnChange}
+                            error={errors.fromDateError}
+                            autoOk
+                            okLabel={false}
+                            clearable
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position='start'>
+                                  <Typography variant='h3'>From:</Typography>
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                          <FormHelperText>
+                            {errors.fromDateError
+                              ? 'This field is compulsory!'
+                              : ' '}
+                          </FormHelperText>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={5}>
+                        <FormControl
+                          component='fieldset'
+                          fullWidth
+                          error={errors.toDateError}
+                        >
+                          <KeyboardDatePicker
+                            margin='normal'
+                            format='dd/MM/yyyy'
+                            value={toDate}
+                            onChange={toDateOnChange}
+                            error={errors.toDateError}
+                            autoOk
+                            okLabel={false}
+                            clearable
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position='start'>
+                                  <Typography variant='h3'>To:</Typography>
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                          <FormHelperText>
+                            {!errors.toDateError
+                              ? ' '
+                              : fromDate !== null &&
+                                toDate !== null &&
+                                fromDate > toDate
+                              ? "'To' date cannot be less than 'From' date!"
+                              : 'This field is compulsory!'}
+                          </FormHelperText>
+                        </FormControl>
+                      </Grid>
+                    </Grid>
                   </Grid>
-                ))}
+                  <Grid item>
+                    <Typography variant='h3'>
+                      Observation Environment
+                    </Typography>
+                    <FormControl
+                      component='fieldset'
+                      fullWidth
+                      error={errors.obsEnvError}
+                    >
+                      <Input
+                        placeholder='e.g. hospital ward bed'
+                        fullWidth
+                        inputProps={{ 'aria-label': 'description' }}
+                        onChange={obsEnvOnChange}
+                      />
+                      <FormHelperText>
+                        {errors.obsEnvError ? 'This field is compulsory!' : ' '}
+                      </FormHelperText>
+                    </FormControl>
+                  </Grid>
+                  <Grid item>
+                    {/* TODO: type full description out */}
+                    <Typography variant='body2'>
+                      At the end of the observation period indicate whether the
+                      behavior described in each item was present and, if so, to
+                      what degree: slight, moderate or extreme. Use the
+                      following numerical values and criteria for your ratings.
+                      <br />
+                      <br />
+                      <b>1 = absent:</b> the behavior is not present. <br />
+                      <b>2 = present to a slight degree:</b> the behavior is
+                      present ...
+                      <br />
+                      <b>3 = present to a moderate degree:</b> the individual
+                      needs ot be redirected ...
+                      <br />
+                      <b>4 = present to an extreme degree:</b> the individual is
+                      not able to engage in ...
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <br />
+                <Grid item container spacing={8} direction='column'>
+                  {questions.map((title, index) => (
+                    <Grid item key={index}>
+                      {ABSQuestion({
+                        index: index + 1,
+                        title,
+                        onChange: getChangeHandle(index),
+                        error: questionError(index, errors),
+                      })}
+                    </Grid>
+                  ))}
+                </Grid>
+                <Grid item container justify='flex-end'>
+                  <Button
+                    type='submit'
+                    size='large'
+                    variant='outlined'
+                    color='primary'
+                  >
+                    Submit
+                  </Button>
+                </Grid>
               </Grid>
-              <Grid item container justify='flex-end'>
-                <Button
-                  type='submit'
-                  size='large'
-                  variant='outlined'
-                  color='primary'
-                >
-                  Submit
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
-        </Paper>
+            </form>
+          </Paper>
+        </div>
       </MuiPickersUtilsProvider>
     </ThemeProvider>
   );
