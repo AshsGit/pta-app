@@ -461,7 +461,7 @@ const ABSHistory = withStyles(styles)(({ classes }: any) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {wptasHistoryRows.map((row, i) => (
+            {absHistoryRows.map((row, i) => (
               <TableRow
                 className={`${i % 2 === 0 ? classes.even : classes.odd}`}
                 key={row.submissionId}
