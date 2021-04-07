@@ -8,11 +8,14 @@ html {
   --color-accent-muted: #FB8C4D;
   /* --color-accent-light: #FF772B; */
   --color-accent-dark: #F3691B;
-  --max-app-width: 1140px;
+  --max-app-width: 750px;
   --backdrop-height: 150px;
   font-family: 'Roboto', sans-serif;
 }
-*, *::before, *::after {
+
+*,
+*::before,
+*::after {
   box-sizing: inherit;
 }
 

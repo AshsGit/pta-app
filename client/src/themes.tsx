@@ -14,7 +14,7 @@ declare module '@material-ui/core/styles/overrides' {
 export const WPTASTheme = createMuiTheme({
   palette: {
     type: 'light',
-    secondary: deepOrange,
+    primary: { main: '#5C88F6' },
     background: {
       default: '#E5E5E5',
     },
@@ -24,7 +24,7 @@ export const WPTASTheme = createMuiTheme({
     fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
     h1: {
       fontStyle: 'normal',
-      fontWeight: 'normal',
+      fontWeight: 'bold',
       fontSize: '1.625rem',
       lineHeight: '1.875rem',
     },
@@ -40,16 +40,16 @@ export const WPTASTheme = createMuiTheme({
       fontSize: '1.125rem',
       lineHeight: '1.313rem',
     },
-    h4: {
-      fontStyle: 'normal',
-      fontWeight: 'bold',
-      fontSize: '0.875rem',
-      lineHeight: '1rem',
-    },
+    // h4: {
+    //   fontStyle: 'normal',
+    //   fontWeight: 'bold',
+    //   fontSize: '0.875rem',
+    //   lineHeight: '1rem',
+    // },
     body1: {
       fontStyle: 'normal',
-      fontWeight: 'lighter',
-      fontSize: '1.125rem',
+      fontWeight: 'normal',
+      fontSize: '1rem',
       lineHeight: '1.313rem',
     },
   },
@@ -101,12 +101,12 @@ export const ABSTheme = createMuiTheme({
     },
     body1: {
       fontWeight: 'normal',
-      fontSize: '1.125rem',
+      fontSize: '1rem',
       lineHeight: '1.5rem',
     },
     body2: {
       fontWeight: 'normal',
-      fontSize: '1rem',
+      fontSize: '14px',
       lineHeight: '1.5rem',
     },
   },

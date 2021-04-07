@@ -7,15 +7,21 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
+  FormLabel,
   Grid,
   GridList,
   GridListTile,
   GridListTileBar,
+  IconButton,
+  Input,
   List,
   ListItem,
   ListItemText,
+  MenuItem,
   Paper,
   Radio,
+  RadioGroup,
+  Select,
   Switch,
   TextField,
   Typography,
@@ -28,6 +34,14 @@ import {
 } from '@material-ui/core/styles';
 import { WPTASTheme } from '../../themes';
 import { DateTime } from 'luxon';
+import questions from '../../data/wptas';
+import { WPTASQuestion } from '../../types/WPTAS';
+import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
+import {
+  KeyboardDatePicker,
+  MuiPickersUtilsProvider,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -73,25 +87,49 @@ const useStyles = makeStyles((theme: Theme) =>
       position: 'relative',
     },
     root_content: {
-      position: 'absolute',
-      top: '5%',
-      left: '5%',
-      right: '5%',
-      minHeight: '90%',
-      margin: '5%',
-      padding: '1rem',
-      zIndex: 2,
-    },
-    root_background: {
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      height: '100%',
+      position: 'relative',
+      // position: 'absolute',
+      // top: '5%',
+      // left: '5%',
+      // right: '5%',
+      // minHeight: '90%',
+      // margin: '5%',
+      // padding: '1rem',
+      // zIndex: 2,
       width: '100%',
-      zIndex: 1,
-      background: 'blue',
-      margin: 0,
-      padding: 0,
+      margin: '3rem 2rem 2rem 2rem',
+      padding: '0 2rem 2rem 2rem',
+      zIndex: 2,
+      textAlign: 'left',
+    },
+    background: {
+      position: 'absolute',
+      width: '100%',
+      height: '18rem',
+      top: 0,
+      backgroundColor: 'var(--color-primary-dark)',
+    },
+    questionsContainer: {
+      '&>*': { marginBottom: '2rem' },
+    },
+    question: {
+      '&>*:not(:last-child)': { marginBottom: '1.5rem' },
+    },
+    questionLabel: { marginBottom: '0.5rem', fontWeight: 500 },
+    backButton: {
+      position: 'absolute',
+      // top: '1rem',
+      left: '.5rem',
+      // fontSize: 'large',
+      // float: 'left',
+      // paddingTop: '1.1rem',
+    },
+    header: {
+      // position: 'absolute',
+      // top: 0,
+      // height: '60px',
+      paddingTop: '2rem',
+      paddingBottom: '1rem',
     },
   })
 );
@@ -99,45 +137,187 @@ const useStyles = makeStyles((theme: Theme) =>
 export const WPTASForm: FunctionComponent = () => {
   const classes = useStyles();
 
-  const questions = [
-    {
-      title: 'How old are you?',
-      correct_answer: 5,
-      multi_choice: (ca) => (ca ? [ca - 2, ca - 1, ca, ca + 1] : []),
-    } as WPTASQuestionMarkup<number>,
-    {
-      title: 'What is your DOB?',
-      multi_choice: (dt) => ['24/05/2020', '8/11/2019', ...(dt ? [dt] : [])],
-      identifying: true,
-      input_component: 'date',
-    } as WPTASQuestionMarkup<string>,
-    /*{
-      title: 'What month are we in?',
-      multi_choice: (dt => ['January', 'March', 'September'].filter(m=>m!==dt).concat(dt ? [dt] : [])),
-      identifying: true,
-      input_component: "Select",
-    } as WPTASQuestionMarkup<
-      |"January"|"February"|"March"|"April"|"May"|"June"
-      |"July"|"August"|"September"|"October"|"November"|"December">,
-    {
-      title: 'What is your DOB?',
-      multi_choice: (dt => ['24/05/2020', '8/11/2019', ...(dt ? [dt] : [])]),
-      identifying: true,
-      input_component: "DatePicker",
-    } as WPTASQuestionMarkup<string>,*/
-  ];
-
-  const generate_questions = generate_q_component as (
-    question: WPTASQuestionMarkup<any>,
-    index: number
-  ) => JSX.Element;
+  // const generate_questions = generate_q_component as (
+  //   question: WPTASQuestionMarkup<any>,
+  //   index: number
+  // ) => JSX.Element;
   return (
     <ThemeProvider theme={WPTASTheme}>
-      <CssBaseline />
-      <Paper variant='outlined' className={classes.root_content}>
-        {questions.map((q, index) => generate_questions(q, index + 1))}
-      </Paper>
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <CssBaseline />
+        <Background />
+        <div className='page'>
+          <Paper variant='outlined' className={classes.root_content}>
+            <Header />
+            <Box>
+              <form onSubmit={() => {}}>
+                <Box
+                  display='flex'
+                  flexDirection='column'
+                  className={classes.questionsContainer}
+                >
+                  {questions
+                    .filter((_, i) => i < 3)
+                    .map((question) => (
+                      <WPTASQuestionComponent
+                        key={question.questionNum}
+                        question={question}
+                      />
+                    ))}
+                </Box>
+              </form>
+            </Box>
+            {
+              // questions.map()
+            }
+            {/* {questions.map((q, index) => generate_questions(q, index + 1))} */}
+          </Paper>
+        </div>
+      </MuiPickersUtilsProvider>
     </ThemeProvider>
+  );
+};
+
+const Header: FunctionComponent = () => {
+  const classes = useStyles();
+  return (
+    <Box display='flex' className={classes.header} alignItems='center'>
+      <IconButton aria-label='back' className={classes.backButton}>
+        <ArrowBackSharpIcon fontSize='large' />
+      </IconButton>
+      <Box flexGrow={1} style={{ textAlign: 'center' }}>
+        <Typography variant='h1' color='textPrimary' align='center'>
+          WPTAS
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
+const Background: FunctionComponent = () => {
+  const classes = useStyles();
+
+  return (
+    <React.Fragment>
+      <Box className={classes.background} />
+    </React.Fragment>
+  );
+};
+
+const PatientResponseInput = ({ type, choices }: any) => {
+  const classes = useStyles();
+  let label = (
+    <FormLabel id='response-label' className={classes.questionLabel}>
+      Patient Response
+    </FormLabel>
+  );
+  const [response, setResponse] = useState(type === 'select' ? '' : null);
+  const onDateResponse = (date) => {
+    setResponse(date);
+  };
+  const onSelectResponse = (event: React.ChangeEvent<any>) => {
+    setResponse(event.target.value);
+  };
+  switch (type) {
+    case 'text':
+      return (
+        <FormControl style={{ maxWidth: '600px' }}>
+          {label}
+          <Input />
+        </FormControl>
+      );
+    case 'date':
+      return (
+        <FormControl style={{ maxWidth: '300px' }}>
+          {label}
+          <KeyboardDatePicker
+            margin='normal'
+            format='dd/MM/yyyy'
+            value={response}
+            onChange={onDateResponse}
+            // error={errors.fromDateError}
+            autoOk
+            okLabel={false}
+            clearable
+            label='Select date'
+          />
+        </FormControl>
+      );
+    case 'select':
+      return (
+        <FormControl style={{ maxWidth: '300px' }}>
+          {label}
+          <Select
+            labelId='response-label'
+            value={response}
+            onChange={onSelectResponse}
+          >
+            {choices.map((choice) => (
+              <MenuItem key={choice} value={choice}>
+                {choice}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      );
+    default:
+      return <div></div>;
+  }
+};
+
+const WPTASQuestionComponent = ({ question }: { question: WPTASQuestion }) => {
+  const classes = useStyles();
+  const { title, questionNum, questionType, choices } = question;
+
+  const [isMultiChoice, setIsMultiChoice] = useState(false);
+  const [selectedMultiChoice, setSelectedMultiChoice] = useState(0);
+
+  // State for 'answered correctly?' question
+  const [answeredCorrectly, setAnsweredCorrectly] = useState(null);
+  const answeredCorrectlySelected = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setAnsweredCorrectly((event.target as HTMLInputElement).value);
+  };
+  return (
+    <Box
+      display='flex'
+      flexDirection='column'
+      alignItems='stretch'
+      className={classes.question}
+    >
+      <h3>{`${questionNum}. ${title}`}</h3>
+      <FormControl>
+        <FormLabel className={classes.questionLabel}>
+          Answered correctly?
+        </FormLabel>
+        <RadioGroup
+          row
+          aria-label='answered correctly?'
+          value={answeredCorrectly}
+          onChange={answeredCorrectlySelected}
+        >
+          <Box flexGrow='1' display='flex' flexDirection='row'>
+            <Box flex='1 1 50%'>
+              <FormControlLabel
+                value='yes'
+                control={<Radio color='primary' />}
+                label='Yes'
+              />
+            </Box>
+            <Box flex='1 1 50%'>
+              <FormControlLabel
+                value='no'
+                control={<Radio color='primary' />}
+                label='No'
+              />
+            </Box>
+          </Box>
+        </RadioGroup>
+      </FormControl>
+      <PatientResponseInput type={questionType} choices={choices || []} />
+      {/* {renderPatientResponseInput(questionType)} */}
+    </Box>
   );
 };
 
@@ -151,19 +331,19 @@ type WPTASQuestionMarkup<T> = {
   input_component?: WPTASInputComponent;
 };
 
-//const generate_q_components = <T, >(questions: (T extends WPTASQuestionMarkup<infer R> ? WPTASQuestionMarkup<R> : any)) => (
-const generate_q_component = <T,>(
-  question: WPTASQuestionMarkup<T>,
-  index: number
-): JSX.Element => (
-  <WPTASQuestion
-    index={index}
-    title={question.title}
-    correct_answer={question.correct_answer}
-    multi_choice={question.multi_choice}
-    identifying={question.identifying}
-  />
-);
+// //const generate_q_components = <T, >(questions: (T extends WPTASQuestionMarkup<infer R> ? WPTASQuestionMarkup<R> : any)) => (
+// const generate_q_component = <T,>(
+//   question: WPTASQuestionMarkup<T>,
+//   index: number
+// ): JSX.Element => (
+//   <WPTASQuestion
+//     index={index}
+//     title={question.title}
+//     correct_answer={question.correct_answer}
+//     multi_choice={question.multi_choice}
+//     identifying={question.identifying}
+//   />
+// );
 
 type MultiChoiceAnswers<T> = T[];
 type MultiChoiceEval<T> = (correct_answer: T) => MultiChoiceAnswers<T>;
@@ -177,7 +357,7 @@ type Question_props<T> = {
   input_component?: WPTASInputComponent;
 };
 
-const WPTASQuestion = <T,>({
+const WPTASQuestion1 = <T,>({
   index,
   title,
   multi_choice: multi_choice_answers,
@@ -187,7 +367,7 @@ const WPTASQuestion = <T,>({
 }: Question_props<T>) => {
   const classes = useStyles();
 
-  const [mc, set_multi_choice] = useState(true);
+  const [mc, set_multi_choice] = useState(false);
   const [mc_answers, set_mc_answers] = useState<(T | null)[]>(
     correct_answer === undefined ? [] : multi_choice_answers(correct_answer)
   );
@@ -242,9 +422,7 @@ const WPTASQuestion = <T,>({
         rows={1}
         rowsMax={4}
       />
-    ) : /*) : typeof input_component === React.Component ? (
-        input_component*/
-    undefined;
+    ) : undefined;
 
   const question_section = (
     <FormGroup>
@@ -293,23 +471,6 @@ const WPTASQuestion = <T,>({
                     />
                   </Grid>
                 </Grid>
-                {/*<Grid container direction='row'>
-                  <Grid item xs={9}>
-                    <Radio value={index} checked={selected_mc.answer === ""+index} onClick={select_mc} />
-                    <TextField 
-                      id={""+index} 
-                      label="" 
-                      defaultValue={option} 
-                      color="secondary" 
-                      type={text_field_type} />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Checkbox 
-                      value={index} 
-                      checked={selected_mc.correct === ""+index} 
-                      onClick={select_correct_mc} />
-                  </Grid>
-                </Grid>*/}
               </ListItem>
             )
           )}
