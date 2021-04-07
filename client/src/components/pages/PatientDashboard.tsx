@@ -21,7 +21,7 @@ const styles: Styles<Theme, any> = (theme: any) => ({
   },
   menuIcon: { color: 'white' },
   backdrop: {
-    backgroundColor: 'var(--color-primary)',
+    backgroundColor: 'var(--color-neutral)',
     height: 'var(--backdrop-height)',
     width: '100%',
     position: 'absolute',
@@ -125,7 +125,7 @@ const DashboardHeader = withStyles(styles)(({ classes }: any) => {
   return (
     <div className={classes.header}>
       <h2>{`Patient ${id}`}</h2>
-      <PatientMenu />
+      {/* <PatientMenu /> */}
     </div>
   );
 });
