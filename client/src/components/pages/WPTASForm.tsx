@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: 'var(--color-primary-dark)',
     },
     questionsContainer: {
-      '&>*': { marginBottom: '2rem' },
+      '&>*': { marginBottom: '1.5rem' },
     },
     question: {
       '&>*:not(:last-child)': { marginBottom: '1.5rem' },
@@ -138,7 +138,7 @@ const useStyles = makeStyles((theme: Theme) =>
       top: '1rem',
     },
     multiChoiceRadioGroup: {
-      '&>*': { marginBottom: '1rem' },
+      '&>*:not(:last-child)': { marginBottom: '1rem' },
     },
   })
 );
