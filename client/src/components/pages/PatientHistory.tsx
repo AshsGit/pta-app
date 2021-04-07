@@ -81,6 +81,7 @@ const styles: Styles<Theme, any> = (theme: any) => ({
   },
   btnCell: {
     display: 'flex',
+    justifyContent: 'center',
     '& button': {
       width: '100%',
     },
@@ -425,6 +426,7 @@ const WPTASHistory = withStyles(styles)(({ classes }: any) => {
                 <TableCell>{row.score}</TableCell>
                 <TableCell className={classes.btnCell}>
                   <OutlineButton
+                    style={{ maxWidth: '150px' }}
                     onClick={() => {
                       history.push(
                         `/${id}/wptas?submission=${row.submissionId}`
