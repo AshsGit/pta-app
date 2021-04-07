@@ -114,6 +114,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     question: {
       '&>*:not(:last-child)': { marginBottom: '1.5rem' },
+      position: 'relative',
     },
     questionLabel: { marginBottom: '0.5rem', fontWeight: 500 },
     backButton: {
@@ -130,6 +131,14 @@ const useStyles = makeStyles((theme: Theme) =>
       // height: '60px',
       paddingTop: '2rem',
       paddingBottom: '1rem',
+    },
+    switch: {
+      position: 'absolute',
+      right: 0,
+      top: '1rem',
+    },
+    multiChoiceRadioGroup: {
+      '&>*': { marginBottom: '1rem' },
     },
   })
 );
@@ -157,7 +166,7 @@ export const WPTASForm: FunctionComponent = () => {
                   className={classes.questionsContainer}
                 >
                   {questions
-                    .filter((_, i) => i < 3)
+                    // .filter((_, i) => i < 3)
                     .map((question) => (
                       <WPTASQuestionComponent
                         key={question.questionNum}
@@ -265,12 +274,38 @@ const PatientResponseInput = ({ type, choices }: any) => {
   }
 };
 
+const WPTASMultiChoiceQuestion = ({}) => {
+  const [selectedMultiChoice, setSelectedMultiChoice] = useState('');
+  const classes = useStyles();
+  return (
+    <RadioGroup
+      aria-label='multiple choice'
+      value={selectedMultiChoice}
+      onChange={(event) => {
+        setSelectedMultiChoice((event.target as HTMLInputElement).value);
+      }}
+      className={classes.multiChoiceRadioGroup}
+    >
+      {
+        // TODO replace with multiple choice generator. Expect an array of strings
+        // TODO DECIDE if we generate these every time the component is rendered or once at the start when the form is initialised
+        ['option 1', 'option 2', 'option 3'].map((choice) => (
+          <FormControlLabel
+            value={choice}
+            control={<Radio color='primary' />}
+            label={choice}
+          />
+        ))
+      }
+    </RadioGroup>
+  );
+};
+
 const WPTASQuestionComponent = ({ question }: { question: WPTASQuestion }) => {
   const classes = useStyles();
   const { title, questionNum, questionType, choices } = question;
 
   const [isMultiChoice, setIsMultiChoice] = useState(false);
-  const [selectedMultiChoice, setSelectedMultiChoice] = useState(0);
 
   // State for 'answered correctly?' question
   const [answeredCorrectly, setAnsweredCorrectly] = useState(null);
@@ -286,36 +321,48 @@ const WPTASQuestionComponent = ({ question }: { question: WPTASQuestion }) => {
       alignItems='stretch'
       className={classes.question}
     >
-      <h3>{`${questionNum}. ${title}`}</h3>
-      <FormControl>
-        <FormLabel className={classes.questionLabel}>
-          Answered correctly?
-        </FormLabel>
-        <RadioGroup
-          row
-          aria-label='answered correctly?'
-          value={answeredCorrectly}
-          onChange={answeredCorrectlySelected}
-        >
-          <Box flexGrow='1' display='flex' flexDirection='row'>
-            <Box flex='1 1 50%'>
-              <FormControlLabel
-                value='yes'
-                control={<Radio color='primary' />}
-                label='Yes'
-              />
-            </Box>
-            <Box flex='1 1 50%'>
-              <FormControlLabel
-                value='no'
-                control={<Radio color='primary' />}
-                label='No'
-              />
-            </Box>
-          </Box>
-        </RadioGroup>
-      </FormControl>
-      <PatientResponseInput type={questionType} choices={choices || []} />
+      <Switch
+        color='primary'
+        className={classes.switch}
+        checked={isMultiChoice}
+        onChange={() => setIsMultiChoice(!isMultiChoice)}
+      />
+      <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
+      {isMultiChoice ? (
+        <WPTASMultiChoiceQuestion />
+      ) : (
+        <React.Fragment>
+          <FormControl>
+            <FormLabel className={classes.questionLabel}>
+              Answered correctly?
+            </FormLabel>
+            <RadioGroup
+              row
+              aria-label='answered correctly?'
+              value={answeredCorrectly}
+              onChange={answeredCorrectlySelected}
+            >
+              <Box flexGrow='1' display='flex' flexDirection='row'>
+                <Box flex='1 1 50%'>
+                  <FormControlLabel
+                    value='yes'
+                    control={<Radio color='primary' />}
+                    label='Yes'
+                  />
+                </Box>
+                <Box flex='1 1 50%'>
+                  <FormControlLabel
+                    value='no'
+                    control={<Radio color='primary' />}
+                    label='No'
+                  />
+                </Box>
+              </Box>
+            </RadioGroup>
+          </FormControl>
+          <PatientResponseInput type={questionType} choices={choices || []} />
+        </React.Fragment>
+      )}
       {/* {renderPatientResponseInput(questionType)} */}
     </Box>
   );

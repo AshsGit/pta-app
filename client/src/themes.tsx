@@ -24,7 +24,7 @@ export const WPTASTheme = createMuiTheme({
     fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
     h1: {
       fontStyle: 'normal',
-      fontWeight: 'bold',
+      fontWeight: 500,
       fontSize: '1.625rem',
       lineHeight: '1.875rem',
     },
@@ -37,7 +37,7 @@ export const WPTASTheme = createMuiTheme({
     h3: {
       fontStyle: 'normal',
       fontWeight: 'bold',
-      fontSize: '1.125rem',
+      fontSize: '20px',
       lineHeight: '1.313rem',
     },
     // h4: {
