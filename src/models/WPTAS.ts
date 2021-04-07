@@ -2,39 +2,7 @@ export {};
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-export const wptasSubmissionSchema = new Schema(
-  {
-    date_of_injury: {
-      type: Date,
-      max: Date.now,
-      required: true,
-    },
-    date_of_submission: {
-      type: Date,
-      max: Date.now,
-      required: true,
-    },
-    total: {
-      validate: {
-        validator: Number.isInteger,
-        message: 'Score total should be integer',
-      },
-      type: Number,
-      required: true,
-    },
-    examiner_initials: {
-      type: String,
-      required: true,
-    },
-    patients: {
-      type: Schema.Types.ObjectId,
-      ref: 'Patient',
-    },
-  },
-  { versionKey: false }
-);
-
-export const wptasResponseSchema = new Schema(
+const wptasResponseSchema = new Schema(
   {
     submissions: {
       type: Schema.Types.ObjectId,
@@ -65,7 +33,42 @@ export const wptasResponseSchema = new Schema(
   { versionKey: false }
 );
 
-export const wptasQuestionSchema = new Schema(
+const WPTASResponse = mongoose.model('WPTASResponse', wptasResponseSchema);
+
+const wptasSubmissionSchema = new Schema(
+  {
+    date_of_injury: {
+      type: Date,
+      max: Date.now,
+      required: true,
+    },
+    date_of_submission: {
+      type: Date,
+      max: Date.now,
+      required: true,
+    },
+    responses: [{ type: Schema.Types.ObjectId, ref: WPTASResponse }],
+    total: {
+      validate: {
+        validator: Number.isInteger,
+        message: 'Score total should be integer',
+      },
+      type: Number,
+      required: true,
+    },
+    examiner_initials: {
+      type: String,
+      required: true,
+    },
+    patients: {
+      type: Schema.Types.ObjectId,
+      ref: 'Patient',
+    },
+  },
+  { versionKey: false }
+);
+
+const wptasQuestionSchema = new Schema(
   {
     question_text: {
       type: String,
@@ -83,7 +86,7 @@ export const wptasQuestionSchema = new Schema(
   { versionKey: false }
 );
 
-export const wptasImageSchema = new Schema(
+const wptasImageSchema = new Schema(
   {
     wptas_questions: {
       type: Schema.Types.ObjectId,
@@ -101,13 +104,12 @@ const WPTASSubmission = mongoose.model(
   'WPTASSubmission',
   wptasSubmissionSchema
 );
-const WPTASResopnse = mongoose.model('WPTASResponse', wptasResponseSchema);
 const WPTASQuestion = mongoose.model('WPTASQuestion', wptasQuestionSchema);
 const WPTASImage = mongoose.model('WPTASImage', wptasImageSchema);
 
 module.exports = {
   WPTASSubmission: WPTASSubmission,
-  WPTASResopnse: WPTASResopnse,
+  WPTASResopnse: WPTASResponse,
   WPTASQuestion: WPTASQuestion,
   WPTASImage: WPTASImage,
 };

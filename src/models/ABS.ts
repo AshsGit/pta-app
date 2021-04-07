@@ -3,6 +3,29 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Patient = require('./Patient');
 
+const absResponseSchema = new Schema(
+  {
+    submissions: {
+      type: Schema.Types.ObjectId,
+      ref: 'ABSSubmission',
+    },
+    abs_questions: {
+      type: Schema.Types.ObjectId,
+      ref: 'ABSQuestion',
+    },
+    score: {
+      validate: {
+        validator: Number.isInteger,
+        message: 'Score should be integer',
+      },
+      type: Number,
+      required: true,
+    },
+  },
+  { versionKey: false }
+);
+const ABSResponse = mongoose.model('ABSResponse', absResponseSchema);
+
 const absSubmissionSchema = new Schema(
   {
     date_of_injury: {
@@ -27,9 +50,12 @@ const absSubmissionSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: Patient,
     },
+    responses: [{ type: Schema.Types.ObjectId, ref: ABSResponse }],
   },
   { versionKey: false }
 );
+
+const ABSSubmission = mongoose.model('ABSSubmission', absSubmissionSchema);
 
 const absQuestionSchema = new Schema(
   {
@@ -45,31 +71,7 @@ const absQuestionSchema = new Schema(
   { versionKey: false }
 );
 
-const absResponseSchema = new Schema(
-  {
-    submissions: {
-      type: Schema.Types.ObjectId,
-      ref: 'ABSSubmission',
-    },
-    abs_questions: {
-      type: Schema.Types.ObjectId,
-      ref: 'ABSQuestion',
-    },
-    score: {
-      validate: {
-        validator: Number.isInteger,
-        message: 'Score should be integer',
-      },
-      type: Number,
-      required: true,
-    },
-  },
-  { versionKey: false }
-);
-
-const ABSSubmission = mongoose.model('ABSSubmission', absSubmissionSchema);
 const ABSQuestion = mongoose.model('ABSQuestion', absQuestionSchema);
-const ABSResponse = mongoose.model('ABSResponse', absResponseSchema);
 
 module.exports = {
   ABSSubmission: ABSSubmission,
