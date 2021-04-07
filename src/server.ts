@@ -1,7 +1,9 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
-
+export {};
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const abs = require('./routes/api/abs');
+const wptas = require('./routes/api/wptas');
 const patients = require('./routes/api/patients');
 
 const app = express();
@@ -9,22 +11,25 @@ const app = express();
 // bodyparser middleware
 app.use(bodyParser.json());
 
-//DB config
+// DB config
 const db = require('./config/keys').mongoURI;
 
-//Set mongoose flags to prevent depreciation warnings
+// Set mongoose flags to prevent depreciation warnings
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
-//Connect to Mongo 
-mongoose.connect(db)
-    .then(() => console.log("MongoDB Connected..."))
-    .catch(err => console.log(err));
+// Connect to Mongo
+mongoose
+  .connect(db)
+  .then(() => console.log('MongoDB Connected...'))
+  .catch((err) => console.log(err));
 
 // Use routes
-app.use('/api/patients', patients);
+app.use('/api/patient', patients);
+app.use('/api/wptas', wptas);
+app.use('/api/abs', abs);
 
 const port = process.env.PORT || 5000;
 
