@@ -30,7 +30,7 @@ const questions: Array<WPTASQuestion> = [
     title: 'What time of day is it?',
     questionNum: 4,
     questionType: 'select',
-    choices: ['morning', 'afternoon', 'evening'],
+    choices: ['Morning', 'Afternoon', 'Evening'],
   },
   {
     title: 'What day of the week is it?',
