@@ -42,6 +42,7 @@ import {
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -115,6 +116,7 @@ const useStyles = makeStyles((theme: Theme) =>
     question: {
       '&>*:not(:last-child)': { marginBottom: '1.5rem' },
       position: 'relative',
+      height: '230px',
     },
     questionLabel: { marginBottom: '0.5rem', fontWeight: 500 },
     backButton: {
@@ -167,6 +169,7 @@ export const WPTASForm: FunctionComponent = () => {
                 >
                   {questions
                     // .filter((_, i) => i < 3)
+                    .filter((_, i) => i < 7)
                     .map((question) => (
                       <WPTASQuestionComponent
                         key={question.questionNum}
@@ -189,9 +192,14 @@ export const WPTASForm: FunctionComponent = () => {
 
 const Header: FunctionComponent = () => {
   const classes = useStyles();
+  const history = useHistory();
   return (
     <Box display='flex' className={classes.header} alignItems='center'>
-      <IconButton aria-label='back' className={classes.backButton}>
+      <IconButton
+        aria-label='back'
+        className={classes.backButton}
+        onClick={() => history.goBack()}
+      >
         <ArrowBackSharpIcon fontSize='large' />
       </IconButton>
       <Box flexGrow={1} style={{ textAlign: 'center' }}>
@@ -217,7 +225,7 @@ const PatientResponseInput = ({ type, choices }: any) => {
   const classes = useStyles();
   let label = (
     <FormLabel id='response-label' className={classes.questionLabel}>
-      Patient Response
+      Patient Response (optional)
     </FormLabel>
   );
   const [response, setResponse] = useState(type === 'select' ? '' : null);
@@ -240,7 +248,6 @@ const PatientResponseInput = ({ type, choices }: any) => {
         <FormControl style={{ maxWidth: '300px' }}>
           {label}
           <KeyboardDatePicker
-            margin='normal'
             format='dd/MM/yyyy'
             value={response}
             onChange={onDateResponse}
@@ -274,7 +281,7 @@ const PatientResponseInput = ({ type, choices }: any) => {
   }
 };
 
-const WPTASMultiChoiceQuestion = ({}) => {
+const WPTASMultiChoiceQuestion = () => {
   const [selectedMultiChoice, setSelectedMultiChoice] = useState('');
   const classes = useStyles();
   return (
@@ -291,6 +298,7 @@ const WPTASMultiChoiceQuestion = ({}) => {
         // TODO DECIDE if we generate these every time the component is rendered or once at the start when the form is initialised
         ['option 1', 'option 2', 'option 3'].map((choice) => (
           <FormControlLabel
+            key={choice}
             value={choice}
             control={<Radio color='primary' />}
             label={choice}
@@ -321,12 +329,14 @@ const WPTASQuestionComponent = ({ question }: { question: WPTASQuestion }) => {
       alignItems='stretch'
       className={classes.question}
     >
-      <Switch
-        color='primary'
-        className={classes.switch}
-        checked={isMultiChoice}
-        onChange={() => setIsMultiChoice(!isMultiChoice)}
-      />
+      <Box className={classes.switch} display='flex' alignItems='center'>
+        <span style={{ fontSize: '11px' }}>Multiple choice?</span>
+        <Switch
+          color='primary'
+          checked={isMultiChoice}
+          onChange={() => setIsMultiChoice(!isMultiChoice)}
+        />
+      </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       {isMultiChoice ? (
         <WPTASMultiChoiceQuestion />

@@ -31,7 +31,7 @@ import {
 import DateFnsUtils from '@date-io/date-fns';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
 import { ABSAnswer, ABSSubmission } from '../../types/ABS';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 const submit = (submission: ABSSubmission) =>
   console.log(JSON.stringify(submission));
@@ -189,6 +189,7 @@ export const ABSForm: FunctionComponent = () => {
     }
   };
   const { id } = useParams() as any;
+  const history = useHistory();
 
   return (
     <ThemeProvider theme={ABSTheme}>
@@ -199,7 +200,11 @@ export const ABSForm: FunctionComponent = () => {
           <Paper variant='outlined' className={classes.root_content}>
             <form onSubmit={($event) => handleSubmit($event, id)}>
               <Grid container direction='column' spacing={5}>
-                <IconButton aria-label='back' className={classes.backButton}>
+                <IconButton
+                  aria-label='back'
+                  className={classes.backButton}
+                  onClick={() => history.goBack()}
+                >
                   <ArrowBackSharpIcon fontSize='large' />
                 </IconButton>
                 <Grid item>
