@@ -11,7 +11,7 @@ export interface WPTASSubmission {
 export interface WPTASQuestion {
   title: string;
   questionNum: number;
-  questionType: WPTASQuestionType;
+  questionType: 'date' | 'select' | 'text';
   choices?: Array<string>;
 }
 
