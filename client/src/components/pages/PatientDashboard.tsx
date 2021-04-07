@@ -125,7 +125,7 @@ const DashboardHeader = withStyles(styles)(({ classes }: any) => {
   return (
     <div className={classes.header}>
       <h2>{`Patient ${id}`}</h2>
-      <PatientMenu />
+      {/* <PatientMenu /> */}
     </div>
   );
 });
