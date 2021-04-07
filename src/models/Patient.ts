@@ -9,6 +9,8 @@ const PatientSchema = new Schema(
     personId: { type: String, default: null },
     currentImages: [{ type: String }],
     correctImageAnswersInARow: { type: Number, default: 0 },
+    location: { type: String, default: null },
+    dateOfBirth: { type: String, default: null },
   },
   { versionKey: false }
 );
