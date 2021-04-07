@@ -1,70 +1,78 @@
-export {}
+export {};
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Patient = require('./Patient');
 
-const absSubSchema = new Schema({
-    _id: Schema.Types.ObjectId,
+const absSubmissionSchema = new Schema(
+  {
     date_of_injury: {
-        type: Date,
-        max: Date.now,
-        required: true
+      type: Date,
+      max: Date.now,
+      required: true,
     },
     date_of_submission: {
-        type: Date,
-        max: Date.now,
-        required: true
+      type: Date,
+      max: Date.now,
+      required: true,
     },
     total: {
-        validate: {
-            validator: Number.isInteger,
-            message: 'Score total should be integer'
-        },
-        type: Number,
-        required: true
+      validate: {
+        validator: Number.isInteger,
+        message: 'Score total should be integer',
+      },
+      type: Number,
+      required: true,
     },
-    patients: {
-        type: Schema.Types.ObjectId,
-        ref: 'Patient'
-    }
-});
+    patient: {
+      type: Schema.Types.ObjectId,
+      ref: Patient,
+    },
+  },
+  { versionKey: false }
+);
 
-const absQuestionSchema = new Schema({
-    _id: Schema.Types.ObjectId,
+const absQuestionSchema = new Schema(
+  {
     question_text: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     question_num: {
-        type: Number,
-        required: true
-    }
-});
+      type: Number,
+      required: true,
+    },
+  },
+  { versionKey: false }
+);
 
-const absResSchema = new Schema({
+const absResponseSchema = new Schema(
+  {
     submissions: {
-        type: Schema.Types.ObjectId,
-        ref: 'ABSSubmission'
+      type: Schema.Types.ObjectId,
+      ref: 'ABSSubmission',
     },
     abs_questions: {
-        type: Schema.Types.ObjectId,
-        ref: 'ABSQuestion'
+      type: Schema.Types.ObjectId,
+      ref: 'ABSQuestion',
     },
     score: {
-        validate: {
-            validator: Number.isInteger,
-            message: 'Score should be integer'
-        },
-        type: Number,
-        required: true
-    }
-});
+      validate: {
+        validator: Number.isInteger,
+        message: 'Score should be integer',
+      },
+      type: Number,
+      required: true,
+    },
+  },
+  { versionKey: false }
+);
 
-const ABSSub = mongoose.model('ABSSubmission', absSubSchema);
-const ABSQues = mongoose.model('ABSQuestion', absQuestionSchema)
-const ABSRes = mongoose.model('ABSResponse', absResSchema);
+const ABSSubmission = mongoose.model('ABSSubmission', absSubmissionSchema);
+const ABSQuestion = mongoose.model('ABSQuestion', absQuestionSchema);
+const ABSResponse = mongoose.model('ABSResponse', absResponseSchema);
 
 module.exports = {
-    ABSSub: ABSSub,
-    ABSQues: ABSQues,
-    ABSRes: ABSRes
+  ABSSubmission: ABSSubmission,
+  ABSQuestion: ABSQuestion,
+  ABSResponse: ABSResponse,
 };

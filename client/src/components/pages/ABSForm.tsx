@@ -30,7 +30,8 @@ import {
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
-import { ABSSubmission } from '../../types/ABSSubmission';
+import { ABSAnswer, ABSSubmission } from '../../types/ABS';
+import { useParams } from 'react-router-dom';
 
 const submit = (submission: ABSSubmission) =>
   console.log(JSON.stringify(submission));
@@ -145,7 +146,7 @@ export const ABSForm: FunctionComponent = () => {
     setQuestionAnswers(temp);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>, id) => {
     event.preventDefault();
 
     const newErrors: InputErrors = {
@@ -171,14 +172,23 @@ export const ABSForm: FunctionComponent = () => {
       setErrors(newErrors);
     } else {
       const submission: ABSSubmission = {
+        patientId: id,
+        submissionId: '',
         periodOfObs_to: toDate as Date,
         periodOfObs_from: fromDate as Date,
         obsEnv,
-        answers: questionAnswers.map(Number),
+        answers: questionAnswers.map(
+          (score, i) =>
+            ({
+              questionNum: i,
+              score: Number(score),
+            } as ABSAnswer)
+        ),
       };
       submit(submission);
     }
   };
+  const { id } = useParams() as any;
 
   return (
     <ThemeProvider theme={ABSTheme}>
@@ -187,7 +197,7 @@ export const ABSForm: FunctionComponent = () => {
         <Background />
         <div className='page'>
           <Paper variant='outlined' className={classes.root_content}>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={($event) => handleSubmit($event, id)}>
               <Grid container direction='column' spacing={5}>
                 <IconButton aria-label='back' className={classes.backButton}>
                   <ArrowBackSharpIcon fontSize='large' />

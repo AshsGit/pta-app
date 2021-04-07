@@ -1,4 +1,4 @@
-export {}
+export {};
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -20,13 +20,14 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
-// Connect to Mongo 
-mongoose.connect(db)
-    .then(() => console.log("MongoDB Connected..."))
-    .catch(err => console.log(err));
+// Connect to Mongo
+mongoose
+  .connect(db)
+  .then(() => console.log('MongoDB Connected...'))
+  .catch((err) => console.log(err));
 
 // Use routes
-app.use('/api/patients', patients);
+app.use('/api/patient', patients);
 app.use('/api/wptas', wptas);
 app.use('/api/abs', abs);
 
