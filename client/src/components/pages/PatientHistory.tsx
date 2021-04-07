@@ -475,6 +475,7 @@ const ABSHistory = withStyles(styles)(({ classes }: any) => {
                 <TableCell>{row.score}</TableCell>
                 <TableCell className={classes.btnCell}>
                   <OutlineButton
+                    style={{ maxWidth: '150px' }}
                     onClick={() => {
                       history.push(`/${id}/abs?submission=${row.submissionId}`);
                     }}
