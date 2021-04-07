@@ -21,7 +21,7 @@ const styles: Styles<Theme, any> = (theme: any) => ({
   },
   menuIcon: { color: 'white' },
   backdrop: {
-    backgroundColor: 'var(--color-primary)',
+    backgroundColor: 'var(--color-neutral)',
     height: 'var(--backdrop-height)',
     width: '100%',
     position: 'absolute',
