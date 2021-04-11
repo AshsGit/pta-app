@@ -38,8 +38,8 @@ const { WPTASSubmission, WPTASResponse } = require('../../models/WPTAS');
 // @access Public
 router.get('/submissions/:patientId', async (req: any, res: any) => {
   try {
-    const patients = await WPTASSubmission.find({ patient: req.params.id });
-    res.status(200).json(patients);
+    const submissions = await WPTASSubmission.find({ patient: req.params.id });
+    res.status(200).json(submissions);
   } catch (e) {
     res.status(400).json({ msg: e.message });
   }
@@ -49,14 +49,23 @@ router.get('/submissions/:patientId', async (req: any, res: any) => {
 // @desc get a submission by submission id
 // @access Public
 router.get('/submission/:id', async (req, res) => {
-  try {
-    const patient = await WPTASSubmission.findOne({
-      _id: req.params.id,
-    }).findOne({ _id: req.params.id });
-    res.status(200).json(patient);
-  } catch (e) {
-    res.status(400).json({ msg: e.message });
-  }
+  WPTASSubmission.findOne({ _id: req.params.id })
+    .populate('responses')
+    .exec((err, submission) => {
+      if (err) {
+        res.status(400).json({ msg: err.message });
+        return;
+      }
+      res.status(200).json(submission);
+    });
+  // try {
+  //   const patient = await WPTASSubmission.findOne({
+  //     _id: req.params.id,
+  //   })
+  //   res.status(200).json(patient);
+  // } catch (e) {
+  //   res.status(400).json({ msg: e.message });
+  // }
 });
 
 // // @route GET api/wptas/images

@@ -48,9 +48,9 @@ const absSubmissionSchema = new Schema(
     },
     patient: {
       type: Schema.Types.ObjectId,
-      ref: Patient,
+      ref: 'Patient',
     },
-    responses: [{ type: Schema.Types.ObjectId, ref: ABSResponse }],
+    responses: [{ type: Schema.Types.ObjectId, ref: 'ABSResponse' }],
   },
   { versionKey: false }
 );

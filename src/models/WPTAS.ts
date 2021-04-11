@@ -47,7 +47,7 @@ const wptasSubmissionSchema = new Schema(
       max: Date.now,
       required: true,
     },
-    responses: [{ type: Schema.Types.ObjectId, ref: WPTASResponse }],
+    responses: [{ type: Schema.Types.ObjectId, ref: 'WPTASResponse' }],
     total: {
       validate: {
         validator: Number.isInteger,
