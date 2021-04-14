@@ -9,14 +9,10 @@ import {
   FormGroup,
   FormLabel,
   Grid,
-  GridList,
-  GridListTile,
-  GridListTileBar,
   IconButton,
   Input,
   List,
   ListItem,
-  ListItemText,
   MenuItem,
   Paper,
   Radio,
@@ -33,7 +29,6 @@ import {
   ThemeProvider,
 } from '@material-ui/core/styles';
 import { WPTASTheme } from '../../themes';
-import { DateTime } from 'luxon';
 import questions from '../../data/wptas';
 import { WPTASQuestion } from '../../types/WPTAS';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';

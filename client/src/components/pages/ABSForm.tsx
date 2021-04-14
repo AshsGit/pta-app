@@ -35,7 +35,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import questions from '../../data/abs';
 
 const submit = (submission: ABSSubmission) =>
-  console.log(JSON.stringify(submission));
+  console.log(JSON.stringify(submission, null, 4));
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,7 +47,8 @@ export const useStyles = makeStyles((theme: Theme) =>
       // minHeight: '90%',
 
       margin: '3rem 2rem 2rem 2rem',
-      padding: '2.875rem',
+      // padding: '2.875rem',
+      padding: '2rem',
       zIndex: 2,
       // '&>*': {
       //   marginBottom: '5.625rem',
@@ -175,6 +176,7 @@ export const ABSForm: FunctionComponent = () => {
       const submission: ABSSubmission = {
         patientId: id,
         submissionId: '',
+        examinerInitials: '',
         periodOfObs_to: toDate as Date,
         periodOfObs_from: fromDate as Date,
         obsEnv,
