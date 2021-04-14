@@ -30,8 +30,9 @@ import {
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
-import { ABSAnswer, ABSSubmission } from '../../types/ABS';
+import { ABSAnswer, ABSQuestion, ABSSubmission } from '../../types/ABS';
 import { useHistory, useParams } from 'react-router-dom';
+import questions from '../../data/abs';
 
 const submit = (submission: ABSSubmission) =>
   console.log(JSON.stringify(submission));
@@ -99,26 +100,26 @@ const questionError = (index: number, e: InputErrors) => e.answerErrors[index];
 export const ABSForm: FunctionComponent = () => {
   const classes = useStyles();
 
-  const questions = [
-    'Short attention span, easy distractibility, inability to concentrate',
-    'Impulsive, impatient, low tolerance for pain or frustration',
-    'Uncooperative, resistant to care, demanding',
-    'Violent and or threatening violence toward people or property',
-  ];
+  // const questions = [
+  //   'Short attention span, easy distractibility, inability to concentrate',
+  //   'Impulsive, impatient, low tolerance for pain or frustration',
+  //   'Uncooperative, resistant to care, demanding',
+  //   'Violent and or threatening violence toward people or property',
+  // ];
 
-  const questionCount = questions.length;
+  // const questionCount = questions.length;
 
   const [toDate, setToDate] = useState<Date | null>(null);
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [obsEnv, setObsEnv] = useState('');
   const [questionAnswers, setQuestionAnswers] = useState<string[]>(
-    new Array(questionCount).fill('')
+    new Array(questions.length).fill('')
   );
   const [errors, setErrors] = useState<InputErrors>({
     toDateError: false,
     fromDateError: false,
     obsEnvError: false,
-    answerErrors: new Array(questionCount).fill(false),
+    answerErrors: new Array(questions.length).fill(false),
   });
 
   const obsEnvOnChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -153,7 +154,7 @@ export const ABSForm: FunctionComponent = () => {
       toDateError: false,
       fromDateError: false,
       obsEnvError: false,
-      answerErrors: new Array(questionCount).fill(false),
+      answerErrors: new Array(questions.length).fill(false),
     };
 
     if (toDate === null) newErrors.toDateError = true;
@@ -331,11 +332,10 @@ export const ABSForm: FunctionComponent = () => {
                 </Grid>
                 <br />
                 <Grid item container spacing={8} direction='column'>
-                  {questions.map((title, index) => (
+                  {questions.map((question, index) => (
                     <Grid item key={index}>
-                      {ABSQuestion({
-                        index: index + 1,
-                        title,
+                      {ABSQuestionComponent({
+                        question,
                         onChange: getChangeHandle(index),
                         error: questionError(index, errors),
                       })}
@@ -362,23 +362,21 @@ export const ABSForm: FunctionComponent = () => {
 };
 
 type ABSQuestionProps = {
-  index: number;
-  title: string;
+  question: ABSQuestion;
   onChange?: RadioGroupProps['onChange'] | undefined;
   error?: FormControlProps['error'] | undefined;
 };
 
-const ABSQuestion: FC<ABSQuestionProps> = ({
-  index,
-  title,
+const ABSQuestionComponent: FC<ABSQuestionProps> = ({
+  question,
   onChange,
   error,
 }) => {
   return (
     <Grid container direction='column' spacing={5}>
       <Grid item>
-        <Typography variant='h2'>
-          {index}. {title}
+        <Typography variant='h3'>
+          {question.questionNum}. {question.title}
         </Typography>
       </Grid>
       <Grid item>
