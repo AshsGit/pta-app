@@ -13,6 +13,8 @@ export interface WPTASQuestion {
   questionNum: number;
   questionType: 'date' | 'select' | 'text';
   choices?: Array<string>;
+  multichoiceGenerator?: any;
+  correctAnswerGenerator?:any;
 }
 
 export enum WPTASQuestionType {
