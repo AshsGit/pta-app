@@ -2,15 +2,16 @@ import React, { FunctionComponent, useState, FC, ChangeEvent } from 'react';
 import {
   Box,
   Button,
+  CircularProgress,
   CssBaseline,
   FormControl,
   FormControlLabel,
   FormControlProps,
   FormHelperText,
+  FormLabel,
   Grid,
   IconButton,
   Input,
-  InputAdornment,
   Paper,
   Radio,
   RadioGroup,
@@ -33,9 +34,7 @@ import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
 import { ABSAnswer, ABSQuestion, ABSSubmission } from '../../types/ABS';
 import { useHistory, useParams } from 'react-router-dom';
 import questions from '../../data/abs';
-
-const submit = (submission: ABSSubmission) =>
-  console.log(JSON.stringify(submission, null, 4));
+import { AbsService } from '../../services/AbsService';
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,7 +44,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       // left: '5%',
       // right: '5%',
       // minHeight: '90%',
-
+      width: '100%',
       margin: '3rem 2rem 2rem 2rem',
       // padding: '2.875rem',
       padding: '2rem',
@@ -70,6 +69,13 @@ export const useStyles = makeStyles((theme: Theme) =>
       float: 'left',
       paddingTop: '1.1rem',
       size: 'large',
+    },
+    headerQuestion: {
+      marginBottom: '1rem',
+    },
+    successfulSubmit: {
+      marginBottom: '0.5rem',
+      fontSize: '16px',
     },
   })
 );
@@ -99,16 +105,11 @@ const hasError = (e: InputErrors): boolean =>
 const questionError = (index: number, e: InputErrors) => e.answerErrors[index];
 
 export const ABSForm: FunctionComponent = () => {
+  const absService = new AbsService();
   const classes = useStyles();
 
-  // const questions = [
-  //   'Short attention span, easy distractibility, inability to concentrate',
-  //   'Impulsive, impatient, low tolerance for pain or frustration',
-  //   'Uncooperative, resistant to care, demanding',
-  //   'Violent and or threatening violence toward people or property',
-  // ];
-
-  // const questionCount = questions.length;
+  const [loading, setLoading] = useState<boolean>(false);
+  const [submitted, setSubmitted] = useState<boolean>(false);
 
   const [toDate, setToDate] = useState<Date | null>(null);
   const [fromDate, setFromDate] = useState<Date | null>(null);
@@ -173,6 +174,7 @@ export const ABSForm: FunctionComponent = () => {
     if (formIncomplete) {
       setErrors(newErrors);
     } else {
+      setLoading(true);
       const submission: ABSSubmission = {
         patientId: id,
         submissionId: '',
@@ -183,12 +185,23 @@ export const ABSForm: FunctionComponent = () => {
         answers: questionAnswers.map(
           (score, i) =>
             ({
-              questionNum: i,
+              questionNum: i + 1,
               score: Number(score),
             } as ABSAnswer)
         ),
       };
-      submit(submission);
+      absService.submit(submission).subscribe(
+        (result) => {
+          console.log('submit done', result);
+          setLoading(false);
+          setSubmitted(true);
+        },
+        (err) => {
+          console.log('Error:', err);
+          setLoading(false);
+          // TODO provide a ui error
+        }
+      );
     }
   };
   const { id } = useParams() as any;
@@ -201,12 +214,13 @@ export const ABSForm: FunctionComponent = () => {
         <Background />
         <div className='page'>
           <Paper variant='outlined' className={classes.root_content}>
+            {/* TODO: show error under submit button if submit failes / form inputs fail */}
             <form onSubmit={($event) => handleSubmit($event, id)}>
               <Grid container direction='column' spacing={5}>
                 <IconButton
                   aria-label='back'
                   className={classes.backButton}
-                  onClick={() => history.goBack()}
+                  onClick={() => history.push(`/${id}`)}
                 >
                   <ArrowBackSharpIcon fontSize='large' />
                 </IconButton>
@@ -215,145 +229,142 @@ export const ABSForm: FunctionComponent = () => {
                     ABS
                   </Typography>
                 </Grid>
-                <Grid item container direction='column' spacing={5}>
-                  <Grid item container direction='column'>
-                    <Typography variant='h3'>Period of Observation</Typography>
-                    <Grid
-                      item
-                      container
-                      direction='row'
-                      spacing={10}
-                      wrap='nowrap'
-                    >
-                      <Grid item xs={5}>
+                {submitted ? (
+                  <Grid item>
+                    <div className={classes.successfulSubmit}>
+                      You have successfully submitted your response!
+                    </div>
+                  </Grid>
+                ) : (
+                  <React.Fragment>
+                    <Grid item container direction='column' spacing={5}>
+                      <Grid item container direction='column'>
+                        <Typography
+                          className={classes.headerQuestion}
+                          variant='h3'
+                        >
+                          Period of Observation
+                        </Typography>
+                        <Grid
+                          item
+                          container
+                          direction='row'
+                          spacing={10}
+                          wrap='nowrap'
+                        >
+                          <Grid item xs={5}>
+                            <FormControl
+                              component='fieldset'
+                              fullWidth
+                              error={errors.fromDateError}
+                            >
+                              <FormLabel>From:</FormLabel>
+                              <KeyboardDatePicker
+                                margin='normal'
+                                format='dd/MM/yyyy'
+                                value={fromDate}
+                                onChange={fromDateOnChange}
+                                error={errors.fromDateError}
+                                autoOk
+                                okLabel={false}
+                                clearable
+                              />
+                              <FormHelperText>
+                                {errors.fromDateError
+                                  ? 'This field is compulsory!'
+                                  : ' '}
+                              </FormHelperText>
+                            </FormControl>
+                          </Grid>
+                          <Grid item xs={5}>
+                            <FormControl
+                              component='fieldset'
+                              fullWidth
+                              error={errors.toDateError}
+                            >
+                              <FormLabel>To:</FormLabel>
+                              <KeyboardDatePicker
+                                margin='normal'
+                                format='dd/MM/yyyy'
+                                value={toDate}
+                                onChange={toDateOnChange}
+                                error={errors.toDateError}
+                                autoOk
+                                okLabel={false}
+                                clearable
+                              />
+                              <FormHelperText>
+                                {!errors.toDateError
+                                  ? ' '
+                                  : fromDate !== null &&
+                                    toDate !== null &&
+                                    fromDate > toDate
+                                  ? "'To' date cannot be less than 'From' date!"
+                                  : 'This field is compulsory!'}
+                              </FormHelperText>
+                            </FormControl>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                      <Grid item>
+                        <Typography
+                          className={classes.headerQuestion}
+                          variant='h3'
+                        >
+                          Observation Environment
+                        </Typography>
                         <FormControl
                           component='fieldset'
                           fullWidth
-                          error={errors.fromDateError}
+                          error={errors.obsEnvError}
                         >
-                          <KeyboardDatePicker
-                            margin='normal'
-                            format='dd/MM/yyyy'
-                            value={fromDate}
-                            onChange={fromDateOnChange}
-                            error={errors.fromDateError}
-                            autoOk
-                            okLabel={false}
-                            clearable
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position='start'>
-                                  <Typography variant='h3'>From:</Typography>
-                                </InputAdornment>
-                              ),
-                            }}
+                          <Input
+                            placeholder='e.g. hospital ward bed'
+                            fullWidth
+                            inputProps={{ 'aria-label': 'description' }}
+                            onChange={obsEnvOnChange}
                           />
                           <FormHelperText>
-                            {errors.fromDateError
+                            {errors.obsEnvError
                               ? 'This field is compulsory!'
                               : ' '}
                           </FormHelperText>
                         </FormControl>
                       </Grid>
-                      <Grid item xs={5}>
-                        <FormControl
-                          component='fieldset'
-                          fullWidth
-                          error={errors.toDateError}
-                        >
-                          <KeyboardDatePicker
-                            margin='normal'
-                            format='dd/MM/yyyy'
-                            value={toDate}
-                            onChange={toDateOnChange}
-                            error={errors.toDateError}
-                            autoOk
-                            okLabel={false}
-                            clearable
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position='start'>
-                                  <Typography variant='h3'>To:</Typography>
-                                </InputAdornment>
-                              ),
-                            }}
-                          />
-                          <FormHelperText>
-                            {!errors.toDateError
-                              ? ' '
-                              : fromDate !== null &&
-                                toDate !== null &&
-                                fromDate > toDate
-                              ? "'To' date cannot be less than 'From' date!"
-                              : 'This field is compulsory!'}
-                          </FormHelperText>
-                        </FormControl>
+                      <Grid item>
+                        <ABSInfoText />
                       </Grid>
                     </Grid>
-                  </Grid>
-                  <Grid item>
-                    <Typography variant='h3'>
-                      Observation Environment
-                    </Typography>
-                    <FormControl
-                      component='fieldset'
-                      fullWidth
-                      error={errors.obsEnvError}
-                    >
-                      <Input
-                        placeholder='e.g. hospital ward bed'
-                        fullWidth
-                        inputProps={{ 'aria-label': 'description' }}
-                        onChange={obsEnvOnChange}
-                      />
-                      <FormHelperText>
-                        {errors.obsEnvError ? 'This field is compulsory!' : ' '}
-                      </FormHelperText>
-                    </FormControl>
-                  </Grid>
-                  <Grid item>
-                    {/* TODO: type full description out */}
-                    <Typography variant='body2'>
-                      At the end of the observation period indicate whether the
-                      behavior described in each item was present and, if so, to
-                      what degree: slight, moderate or extreme. Use the
-                      following numerical values and criteria for your ratings.
-                      <br />
-                      <br />
-                      <b>1 = absent:</b> the behavior is not present. <br />
-                      <b>2 = present to a slight degree:</b> the behavior is
-                      present ...
-                      <br />
-                      <b>3 = present to a moderate degree:</b> the individual
-                      needs ot be redirected ...
-                      <br />
-                      <b>4 = present to an extreme degree:</b> the individual is
-                      not able to engage in ...
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <br />
-                <Grid item container spacing={8} direction='column'>
-                  {questions.map((question, index) => (
-                    <Grid item key={index}>
-                      {ABSQuestionComponent({
-                        question,
-                        onChange: getChangeHandle(index),
-                        error: questionError(index, errors),
-                      })}
+                    <br />
+                    <Grid item container spacing={8} direction='column'>
+                      {questions.map((question, index) => (
+                        <Grid item key={index}>
+                          {
+                            <ABSQuestionComponent
+                              question={question}
+                              onChange={getChangeHandle(index)}
+                              error={questionError(index, errors)}
+                            />
+                          }
+                        </Grid>
+                      ))}
                     </Grid>
-                  ))}
-                </Grid>
-                <Grid item container justify='flex-end'>
-                  <Button
-                    type='submit'
-                    size='large'
-                    variant='outlined'
-                    color='primary'
-                  >
-                    Submit
-                  </Button>
-                </Grid>
+                    <Grid item container justify='flex-end'>
+                      {loading ? (
+                        <CircularProgress />
+                      ) : (
+                        <Button
+                          type='submit'
+                          size='large'
+                          variant='outlined'
+                          color='primary'
+                        >
+                          Submit
+                        </Button>
+                      )}
+                    </Grid>
+                  </React.Fragment>
+                )}
               </Grid>
             </form>
           </Paper>
@@ -419,3 +430,26 @@ const ABSQuestionComponent: FC<ABSQuestionProps> = ({
     </Grid>
   );
 };
+
+const ABSInfoText = () => (
+  <Typography variant='body2'>
+    At the end of the observation period indicate whether the behavior described
+    in each item was present and, if so, to what degree: slight, moderate or
+    extreme. Use the following numerical values and criteria for your ratings.
+    <br />
+    <br />
+    <b>1 = absent:</b> the behavior is not present. <br />
+    <b>2 = present to a slight degree:</b> the behavior is present but does not
+    prevent the conduct of other, contextually appropriate behavior. (The
+    individual may redirect spontaneously, or the continuation of the agitated
+    behavior does not disrupt appropriate behavior.)
+    <br />
+    <b>3 = present to a moderate degree:</b> the individual needs to be
+    redirected from an agitated to an appropriate behavior, but benefits from
+    such cueing.
+    <br />
+    <b>4 = present to an extreme degree:</b> the individual is not able to
+    engage in appropriate behavior due to the interference of the agitated
+    behavior, even when external cueing or redirection is provided.
+  </Typography>
+);

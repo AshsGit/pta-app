@@ -1,6 +1,12 @@
-import { Button, Theme, withStyles } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Theme,
+  withStyles,
+} from '@material-ui/core';
 import { Styles } from '@material-ui/core/styles/withStyles';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -20,6 +26,7 @@ import { OutlineButton } from '../layout/Buttons';
 
 import '../../App.css';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { AbsService } from '../../services/AbsService';
 
 const styles: Styles<Theme, any> = (theme: any) => ({
   headCell: {
@@ -336,17 +343,45 @@ const WPTASTable = withStyles(styles)(({ classes }: any) => {
   );
 });
 
-const ABSTable = withStyles(styles)(({ classes }: any) => {
+const ABSTable = withStyles(styles)(({ classes, absService }: any) => {
+  const { id } = useParams() as any;
+  const [summary, setSummary] = useState([]);
+
+  useEffect(() => {
+    if (!summary || !summary.length) {
+      getAbsSummary();
+    }
+  });
+
+  // Service calls:
+  const getAbsSummary = async () => {
+    absService.getAbsSummary(id).subscribe((summary) => {
+      setSummary(summary);
+    });
+  };
+
+  if (summary.length === 0) {
+    return (
+      <Box
+        display='flex'
+        alignItems='center'
+        justifyContent='center'
+        width='100%'
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <TableContainer className={classes.tableContainer} component={Paper}>
       <Table size='small' aria-label='ABS table'>
         <TableHead>
           <TableRow>
-            {Object.keys(absRows[0]).map((key, i) => (
+            {Object.keys(summary[0]).map((key, i) => (
               <TableCell
                 className={`${classes.cell} ${
                   i === 0 ? classes.questionCell : ''
-                } ${i === absRows.length - 1 ? classes.footerCell : ''} ${
+                } ${i === summary.length - 1 ? classes.footerCell : ''} ${
                   classes.headCell
                 } abs`}
                 key={key}
@@ -357,25 +392,25 @@ const ABSTable = withStyles(styles)(({ classes }: any) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {absRows.map((row, i) => (
+          {summary.map((row, i) => (
             <TableRow
               className={`${i % 2 === 0 ? classes.even : classes.odd}`}
               key={row.question}
             >
               <TableCell
                 className={`${classes.cell} ${
-                  i === absRows.length - 1 ? classes.footerCell : ''
+                  i === summary.length - 1 ? classes.footerCell : ''
                 } ${classes.questionCell} abs`}
               >
                 {row.question}
               </TableCell>
               {
-                Object.keys(absRows[0])
+                Object.keys(summary[0])
                   .filter((key) => key !== 'question')
                   .map((key: string) => (
                     <TableCell
                       className={`${classes.cell} ${
-                        i === absRows.length - 1
+                        i === summary.length - 1
                           ? classes.footerCell
                           : classes.tableCell
                       }`}
@@ -445,9 +480,36 @@ const WPTASHistory = withStyles(styles)(({ classes }: any) => {
   );
 });
 
-const ABSHistory = withStyles(styles)(({ classes }: any) => {
+const ABSHistory = withStyles(styles)(({ classes, absService }: any) => {
   const history = useHistory();
   const { id } = useParams() as any;
+
+  const [submissions, setSubmissions] = useState([]);
+
+  useEffect(() => {
+    if (!submissions || !submissions.length) {
+      getAbsSubmissions();
+    }
+  });
+
+  const getAbsSubmissions = async () => {
+    absService.getAbsSubmissions(id).subscribe((submissions) => {
+      setSubmissions(submissions);
+    });
+  };
+
+  if (!submissions || submissions.length === 0) {
+    return (
+      <Box
+        display='flex'
+        alignItems='center'
+        justifyContent='center'
+        width='100%'
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <div className={classes.historyContainer}>
@@ -463,16 +525,16 @@ const ABSHistory = withStyles(styles)(({ classes }: any) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {absHistoryRows.map((row, i) => (
+            {submissions.map((row, i) => (
               <TableRow
                 className={`${i % 2 === 0 ? classes.even : classes.odd}`}
                 key={row.submissionId}
               >
                 <TableCell style={{ fontWeight: 600 }}>
-                  {row.date.toDateString()}
+                  {row.submissionDate.toDateString()}
                 </TableCell>
-                <TableCell>{row.examiner}</TableCell>
-                <TableCell>{row.score}</TableCell>
+                <TableCell>{row.examinerInitials || '-'}</TableCell>
+                <TableCell>{row.total}</TableCell>
                 <TableCell className={classes.btnCell}>
                   <OutlineButton
                     style={{ maxWidth: '150px' }}
@@ -494,11 +556,14 @@ const ABSHistory = withStyles(styles)(({ classes }: any) => {
 
 export const PatientHistory = withStyles(styles)(({ classes }: any) => {
   const location = useLocation();
+  const absService = new AbsService();
+
   let type = new URLSearchParams(location.search).get('type');
   if (!['wptas', 'abs'].includes(type || '')) {
     type = 'wptas';
   }
   const [testType, setTestType] = React.useState(type);
+  // Component:
 
   return (
     <div className='page-wrapper'>
@@ -511,10 +576,18 @@ export const PatientHistory = withStyles(styles)(({ classes }: any) => {
         <Header testType={testType} setTestType={setTestType} />
         <div style={{ padding: '0 1rem' }}>
           <ResultsCard style={{ marginBottom: '2rem' }}>
-            {testType === 'wptas' ? <WPTASTable /> : <ABSTable />}
+            {testType === 'wptas' ? (
+              <WPTASTable absService={absService} />
+            ) : (
+              <ABSTable absService={absService} />
+            )}
           </ResultsCard>
           <ResultsCard>
-            {testType === 'wptas' ? <WPTASHistory /> : <ABSHistory />}
+            {testType === 'wptas' ? (
+              <WPTASHistory absService={absService} />
+            ) : (
+              <ABSHistory absService={absService} />
+            )}
           </ResultsCard>
         </div>
       </div>
@@ -522,191 +595,8 @@ export const PatientHistory = withStyles(styles)(({ classes }: any) => {
   );
 });
 
-const absRows = [
-  {
-    question:
-      '1. Short attention span, easy distractability, inability to concentrate',
-    '31/10': 1,
-    '1/11': 1,
-    '2/11': 2,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 4,
-    '6/11': 1,
-  },
-  {
-    question: '2. Impulsive, impatient, low tolerance for pain or frustration',
-    '31/10': 2,
-    '1/11': 1,
-    '2/11': 4,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 2,
-    '6/11': 1,
-  },
-  {
-    question: '3. Uncooperative, resistant to care, demanding',
-    '31/10': 3,
-    '1/11': 1,
-    '2/11': 2,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 4,
-    '6/11': 1,
-  },
-  {
-    question:
-      '4. Violent and / or threatening violence toward people or property',
-    '31/10': 4,
-    '1/11': 1,
-    '2/11': 3,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 2,
-    '6/11': 1,
-  },
-  {
-    question: '5. Explosive and / or unpredictable anger',
-    '31/10': 2,
-    '1/11': 1,
-    '2/11': 3,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 4,
-    '6/11': 1,
-  },
-  {
-    question: '6. Rocking, rubbing, moaning or other self-stimulating behavior',
-    '31/10': 3,
-    '1/11': 1,
-    '2/11': 2,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 4,
-    '6/11': 1,
-  },
-  {
-    question: '7. Pulling at tubes, restraints, etc.',
-    '31/10': 4,
-    '1/11': 1,
-    '2/11': 3,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 2,
-    '6/11': 1,
-  },
-  {
-    question: '8. Wandering from treatment areas',
-    '31/10': 2,
-    '1/11': 1,
-    '2/11': 3,
-    '3/11': 1,
-    '4/11': 4,
-    '5/11': 4,
-    '6/11': 1,
-  },
-  {
-    question: '9. Restlessness, pacing, excessive movement',
-    '31/10': 4,
-    '1/11': 1,
-    '2/11': 4,
-    '3/11': 2,
-    '4/11': 1,
-    '5/11': 3,
-    '6/11': 1,
-  },
-  {
-    question: '10. Repetitive behaviors, motor and / or verbal',
-    '31/10': 4,
-    '1/11': 1,
-    '2/11': 2,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 3,
-    '6/11': 1,
-  },
-  {
-    question: '11. Rapid, loud or excessive talking',
-    '31/10': 3,
-    '1/11': 1,
-    '2/11': 4,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 2,
-    '6/11': 1,
-  },
-  {
-    question: '12. Sudden changes of mood',
-    '31/10': 3,
-    '1/11': 1,
-    '2/11': 4,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 2,
-    '6/11': 1,
-  },
-  {
-    question: '13. Easily initiated or excessive crying and / or laughter',
-    '31/10': 3,
-    '1/11': 1,
-    '2/11': 4,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 2,
-    '6/11': 1,
-  },
-  {
-    question: '14. Self-abusiveness, physical and / or verbal',
-    '31/10': 3,
-    '1/11': 1,
-    '2/11': 4,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 2,
-    '6/11': 1,
-  },
-  {
-    question: 'Total',
-    '31/10': 21,
-    '1/11': 32,
-    '2/11': 15,
-    '3/11': 12,
-    '4/11': 21,
-    '5/11': 26,
-    '6/11': 24,
-  },
-];
-
 // Sorted by descending date
 const wptasHistoryRows = [
-  {
-    submissionId: '123',
-    date: new Date(2020, 10, 3),
-    examiner: 'E.S',
-    score: 8,
-  },
-  {
-    submissionId: '234',
-    date: new Date(2020, 10, 2),
-    examiner: 'J.Z',
-    score: 9,
-  },
-  {
-    submissionId: '345',
-    date: new Date(2020, 10, 1),
-    examiner: 'T.S',
-    score: 8,
-  },
-  {
-    submissionId: '456',
-    date: new Date(2020, 9, 31),
-    examiner: 'E.S',
-    score: 7,
-  },
-];
-
-// Sorted by descending date
-const absHistoryRows = [
   {
     submissionId: '123',
     date: new Date(2020, 10, 3),

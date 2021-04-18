@@ -1,4 +1,5 @@
 export interface ABSSubmission {
+  submissionDate?: Date;
   periodOfObs_to: Date;
   periodOfObs_from: Date;
   obsEnv: string;
@@ -6,6 +7,7 @@ export interface ABSSubmission {
   patientId: string;
   answers: Array<ABSAnswer>;
   submissionId?: string;
+  total?: number;
 }
 
 export interface ABSQuestion {

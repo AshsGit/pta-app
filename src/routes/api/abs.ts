@@ -2,6 +2,7 @@ export {};
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 const { ABSSubmission } = require('../../models/ABS');
 const { ABSQuestion } = require('../../models/ABS');
@@ -37,12 +38,25 @@ router.get('/questions', (req: any, res: any) => {
 // @desc get submissions for a patient id
 // @access Public
 router.get('/submissions/:patientId', async (req: any, res: any) => {
-  try {
-    const submissions = await ABSSubmission.find({ patient: req.params.id });
-    res.status(200).json(submissions);
-  } catch (e) {
-    res.status(400).json({ msg: e.message });
-  }
+  ABSSubmission.find({ patient: req.params.patientId })
+    .sort([['date_of_submission', 1]])
+    .populate('responses')
+    .exec((err, submissions) => {
+      if (err) {
+        res.status(400).json({ msg: err.message });
+        return;
+      }
+      res.status(200).json(submissions);
+    });
+  // try {
+  //   const submissions = await ABSSubmission.find({
+  //     patient: ObjectId(req.params.patientId),
+  //   }); // TODO BROKEN
+  //   console.log('SRERVER', submissions);
+  //   res.status(200).json(submissions);
+  // } catch (e) {
+  //   res.status(400).json({ msg: e.message });
+  // }
 });
 
 // @route GET api/abs/submission/:id
@@ -58,12 +72,6 @@ router.get('/submission/:id', (req: any, res: any) => {
       }
       res.status(200).json(submission);
     });
-  // try {
-  //   const patient = await ABSSubmission.findOne({ _id: req.params.id });
-  //   res.status(200).json(patient);
-  // } catch (e) {
-  //   res.status(400).json({ msg: e.message });
-  // }
 });
 
 router.post('/submit', async (req: any, res: any) => {
@@ -75,19 +83,10 @@ router.post('/submit', async (req: any, res: any) => {
     return;
   }
 
-  console.log('body', req.body);
-  console.log('newResponses', newResponses);
   newSubmission.total = newResponses.reduce((acc, { score }) => acc + score, 0);
   delete newSubmission.responses;
   delete newSubmission.submissionId;
   try {
-    console.log(
-      'inserting',
-      newResponses.map(({ questionNum, score }) => ({
-        question_num: questionNum,
-        score,
-      }))
-    );
     // Store responses
     const responses = await ABSResponse.insertMany(
       newResponses.map(({ questionNum, score }) => ({
@@ -95,9 +94,7 @@ router.post('/submit', async (req: any, res: any) => {
         score,
       }))
     );
-    console.log('submit done', responses);
 
-    console.log('inserting newSubmission', newSubmission);
     let {
       periodOfObs_to,
       periodOfObs_from,
@@ -117,7 +114,6 @@ router.post('/submit', async (req: any, res: any) => {
       patient: patientId,
       responses: responses.map(({ _id }) => _id),
     });
-    console.log('submitted submission', submission);
 
     res.status(200).json(submission);
   } catch (e) {

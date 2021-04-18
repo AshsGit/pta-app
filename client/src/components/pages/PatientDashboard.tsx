@@ -1,11 +1,6 @@
 import { Theme, withStyles } from '@material-ui/core';
 import { Styles } from '@material-ui/core/styles/withStyles';
-import React, { useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import HistoryIcon from '@material-ui/icons/History';
 import Button from '@material-ui/core/Button';
@@ -63,61 +58,61 @@ const styles: Styles<Theme, any> = (theme: any) => ({
   },
 });
 
-// TO CHANGE
-const showQR = () => {};
+// // TO CHANGE
+// const showQR = () => {};
 
-const navigateHome = () => {};
+// const navigateHome = () => {};
 
-const options = [
-  { label: 'Show QR code', callback: showQR },
-  { label: 'Exit patient view', callback: navigateHome },
-];
+// const options = [
+//   { label: 'Show QR code', callback: showQR },
+//   { label: 'Exit patient view', callback: navigateHome },
+// ];
 
-const PatientMenu = withStyles(styles)(({ classes }: any) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+// const PatientMenu = withStyles(styles)(({ classes }: any) => {
+//   const [anchorEl, setAnchorEl] = useState(null);
+//   const open = Boolean(anchorEl);
 
-  const handleMenuClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
+//   const handleMenuClick = (event: any) => {
+//     setAnchorEl(event.currentTarget);
+//   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+//   const handleMenuClose = () => {
+//     setAnchorEl(null);
+//   };
 
-  const handleMenuItemClick = (event: any, index: number) => {
-    options[index].callback();
-    setAnchorEl(null);
-  };
+//   const handleMenuItemClick = (event: any, index: number) => {
+//     options[index].callback();
+//     setAnchorEl(null);
+//   };
 
-  return (
-    <div>
-      <IconButton
-        aria-label='more'
-        aria-controls='long-menu'
-        aria-haspopup='true'
-        onClick={handleMenuClick}
-      >
-        <MoreVertIcon classes={{ root: classes.menuIcon }} />
-      </IconButton>
-      <Menu
-        anchorEl={anchorEl}
-        keepMounted
-        open={open}
-        onClose={handleMenuClose}
-      >
-        {options.map((option, index) => (
-          <MenuItem
-            key={option.label}
-            onClick={(event) => handleMenuItemClick(event, index)}
-          >
-            {option.label}
-          </MenuItem>
-        ))}
-      </Menu>
-    </div>
-  );
-});
+//   return (
+//     <div>
+//       <IconButton
+//         aria-label='more'
+//         aria-controls='long-menu'
+//         aria-haspopup='true'
+//         onClick={handleMenuClick}
+//       >
+//         <MoreVertIcon classes={{ root: classes.menuIcon }} />
+//       </IconButton>
+//       <Menu
+//         anchorEl={anchorEl}
+//         keepMounted
+//         open={open}
+//         onClose={handleMenuClose}
+//       >
+//         {options.map((option, index) => (
+//           <MenuItem
+//             key={option.label}
+//             onClick={(event) => handleMenuItemClick(event, index)}
+//           >
+//             {option.label}
+//           </MenuItem>
+//         ))}
+//       </Menu>
+//     </div>
+//   );
+// });
 
 const DashboardHeader = withStyles(styles)(({ classes }: any) => {
   const { id } = useParams() as any;
