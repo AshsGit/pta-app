@@ -1,42 +1,42 @@
-import express from 'express';
+export {};
+const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const Patient = require('../../models/Patient');
 
-// @route   GET api/items
-// @desc    Get all items
+// @route   GET api/patients
+// @desc    Get all patients
 // @access  Public
-router.get('/', (req, res) => {
-    Patient.find()
-        .then((patients: any) => res.json(patients))
-});
- 
-// @route   POST api/items
-// @desc    Create an item
-// @access  Public
-router.post('/', (req, res) => {
-    const newItem = new Patient({
-        name: req.body.name
-    });
-
-    newItem.save().then(res.json);
+router.get('/', (req: any, res: any) => {
+  Patient.find().then((patients: any) => res.json(patients));
 });
 
-// @route   DELETE api/items
-// @desc    Delete an item
-// @access  Public
-router.delete('/:id', (req, res) => {
-    Patient.findById(req.params.id)
-        .then(patient => patient.remove().then(() => res.json({success: true})))
-        .catch(err => res.status(404).json({success: false, error: err}))
-})
+// @route POST api/patient/
+// @desc Create a patient
+// @access Public
+router.post('/', async (req: any, res: any) => {
+  const newPatient = new Patient({});
+  try {
+    const item = await newPatient.save();
+    if (!item) throw Error('Something went wrong saving the item');
 
-// @route   DELETE api/items/
-// @desc    Delete all item
-// @access  Public
-/*router.delete('/', (req, res) => {
-    Item.deleteMany((_: string)=>true);
-    res.json({success: true});
-})*/
+    res.status(200).json(item);
+  } catch (e) {
+    res.status(400).json({ msg: e.message });
+  }
+});
+
+// @route GET api/patient/:id
+// @desc get patient with id
+// @access Public
+router.get('/:id', async (req: any, res: any) => {
+  try {
+    const patient = await Patient.findOne({ _id: req.params.id });
+    res.status(200).json(patient);
+  } catch (e) {
+    res.status(400).json({ msg: e.message });
+  }
+});
 
 module.exports = router;
