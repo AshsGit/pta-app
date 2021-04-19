@@ -8,7 +8,7 @@ export interface WPTASSubmission {
   submissionId: string;
 }
 
-export interface WPTASQuestion {
+export interface WPTASNonImageQuestion {
   title: string;
   questionNum: number;
   questionType: 'date' | 'select' | 'text';
@@ -17,12 +17,16 @@ export interface WPTASQuestion {
   correctAnswerGenerator?:any;
 }
 
-export enum WPTASQuestionType {
-  date = 'date',
-  select = 'select',
-  text = 'text',
+export interface WPTASImageQuestion {
+  title: string;
+  questionNum: number;
+  questionType: 'image';
+  image_names: string[]; //there must be exactly enough images to fill dimensions
+  dimensions: '1x3' | '3x3';
+  correctAnswerGenerator?: any;
 }
 
+export type WPTASQuestion = WPTASNonImageQuestion | WPTASImageQuestion;
 export interface WPTASAnswer {
   questionNum: number;
   score: number; // 0 - 1

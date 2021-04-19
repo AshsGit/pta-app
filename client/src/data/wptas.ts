@@ -291,8 +291,13 @@ const questions: Array<WPTASQuestion> = [
   },
 
   // Or change question type to 'special'?
-  { title: 'Face', questionNum: 8, questionType: 'select' },
-
+  { 
+    title: 'Face', 
+    questionNum: 8, 
+    questionType: 'image',
+    image_names: ["lungile", "florence", "rin"],
+    dimensions: '1x3'
+  },
   { title: 'Name', questionNum: 9, questionType: 'text' },
 
   { title: 'Picture 1', questionNum: 10, questionType: 'select' },
