@@ -17,6 +17,7 @@ import {
   Switch,
   Typography,
 } from '@material-ui/core';
+import Image from 'material-ui-image';
 import {
   createStyles,
   makeStyles,
@@ -345,7 +346,12 @@ const WPTASImageQuestionComponent = ({ question }: { question: WPTASImageQuestio
                 key={img_name}
                 value={index}
                 control={<Radio color='primary' />}
-                label={'abc' /*
+                label={
+                  <Image
+                    src=''
+                    aspectRatio={(16/9)}
+                  />
+                  /*
                   //IMG Goes here...
                   <div>
                     <h1>This is a test component</h1> 
