@@ -30,10 +30,8 @@ const wptasResponseSchema = new Schema(
       default: false,
     },
   },
-  { versionKey: false }
+  { versionKey: false, collection: 'wptas.responses' }
 );
-
-const WPTASResponse = mongoose.model('WPTASResponse', wptasResponseSchema);
 
 const wptasSubmissionSchema = new Schema(
   {
@@ -65,51 +63,17 @@ const wptasSubmissionSchema = new Schema(
       ref: 'Patient',
     },
   },
-  { versionKey: false }
+  { versionKey: false, collection: 'wptas.submissions' }
 );
 
-const wptasQuestionSchema = new Schema(
-  {
-    question_text: {
-      type: String,
-      required: true,
-    },
-    question_number: {
-      type: Number,
-      required: true,
-    },
-    img_src: {
-      type: Schema.Types.ObjectId,
-      ref: 'WPTASImage',
-    },
-  },
-  { versionKey: false }
-);
-
-const wptasImageSchema = new Schema(
-  {
-    wptas_questions: {
-      type: Schema.Types.ObjectId,
-      ref: 'WPTASQuestion',
-    },
-    image_source: {
-      data: Buffer,
-      type: String,
-    },
-  },
-  { versionKey: false }
-);
+const WPTASResponse = mongoose.model('WPTASResponse', wptasResponseSchema);
 
 const WPTASSubmission = mongoose.model(
   'WPTASSubmission',
   wptasSubmissionSchema
 );
-const WPTASQuestion = mongoose.model('WPTASQuestion', wptasQuestionSchema);
-const WPTASImage = mongoose.model('WPTASImage', wptasImageSchema);
 
 module.exports = {
   WPTASSubmission: WPTASSubmission,
   WPTASResopnse: WPTASResponse,
-  WPTASQuestion: WPTASQuestion,
-  WPTASImage: WPTASImage,
 };

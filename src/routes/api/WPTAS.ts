@@ -38,7 +38,9 @@ const { WPTASSubmission, WPTASResponse } = require('../../models/WPTAS');
 // @access Public
 router.get('/submissions/:patientId', async (req: any, res: any) => {
   try {
-    const submissions = await WPTASSubmission.find({ patient: req.params.id });
+    const submissions = await WPTASSubmission.find({
+      patient: req.params.patientId,
+    });
     res.status(200).json(submissions);
   } catch (e) {
     res.status(400).json({ msg: e.message });

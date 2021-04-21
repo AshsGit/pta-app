@@ -83,7 +83,7 @@ export const ABSTheme = createMuiTheme({
     fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
     h1: {
       fontStyle: 'normal',
-      fontWeight: 'normal',
+      fontWeight: 500,
       fontSize: '1.625rem',
       lineHeight: '1.875rem',
     },
@@ -95,7 +95,7 @@ export const ABSTheme = createMuiTheme({
     },
     h3: {
       fontStyle: 'normal',
-      fontWeight: 'bold',
+      fontWeight: 500,
       fontSize: '1.125rem',
       lineHeight: '1.313rem',
     },
