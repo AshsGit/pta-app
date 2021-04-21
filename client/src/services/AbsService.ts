@@ -1,5 +1,6 @@
-import Axios from 'axios-observable';
-import { Observable, of } from 'rxjs';
+// import Axios from 'axios-observable';
+import axios from 'axios';
+import { from, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import questions from '../data/abs';
 import { ABSSubmission } from '../types/ABS';
@@ -11,9 +12,11 @@ type PatientAbsSummary = Array<
 >;
 
 export class AbsService {
-  submissions: Array<ABSSubmission>;
+  submissions: { [patientId: string]: Array<ABSSubmission> } = {};
 
-  dbAbsSubmissionsToAbsSubmissions = (submissions): Array<ABSSubmission> => {
+  private dbAbsSubmissionsToAbsSubmissions = (
+    submissions
+  ): Array<ABSSubmission> => {
     if (!submissions) return null;
 
     const dbAbsSubmissionToAbsSubmission = ({
@@ -46,24 +49,25 @@ export class AbsService {
     return submissions.map(dbAbsSubmissionToAbsSubmission);
   };
 
-  submit(submission: ABSSubmission): Observable<void> {
-    // TODO Reset bc it'll be incorrect, or manually update?
-    this.submissions = null;
-    return Axios.post('/api/abs/submit', submission, {
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    });
+  submit(submission: ABSSubmission): Observable<any> {
+    this.submissions[submission.patientId] = null;
+    return from(
+      axios.post('/api/abs/submit', submission, {
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+    );
   }
 
   getAbsSummary(patientId: string): Observable<PatientAbsSummary> {
-    return (this.submissions
-      ? of(this.submissions)
-      : Axios.get(`/api/abs/submissions/${patientId}`).pipe(
+    return (this.submissions[patientId]
+      ? of(this.submissions[patientId])
+      : from(axios.get(`/api/abs/submissions/${patientId}`)).pipe(
           map((result) => result.data),
           map(this.dbAbsSubmissionsToAbsSubmissions),
           // Cache submissions
-          tap((submissions) => (this.submissions = submissions))
+          tap((submissions) => (this.submissions[patientId] = submissions))
         )
     ).pipe(
       map((submissions: Array<ABSSubmission>) => {
@@ -88,20 +92,21 @@ export class AbsService {
   }
 
   getAbsSubmissions(patientId: string): Observable<Array<ABSSubmission>> {
-    if (this.submissions) {
-      return of(this.submissions);
+    if (this.submissions[patientId]) {
+      return of(this.submissions[patientId]);
     }
-    return Axios.get(`/api/abs/submissions/${patientId}`).pipe(
+    return from(axios.get(`/api/abs/submissions/${patientId}`)).pipe(
       // Reverse because we display history in reverse chronological order
       map((result) => result.data),
       map(this.dbAbsSubmissionsToAbsSubmissions),
       // Cache submissions
-      tap((submissions) => (this.submissions = submissions)),
+      tap((submissions) => (this.submissions[patientId] = [...submissions])),
       map((submissions) => submissions.reverse())
     );
   }
 
-  getAbsSubmission(submissionId: string): Observable<Array<ABSSubmission>> {
-    return Axios.get(`/api/abs/submission/${submissionId}`);
+  // getAbsSubmission(submissionId: string): Observable<Array<ABSSubmission>> {
+  getAbsSubmission(submissionId: string): Observable<any> {
+    return from(axios.get(`/api/abs/submission/${submissionId}`));
   }
 }

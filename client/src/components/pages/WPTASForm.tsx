@@ -163,7 +163,7 @@ const Header: FunctionComponent = () => {
       <IconButton
         aria-label='back'
         className={classes.backButton}
-        onClick={() => history.push(`/${id}`)}
+        onClick={() => history.goBack()}
       >
         <ArrowBackSharpIcon fontSize='large' />
       </IconButton>

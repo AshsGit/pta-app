@@ -2,37 +2,10 @@ export {};
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
 
 const { ABSSubmission } = require('../../models/ABS');
 const { ABSQuestion } = require('../../models/ABS');
 const { ABSResponse } = require('../../models/ABS');
-
-// @route   GET api/abs/questions
-// @desc    Get all questions
-// @access  Public
-router.get('/questions', (req: any, res: any) => {
-  ABSQuestion.find(function (err: any, questions: any) {
-    if (err) {
-      return res.json(err);
-    } else {
-      res.json(questions);
-    }
-  });
-});
-
-// // @route POST api/abs/questions
-// // @desc create a question
-// // @access Public
-// router.post('/questions', (req: any, res: any) => {
-//   let newQuestionDetails = req.body;
-//   newQuestionDetails._id = new mongoose.Types.ObjectId();
-//   let question = new ABSQuestion(newQuestionDetails);
-//   question.save(function (err: any) {
-//     console.log('Done');
-//     res.json(question);
-//   });
-// });
 
 // @route GET api/abs/submissions/:id
 // @desc get submissions for a patient id
@@ -48,15 +21,6 @@ router.get('/submissions/:patientId', async (req: any, res: any) => {
       }
       res.status(200).json(submissions);
     });
-  // try {
-  //   const submissions = await ABSSubmission.find({
-  //     patient: ObjectId(req.params.patientId),
-  //   }); // TODO BROKEN
-  //   console.log('SRERVER', submissions);
-  //   res.status(200).json(submissions);
-  // } catch (e) {
-  //   res.status(400).json({ msg: e.message });
-  // }
 });
 
 // @route GET api/abs/submission/:id
