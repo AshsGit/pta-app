@@ -12,9 +12,11 @@ type PatientAbsSummary = Array<
 >;
 
 export class AbsService {
-  submissions: Array<ABSSubmission>;
+  submissions: { [patientId: string]: Array<ABSSubmission> } = {};
 
-  dbAbsSubmissionsToAbsSubmissions = (submissions): Array<ABSSubmission> => {
+  private dbAbsSubmissionsToAbsSubmissions = (
+    submissions
+  ): Array<ABSSubmission> => {
     if (!submissions) return null;
 
     const dbAbsSubmissionToAbsSubmission = ({
@@ -48,8 +50,7 @@ export class AbsService {
   };
 
   submit(submission: ABSSubmission): Observable<any> {
-    // TODO Reset bc it'll be incorrect, or manually update?
-    this.submissions = null;
+    this.submissions[submission.patientId] = null;
     return from(
       axios.post('/api/abs/submit', submission, {
         headers: {
@@ -60,13 +61,13 @@ export class AbsService {
   }
 
   getAbsSummary(patientId: string): Observable<PatientAbsSummary> {
-    return (this.submissions
-      ? of(this.submissions)
+    return (this.submissions[patientId]
+      ? of(this.submissions[patientId])
       : from(axios.get(`/api/abs/submissions/${patientId}`)).pipe(
           map((result) => result.data),
           map(this.dbAbsSubmissionsToAbsSubmissions),
           // Cache submissions
-          tap((submissions) => (this.submissions = submissions))
+          tap((submissions) => (this.submissions[patientId] = submissions))
         )
     ).pipe(
       map((submissions: Array<ABSSubmission>) => {
@@ -91,15 +92,15 @@ export class AbsService {
   }
 
   getAbsSubmissions(patientId: string): Observable<Array<ABSSubmission>> {
-    if (this.submissions) {
-      return of(this.submissions);
+    if (this.submissions[patientId]) {
+      return of(this.submissions[patientId]);
     }
     return from(axios.get(`/api/abs/submissions/${patientId}`)).pipe(
       // Reverse because we display history in reverse chronological order
       map((result) => result.data),
       map(this.dbAbsSubmissionsToAbsSubmissions),
       // Cache submissions
-      tap((submissions) => (this.submissions = [...submissions])),
+      tap((submissions) => (this.submissions[patientId] = [...submissions])),
       map((submissions) => submissions.reverse())
     );
   }
