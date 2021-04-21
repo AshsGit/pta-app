@@ -1,5 +1,6 @@
-import Axios from 'axios-observable';
-import { Observable, of } from 'rxjs';
+// import Axios from 'axios-observable';
+import axios from 'axios';
+import { from, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import questions from '../data/abs';
 import { ABSSubmission } from '../types/ABS';
@@ -46,20 +47,22 @@ export class AbsService {
     return submissions.map(dbAbsSubmissionToAbsSubmission);
   };
 
-  submit(submission: ABSSubmission): Observable<void> {
+  submit(submission: ABSSubmission): Observable<any> {
     // TODO Reset bc it'll be incorrect, or manually update?
     this.submissions = null;
-    return Axios.post('/api/abs/submit', submission, {
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    });
+    return from(
+      axios.post('/api/abs/submit', submission, {
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+    );
   }
 
   getAbsSummary(patientId: string): Observable<PatientAbsSummary> {
     return (this.submissions
       ? of(this.submissions)
-      : Axios.get(`/api/abs/submissions/${patientId}`).pipe(
+      : from(axios.get(`/api/abs/submissions/${patientId}`)).pipe(
           map((result) => result.data),
           map(this.dbAbsSubmissionsToAbsSubmissions),
           // Cache submissions
@@ -91,17 +94,18 @@ export class AbsService {
     if (this.submissions) {
       return of(this.submissions);
     }
-    return Axios.get(`/api/abs/submissions/${patientId}`).pipe(
+    return from(axios.get(`/api/abs/submissions/${patientId}`)).pipe(
       // Reverse because we display history in reverse chronological order
       map((result) => result.data),
       map(this.dbAbsSubmissionsToAbsSubmissions),
       // Cache submissions
-      tap((submissions) => (this.submissions = submissions)),
+      tap((submissions) => (this.submissions = [...submissions])),
       map((submissions) => submissions.reverse())
     );
   }
 
-  getAbsSubmission(submissionId: string): Observable<Array<ABSSubmission>> {
-    return Axios.get(`/api/abs/submission/${submissionId}`);
+  // getAbsSubmission(submissionId: string): Observable<Array<ABSSubmission>> {
+  getAbsSubmission(submissionId: string): Observable<any> {
+    return from(axios.get(`/api/abs/submission/${submissionId}`));
   }
 }
