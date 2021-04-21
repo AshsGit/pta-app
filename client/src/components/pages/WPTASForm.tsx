@@ -7,6 +7,8 @@ import {
   FormHelperText,
   FormLabel,
   Grid,
+  GridList,
+  GridListTile,
   IconButton,
   Input,
   MenuItem,
@@ -17,7 +19,6 @@ import {
   Switch,
   Typography,
 } from '@material-ui/core';
-import Image from 'material-ui-image';
 import {
   createStyles,
   makeStyles,
@@ -25,7 +26,7 @@ import {
   ThemeProvider,
 } from '@material-ui/core/styles';
 import { WPTASTheme } from '../../themes';
-import questions from '../../data/wptas';
+import questions from '../../data/wptas_questions';
 import { WPTASImageQuestion, WPTASNonImageQuestion, WPTASQuestion } from '../../types/WPTAS';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
 import {
@@ -34,6 +35,10 @@ import {
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { useHistory } from 'react-router-dom';
+
+import { face_images } from '../../data/wptas_images'; 
+
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -108,6 +113,12 @@ const useStyles = makeStyles((theme: Theme) =>
       '&>*:not(:last-child)': { marginBottom: '1.5rem' },
       position: 'relative',
       height: '230px',
+    },
+    imageQuestion: {
+      '&>*:not(:last-child)': { marginBottom: '1.5rem' },
+      position: 'relative',
+      height: 'auto',
+      margin: 0,
     },
     questionLabel: { marginBottom: '0.5rem', fontWeight: 500 },
     backButton: {
@@ -327,45 +338,45 @@ const WPTASImageQuestionComponent = ({ question }: { question: WPTASImageQuestio
       display='flex'
       flexDirection='column'
       alignItems='stretch'
-      className={classes.question}
+      className={classes.imageQuestion}
     >
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       <FormControl component='fieldset' fullWidth error={error}>
+        <GridList cols={3}>
+          {image_names.filter((_, i) => i < 3).map((img_name, index) => (
+            <GridListTile key={img_name} cols={1}>
+              <img
+                src={face_images[img_name]}
+                onClick={(_) => setSelectedMultiChoice(`${index}`)}
+              />
+            </GridListTile>
+          ))}
+        </GridList>
         <RadioGroup 
           aria-label='multiple choice'
-          className={classes.multiChoiceRadioGroup}
           value={selectedMultiChoice}
           row 
           onChange={(event) => {
             setSelectedMultiChoice((event.target as HTMLInputElement).value);
           }}
         >
-          <Grid container direction='row' justify='space-between'>
-            {image_names.filter((_, i) => i < 3).map((img_name, index) => (
-              <FormControlLabel
-                key={img_name}
-                value={index}
-                control={<Radio color='primary' />}
-                label={
-                  <Image
-                    src=''
-                    aspectRatio={(16/9)}
-                  />
-                  /*
-                  //IMG Goes here...
-                  <div>
-                    <h1>This is a test component</h1> 
-                    <h2>This is a second test</h2>
-                  </div>*/
-                }
-                labelPlacement='top'
-              />
-            ))}
+          <Grid container direction='row' justify='space-around'>
+            <Grid item>
+              <Radio color='primary' checked={selectedMultiChoice === '0'} value="0" />
+            </Grid>
+            <Grid item>
+              <Radio color='primary' checked={selectedMultiChoice === '1'} value="1" /> 
+            </Grid>
+            <Grid item>
+              <Radio color='primary' checked={selectedMultiChoice === '2'} value="2" />
+            </Grid>
           </Grid>
         </RadioGroup>
-        <FormHelperText>
-          {error ? 'This question must be answered!' : ' '}
-        </FormHelperText>
+        {error ? (
+          <FormHelperText>
+            This question must be answered!
+          </FormHelperText>
+        ) : null}
       </FormControl>
     </Box>
   );
