@@ -27,17 +27,18 @@ import {
 } from '@material-ui/core/styles';
 import { WPTASTheme } from '../../themes';
 import questions from '../../data/wptas_questions';
-import { WPTASImageQuestion, WPTASNonImageQuestion, WPTASQuestion } from '../../types/WPTAS';
+import { WPTASFaceQuestion, WPTASNonImageQuestion, WPTASPicturesQuestion, WPTASQuestion } from '../../types/WPTAS';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
+import CheckIcon from '@material-ui/icons/Check';
+
 import DateFnsUtils from '@date-io/date-fns';
 import { useHistory } from 'react-router-dom';
 
-import { face_images } from '../../data/wptas_images'; 
-
+import { face_images, photo_question_images } from '../../data/wptas_images'; 
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -115,7 +116,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '230px',
     },
     imageQuestion: {
-      '&>*:not(:last-child)': { marginBottom: '1.5rem' },
+      '&>*': { marginBottom: '1.5rem' },
       position: 'relative',
       height: 'auto',
       margin: 0,
@@ -168,7 +169,7 @@ export const WPTASForm: FunctionComponent = () => {
                   {questions
                     .map((question) => (
                       <WPTASQuestionComponent
-                        key={question.questionNum}
+                        {...{/*key={question.questionNum}*/}}
                         question={question}
                       />
                     ))}
@@ -305,26 +306,21 @@ const WPTASMultiChoiceQuestion = () => {
   );
 };
 
-const WPTASQuestionComponent = ({ question }: { question: WPTASQuestion }) => question.questionType === 'image' 
-  ? WPTASImageQuestionComponent({ question })
-  : WPTASNonImageQuestionComponent({ question });
+const WPTASQuestionComponent = ({ question }: { question: WPTASQuestion }) => question.questionType === 'face_question' 
+  ? WPTASFaceQuestionComponent( {question} )
+  : question.questionType === 'pictures_question'
+    ? WPTASPictureQuestionComponent({ question })
+    : WPTASNonImageQuestionComponent({ question })
 
 
-const WPTASImageQuestionComponent = ({ question }: { question: WPTASImageQuestion }) => {
+const WPTASFaceQuestionComponent = ({ question }: { question: WPTASFaceQuestion }) => {
   const classes = useStyles();
-  const { title, questionNum, image_names, dimensions, correctAnswerGenerator } = question;
+  const { title, questionNum, image_names, correctAnswerGenerator } = question;
+  const correctAnswerIndex = image_names.indexOf(correctAnswerGenerator());
 
   const [selectedMultiChoice, setSelectedMultiChoice] = useState('');
   const [error, setError] = useState(false);
-
-  /*const rows: string[][] = image_names.reduce((list, img_name, index) => {
-    if (index % 3 === 0) 
-      return [...list, [img_name]];
-    else
-      const tmp = [...list];
-      tmp[tmp.length-1].push(img_name);
-      return tmp;
-    }, []);*/
+  const [showAnswer, setShowAnswer] = useState(false);
 
   // State for 'answered correctly?' question
   const [answeredCorrectly, setAnsweredCorrectly] = useState(null);
@@ -333,6 +329,7 @@ const WPTASImageQuestionComponent = ({ question }: { question: WPTASImageQuestio
   ) => {
     setAnsweredCorrectly((event.target as HTMLInputElement).value);
   };
+
   return (
     <Box
       display='flex'
@@ -377,6 +374,86 @@ const WPTASImageQuestionComponent = ({ question }: { question: WPTASImageQuestio
             This question must be answered!
           </FormHelperText>
         ) : null}
+        {showAnswer ? (
+          <CheckIcon style={{ color: "#4caf50", left: `${(correctAnswerIndex+1) * 33}%` }} />
+        ): null}
+      </FormControl>
+    </Box>
+  );
+};
+
+
+const WPTASPictureQuestionComponent = ({ question }: { question: WPTASPicturesQuestion }) => {
+  const classes = useStyles();
+  const { title, questionNum, image_names, correctAnswerGenerator } = question;
+  const correctAnswerCoords = correctAnswerGenerator()
+    .map(img_name => image_names.findIndex( v=> v===img_name ))
+    .map(index => [index % 3, index / 3 >> 0]);
+
+  const [selected, setSelected] = useState({
+    total: 0,
+    arr: [
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+    ]
+  });
+
+  const [error, setError] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
+
+  // State for 'answered correctly?' question
+  const [answeredCorrectly, setAnsweredCorrectly] = useState(null);
+  const answeredCorrectlySelected = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setAnsweredCorrectly((event.target as HTMLInputElement).value);
+  };
+
+  const rows = image_names.filter((_, i) => i < 9).reduce((list, img_name, index) => {
+    if (index % 3 === 0) 
+      return [...list, [img_name]];
+    else {
+      let tmp = [...list];
+      tmp[tmp.length-1].push(img_name);
+      return tmp;
+    }}, []);
+    
+  const onClickImage = (x: number, y: number) => (_) => {
+    if (selected.total < 3 || selected.arr[x][y] === true) {
+      const total = selected.total + (selected.arr[x][y] === true ? -1 : 1);
+      const arr = [...selected.arr];
+      arr[x] = [...arr[x]];
+      arr[x][y] = !arr[x][y];
+      setSelected({
+        total, 
+        arr
+      });
+    }
+  }
+
+  return (
+    <Box
+      display='flex'
+      flexDirection='column'
+      alignItems='stretch'
+      className={classes.imageQuestion}
+    >
+      <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
+      <FormControl component='fieldset' fullWidth error={error}>
+        <Grid container direction="column" justify="space-between" >
+          {rows.map((row, y) => (
+            <Grid container item xs direction="row" justify="center" >
+              {row.map((img_name, x) => (
+                <Grid item xs>
+                  <img
+                    src={photo_question_images[img_name]}
+                    onClick={onClickImage(x, y)} />
+                </Grid>
+              ))}
+            </Grid>
+          ))}
+        </Grid>
       </FormControl>
     </Box>
   );

@@ -17,16 +17,23 @@ export interface WPTASNonImageQuestion {
   correctAnswerGenerator?:any;
 }
 
-export interface WPTASImageQuestion {
+export interface WPTASFaceQuestion {
   title: string;
   questionNum: number;
-  questionType: 'image';
+  questionType: 'face_question';
   image_names: string[]; //there must be exactly enough images to fill dimensions
-  dimensions: '1x3' | '3x3';
-  correctAnswerGenerator?: any;
+  correctAnswerGenerator?: () => string;
 }
 
-export type WPTASQuestion = WPTASNonImageQuestion | WPTASImageQuestion;
+export interface WPTASPicturesQuestion {
+  title: string;
+  questionNum: number[];
+  questionType: 'pictures_question';
+  image_names: string[]; //there must be exactly enough images to fill dimensions
+  correctAnswerGenerator?: () => string[];
+}
+
+export type WPTASQuestion = WPTASNonImageQuestion | WPTASFaceQuestion | WPTASPicturesQuestion;
 export interface WPTASAnswer {
   questionNum: number;
   score: number; // 0 - 1

@@ -294,17 +294,25 @@ const questions: Array<WPTASQuestion> = [
   { 
     title: 'Face', 
     questionNum: 8, 
-    questionType: 'image',
+    questionType: 'face_question',
     image_names: ["lungile", "florence", "rin"],
-    dimensions: '1x3'
+    correctAnswerGenerator: () => 'lungile'
   },
-  { title: 'Name', questionNum: 9, questionType: 'text' },
+  { 
+    title: 'Name', 
+    questionNum: 9, 
+    questionType: 'text',
+    multichoiceGenerator: c => [c, 'steve', 'bobby'],
+    correctAnswerGenerator: () => 'lungile'
+  },
 
-  { title: 'Picture 1', questionNum: 10, questionType: 'select' },
-
-  { title: 'Picture 2', questionNum: 11, questionType: 'select' },
-
-  { title: 'Picture 3', questionNum: 12, questionType: 'select' },
+  { 
+    title: 'Pictures', 
+    questionNum: [10, 11, 12], 
+    questionType: 'pictures_question',
+    image_names: ['clock', 'fork', 'scissors', 'teacup', 'toothbrush', 'sunflower', 'pen', 'keys', 'bird'],
+    correctAnswerGenerator: () => ['fork', 'scissors', 'bird']
+  },
 ];
 
 export default questions;
