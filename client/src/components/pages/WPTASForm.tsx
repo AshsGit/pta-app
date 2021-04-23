@@ -441,14 +441,16 @@ const WPTASPictureQuestionComponent = ({ question }: { question: WPTASPicturesQu
     >
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       <FormControl component='fieldset' fullWidth error={error}>
-        <Grid container direction="column" justify="space-between" >
+        <Grid container direction="column" justify="space-between" spacing={3}>
           {rows.map((row, y) => (
-            <Grid container item xs direction="row" justify="center" >
+            <Grid container item xs direction="row" justify="space-around" >
               {row.map((img_name, x) => (
-                <Grid item xs>
+                <Grid item xs style={{flexGrow: 0}}>
                   <img
                     src={photo_question_images[img_name]}
-                    onClick={onClickImage(x, y)} />
+                    onClick={onClickImage(x, y)}
+                    width={150}
+                    height={190} />
                 </Grid>
               ))}
             </Grid>
