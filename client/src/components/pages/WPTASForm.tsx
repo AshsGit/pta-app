@@ -29,6 +29,8 @@ import { WPTASTheme } from '../../themes';
 import questions from '../../data/wptas_questions';
 import { WPTASFaceQuestion, WPTASNonImageQuestion, WPTASPicturesQuestion, WPTASQuestion } from '../../types/WPTAS';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
+import CorrectIcon from '@material-ui/icons/CheckCircleTwoTone';
+import IncorrectIcon from '@material-ui/icons/CancelTwoTone';
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
@@ -38,11 +40,18 @@ import CheckIcon from '@material-ui/icons/Check';
 import DateFnsUtils from '@date-io/date-fns';
 import { useHistory } from 'react-router-dom';
 
+import { FilledButton } from '../layout/Buttons';
 import { face_images, photo_question_images } from '../../data/wptas_images'; 
 
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    correct: {
+      color: "#4caf50"
+    },
+    incorrect: {
+      color: "#eb4034"
+    },
     form_group_row: {
       display: 'inline-flex',
       justifyContent: 'space-between',
@@ -122,6 +131,19 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: 0,
     },
     questionLabel: { marginBottom: '0.5rem', fontWeight: 500 },
+    image_wrapper: {
+      position: "relative",
+      display: "inline-flex"
+    },
+    image_icon_overlay: {
+      position: "absolute",
+      top: 0,
+      right: 0,
+      margin: '2px',
+      zIndex: 1,
+      width: "25px",
+      height: "25px",
+    },
     backButton: {
       position: 'absolute',
       // top: '1rem',
@@ -318,9 +340,11 @@ const WPTASFaceQuestionComponent = ({ question }: { question: WPTASFaceQuestion 
   const { title, questionNum, image_names, correctAnswerGenerator } = question;
   const correctAnswerIndex = image_names.indexOf(correctAnswerGenerator());
 
-  const [selectedMultiChoice, setSelectedMultiChoice] = useState('');
+  const [selectedImage, setSelectedImage] = useState('');
+  const [multiChoiceGiven, setMultiChoiceGiven] = useState(false);
   const [error, setError] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
+  const toggleShowAnswer = () => setShowAnswer(!showAnswer)
 
   // State for 'answered correctly?' question
   const [answeredCorrectly, setAnsweredCorrectly] = useState(null);
@@ -337,35 +361,53 @@ const WPTASFaceQuestionComponent = ({ question }: { question: WPTASFaceQuestion 
       alignItems='stretch'
       className={classes.imageQuestion}
     >
+      <Box className={classes.switch} display='flex' alignItems='center'>
+        <span style={{ fontSize: '11px' }}>Multiple choice given?</span>
+        <Switch
+          color='primary'
+          checked={multiChoiceGiven}
+          onChange={() => setMultiChoiceGiven(!multiChoiceGiven)}
+        />
+      </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       <FormControl component='fieldset' fullWidth error={error}>
         <GridList cols={3}>
           {image_names.filter((_, i) => i < 3).map((img_name, index) => (
-            <GridListTile key={img_name} cols={1}>
+            <GridListTile key={img_name} cols={1} className={classes.image_wrapper}>
               <img
                 src={face_images[img_name]}
-                onClick={(_) => setSelectedMultiChoice(`${index}`)}
+                onClick={(_) => setSelectedImage(`${index}`)}
+                style={showAnswer && selectedImage !== `${index}` ? {opacity: 0.4} : {}}
               />
+              {showAnswer ? (
+                correctAnswerIndex ===  index ? (
+                  <CorrectIcon 
+                    className={`${classes.image_icon_overlay} ${classes.correct}`} />
+                ) : selectedImage === `${index}` ? (
+                  <IncorrectIcon 
+                    className={`${classes.image_icon_overlay} ${classes.incorrect}`} />
+                ) : null
+              ) : null}
             </GridListTile>
           ))}
         </GridList>
         <RadioGroup 
           aria-label='multiple choice'
-          value={selectedMultiChoice}
+          value={selectedImage}
           row 
           onChange={(event) => {
-            setSelectedMultiChoice((event.target as HTMLInputElement).value);
+            setSelectedImage((event.target as HTMLInputElement).value);
           }}
         >
           <Grid container direction='row' justify='space-around'>
             <Grid item>
-              <Radio color='primary' checked={selectedMultiChoice === '0'} value="0" />
+              <Radio color='primary' checked={selectedImage === '0'} value="0" />
             </Grid>
             <Grid item>
-              <Radio color='primary' checked={selectedMultiChoice === '1'} value="1" /> 
+              <Radio color='primary' checked={selectedImage === '1'} value="1" /> 
             </Grid>
             <Grid item>
-              <Radio color='primary' checked={selectedMultiChoice === '2'} value="2" />
+              <Radio color='primary' checked={selectedImage === '2'} value="2" />
             </Grid>
           </Grid>
         </RadioGroup>
@@ -374,9 +416,10 @@ const WPTASFaceQuestionComponent = ({ question }: { question: WPTASFaceQuestion 
             This question must be answered!
           </FormHelperText>
         ) : null}
-        {showAnswer ? (
-          <CheckIcon style={{ color: "#4caf50", left: `${(correctAnswerIndex+1) * 33}%` }} />
-        ): null}
+        <Grid container justify='flex-end'>
+          <FilledButton fullWidth={false} onClick={toggleShowAnswer}>{showAnswer ? 'Hide Answer' : 'Show Answer'}</FilledButton>
+        </Grid>
+        
       </FormControl>
     </Box>
   );
@@ -401,6 +444,7 @@ const WPTASPictureQuestionComponent = ({ question }: { question: WPTASPicturesQu
 
   const [error, setError] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [isMultiChoice, setIsMultiChoice] = useState(false);
 
   // State for 'answered correctly?' question
   const [answeredCorrectly, setAnsweredCorrectly] = useState(null);
@@ -439,6 +483,14 @@ const WPTASPictureQuestionComponent = ({ question }: { question: WPTASPicturesQu
       alignItems='stretch'
       className={classes.imageQuestion}
     >
+      <Box className={classes.switch} display='flex' alignItems='center'>
+        <span style={{ fontSize: '11px' }}>Multiple choice given?</span>
+        <Switch
+          color='primary'
+          checked={isMultiChoice}
+          onChange={() => setIsMultiChoice(!isMultiChoice)}
+        />
+      </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       <FormControl component='fieldset' fullWidth error={error}>
         <Grid container direction="column" justify="space-between" spacing={3}>

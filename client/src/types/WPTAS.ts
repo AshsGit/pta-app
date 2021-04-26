@@ -14,7 +14,7 @@ export interface WPTASNonImageQuestion {
   questionType: 'date' | 'select' | 'text';
   choices?: Array<string>;
   multichoiceGenerator?: any;
-  correctAnswerGenerator?:any;
+  correctAnswerGenerator?: any; //change any type to () => Promise<string>
 }
 
 export interface WPTASFaceQuestion {
@@ -22,7 +22,7 @@ export interface WPTASFaceQuestion {
   questionNum: number;
   questionType: 'face_question';
   image_names: string[]; //there must be exactly enough images to fill dimensions
-  correctAnswerGenerator?: () => string;
+  correctAnswerGenerator?: any; //change any type to () => Promise<string>
 }
 
 export interface WPTASPicturesQuestion {
