@@ -246,7 +246,7 @@ const PatientResponseInput = ({ type, choices }: any) => {
   }
 };
 
-const WPTASMultiChoiceQuestion = () => {
+const WPTASMultiChoiceQuestion = ( question: WPTASQuestion ) => {
   const [selectedMultiChoice, setSelectedMultiChoice] = useState('');
   const classes = useStyles();
   return (
@@ -261,7 +261,7 @@ const WPTASMultiChoiceQuestion = () => {
       {
         // TODO replace with multiple choice generator. Expect an array of strings
         // TODO DECIDE if we generate these every time the component is rendered or once at the start when the form is initialised
-        ['option 1', 'option 2', 'option 3'].map((choice) => (
+        question.multichoiceGenerator(question.correctAnswerGenerator()).map((choice) => (
           <FormControlLabel
             key={choice}
             value={choice}
