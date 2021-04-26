@@ -1,5 +1,5 @@
 import { createMuiTheme } from '@material-ui/core';
-import { deepOrange, blue } from '@material-ui/core/colors';
+import { deepOrange, blue, green } from '@material-ui/core/colors';
 import { MuiPickersOverrides } from '@material-ui/pickers/typings/overrides';
 
 //Modifies override type within themes
@@ -14,7 +14,7 @@ declare module '@material-ui/core/styles/overrides' {
 export const WPTASTheme = createMuiTheme({
   palette: {
     type: 'light',
-    primary: { main: '#5C88F6' },
+    primary: { main: '#5C88F6', dark: "#7496ec" },
     background: {
       default: '#E5E5E5',
     },

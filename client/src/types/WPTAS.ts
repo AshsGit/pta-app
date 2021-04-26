@@ -8,21 +8,32 @@ export interface WPTASSubmission {
   submissionId: string;
 }
 
-export interface WPTASQuestion {
+export interface WPTASNonImageQuestion {
   title: string;
   questionNum: number;
   questionType: 'date' | 'select' | 'text';
   choices?: Array<string>;
   multichoiceGenerator?: any;
-  correctAnswerGenerator?:any;
+  correctAnswerGenerator?: any; //change any type to () => Promise<string>
 }
 
-export enum WPTASQuestionType {
-  date = 'date',
-  select = 'select',
-  text = 'text',
+export interface WPTASFaceQuestion {
+  title: string;
+  questionNum: number;
+  questionType: 'face_question';
+  image_names: string[]; //there must be exactly enough images to fill dimensions
+  correctAnswerGenerator?: any; //change any type to () => Promise<string>
 }
 
+export interface WPTASPicturesQuestion {
+  title: string;
+  questionNum: number[];
+  questionType: 'pictures_question';
+  image_names: string[]; //there must be exactly enough images to fill dimensions
+  correctAnswerGenerator?: () => string[];
+}
+
+export type WPTASQuestion = WPTASNonImageQuestion | WPTASFaceQuestion | WPTASPicturesQuestion;
 export interface WPTASAnswer {
   questionNum: number;
   score: number; // 0 - 1
