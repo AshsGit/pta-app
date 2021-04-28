@@ -1,67 +1,68 @@
 import { WPTASQuestion } from '../types/WPTAS';
-
+const CORRECT_AGE = '30';
+const CORRECT_DOB = new Date(1999, 0, 25);
+const CORRECT_LOCATION = 'Epworth Hospital';
+const CORRECT_NAME = 'Lungile';
 const questions: Array<WPTASQuestion> = [
-  { title: 'How old are you?', 
-    questionNum: 1, 
+  {
+    title: 'How old are you?',
+    questionNum: 1,
     questionType: 'text',
-    multichoiceGenerator: function res(correctAnswer: number): Array<number> {
-      var choices: Array<number> = [correctAnswer];
-      var max:number = correctAnswer;
-      var min:number = correctAnswer;
-      var i: number = 0;
-      var myRandom:number;
-      while (i < 2) {
-        myRandom = Math.floor(Math.random() * 2);
-        if (myRandom < 1 && (min - 1) > 0){
-          choices.push(min - 1);
-          min -= 1;
-        } else {
-          choices.push(max + 1)
-          max += 1;
-        }
-        i++;
+    multichoiceGenerator: function res(correctAnswer: string): Array<string> {
+      let correctAnswerNum = parseInt(correctAnswer);
+      var myRandom = getRandom(3);
+      switch (myRandom) {
+        case 0:
+          return [
+            correctAnswerNum,
+            correctAnswerNum + 1,
+            correctAnswerNum + 2,
+          ].map((n) => n.toString());
+        case 1:
+          return [
+            correctAnswerNum - 1,
+            correctAnswerNum,
+            correctAnswerNum + 1,
+          ].map((n) => n.toString());
+        default:
+          return [
+            correctAnswerNum - 2,
+            correctAnswerNum - 1,
+            correctAnswerNum,
+          ].map((n) => n.toString());
       }
-      var finalChoices: Array<number>;
-      while (finalChoices.length < 3) {
-        myRandom = Math.floor(Math.random() * choices.length);
-        finalChoices.push((choices.splice(myRandom, 1)).pop());
-      }
-      return finalChoices;
-    }
+    },
+    correctAnswerGenerator: () => CORRECT_AGE,
   },
 
   {
     title: 'What is your date of birth?',
     questionNum: 2,
     questionType: 'date',
-    multichoiceGenerator: function res(correctAnswer: Date): Array<Date> {
-      var choices: Array<Date> = [correctAnswer];
-      var i: number = 0;
-      var max:Date = new Date(correctAnswer);
-      var min:Date = new Date(correctAnswer);
-      var newChoice:Date = correctAnswer;
-      var myRandom:number;
-      while (i < 2) {
-        myRandom = Math.floor(Math.random() * 2);
-        var newChoice: Date = new Date();
-        if (myRandom < 1){
-          newChoice.setDate(min.getDate() - 1);
-          choices.push(newChoice);
-          min.setDate(newChoice.getDate());
-        } else {
-          newChoice.setDate(max.getDate() + 1);
-          choices.push(newChoice);
-          max.setDate(newChoice.getDate());
-        }
-        i++;
+    multichoiceGenerator: function res(correctAnswer: Date): Array<string> {
+      var myRandom = getRandom(3);
+      switch (myRandom) {
+        case 0:
+          return [
+            correctAnswer,
+            addDays(correctAnswer, 1),
+            addDays(correctAnswer, 2),
+          ].map((d) => d.toDateString());
+        case 1:
+          return [
+            addDays(correctAnswer, -1),
+            correctAnswer,
+            addDays(correctAnswer, 1),
+          ].map((d) => d.toDateString());
+        default:
+          return [
+            addDays(correctAnswer, -2),
+            addDays(correctAnswer, -1),
+            correctAnswer,
+          ].map((d) => d.toDateString());
       }
-      var finalChoices: Array<Date>;
-      while (finalChoices.length < 3) {
-        myRandom = Math.floor(Math.random() * choices.length);
-        finalChoices.push((choices.splice(myRandom, 1)).pop());
-      }
-      return finalChoices;
-    }
+    },
+    correctAnswerGenerator: () => CORRECT_DOB.toDateString(),
   },
 
   {
@@ -82,114 +83,119 @@ const questions: Array<WPTASQuestion> = [
       'November',
       'December',
     ],
-    multichoiceGenerator: function res(correctAnswer:string):Array<string>{
-      var choices:Array<number>;
-      var finalChoices:Array<string>;
-      var i: number = 0;
-      var correctMonth:number;
-      var max: number;
-      var min: number;
-      if (correctAnswer === "January") {
+    multichoiceGenerator: function res(correctAnswer: string): Array<string> {
+      var choices: Array<number> = [];
+      var correctMonth: number;
+      if (correctAnswer === 'January') {
         correctMonth = 0;
-      } else if (correctAnswer === "February") {
+      } else if (correctAnswer === 'February') {
         correctMonth = 1;
-      } else if (correctAnswer === "March") {
+      } else if (correctAnswer === 'March') {
         correctMonth = 2;
-      } else if (correctAnswer === "April") {
+      } else if (correctAnswer === 'April') {
         correctMonth = 3;
-      } else if (correctAnswer === "May") {
+      } else if (correctAnswer === 'May') {
         correctMonth = 4;
-      } else if (correctAnswer === "June") {
+      } else if (correctAnswer === 'June') {
         correctMonth = 5;
-      } else if (correctAnswer === "July") {
+      } else if (correctAnswer === 'July') {
         correctMonth = 6;
-      } else if (correctAnswer === "August") {
+      } else if (correctAnswer === 'August') {
         correctMonth = 7;
-      } else if (correctAnswer === "September") {
+      } else if (correctAnswer === 'September') {
         correctMonth = 8;
-      } else if (correctAnswer === "October") {
+      } else if (correctAnswer === 'October') {
         correctMonth = 9;
-      } else if (correctAnswer === "November") {
+      } else if (correctAnswer === 'November') {
         correctMonth = 10;
-      } else if (correctAnswer === "December") {
+      } else if (correctAnswer === 'December') {
         correctMonth = 11;
       }
-      choices.push(correctMonth);
-      max = correctMonth;
-      min = correctMonth;
-      var myRandom: number;
-      while (i < 2) {
-        myRandom = Math.floor(Math.random() * 2);
-        if (myRandom < 1 && (min - 1) >= 0){
-          choices.push(min - 1);
-          min -= 1;
-          i++;
-        } else if (myRandom > 0 && (max + 1) < 12) {
-          choices.push(max + 1);
-          max += 1;
-          i++;
-        }
+
+      var myRandom = getRandom(3);
+      switch (myRandom) {
+        case 0:
+          choices.push(
+            correctMonth,
+            (correctMonth + 1) % 12,
+            (correctMonth + 2) % 12
+          );
+          break;
+        case 1:
+          choices.push(
+            (correctMonth - 1) % 12,
+            correctMonth,
+            (correctMonth + 1) % 12
+          );
+          break;
+        default:
+          choices.push(
+            (correctMonth - 2) % 12,
+            (correctMonth - 1) % 12,
+            correctMonth
+          );
+          break;
       }
-      while (finalChoices.length < 3) {
-        myRandom = Math.floor(Math.random() * choices.length);
-        var month: number = (choices.splice(myRandom, 1)).pop();
-        if (month == 0) {
-          finalChoices.push("January");
-        } else if (month == 1){
-          finalChoices.push("February");
-        } else if (month == 2) {
-          finalChoices.push("March");
-        } else if (month == 3) {
-          finalChoices.push("April");
-        } else if (month == 4) {
-          finalChoices.push("May");
-        } else if (month == 5) {
-          finalChoices.push("June");
-        } else if (month == 6) {
-          finalChoices.push("July");
-        } else if (month == 7) {
-          finalChoices.push("August");
-        } else if (month == 8) {
-          finalChoices.push("September");
-        } else if (month == 9) {
-          finalChoices.push("October");
-        } else if (month == 10) {
-          finalChoices.push("November");
-        } else if (month == 11){
-          finalChoices.push("December");
+
+      let indexToMonth = (i) => {
+        if (i === 0) {
+          return 'January';
+        } else if (i === 1) {
+          return 'February';
+        } else if (i === 2) {
+          return 'March';
+        } else if (i === 3) {
+          return 'April';
+        } else if (i === 4) {
+          return 'May';
+        } else if (i === 5) {
+          return 'June';
+        } else if (i === 6) {
+          return 'July';
+        } else if (i === 7) {
+          return 'August';
+        } else if (i === 8) {
+          return 'September';
+        } else if (i === 9) {
+          return 'October';
+        } else if (i === 10) {
+          return 'November';
+        } else if (i === 11) {
+          return 'December';
         }
-      }
-      return finalChoices;    
+      };
+
+      return choices.map(indexToMonth);
     },
     correctAnswerGenerator: function res(): string {
       var date = new Date();
       var month = date.getUTCMonth() + 1;
-      if (month == 1) {
-        return "January";
-      } else if (month == 2){
-        return "February";
-      } else if (month == 3) {
-        return "March";
-      } else if (month == 4) {
-        return "April";
-      } else if (month == 5) {
-        return "May";
-      } else if (month == 6) {
-        return "June";
-      } else if (month == 7) {
-        return "July";
-      } else if (month == 8) {
-        return "August";
-      } else if (month == 9) {
-        return "September";
-      } else if (month == 10) {
-        return "October";
-      } else if (month == 11) {
-        return "November";
+      if (month === 1) {
+        return 'January';
+      } else if (month === 2) {
+        return 'February';
+      } else if (month === 3) {
+        return 'March';
+      } else if (month === 4) {
+        return 'April';
+      } else if (month === 5) {
+        return 'May';
+      } else if (month === 6) {
+        return 'June';
+      } else if (month === 7) {
+        return 'July';
+      } else if (month === 8) {
+        return 'August';
+      } else if (month === 9) {
+        return 'September';
+      } else if (month === 10) {
+        return 'October';
+      } else if (month === 11) {
+        return 'November';
       } else {
-        return "December";
+        return 'December';
       }
-    }
+    },
   },
 
   {
@@ -197,35 +203,22 @@ const questions: Array<WPTASQuestion> = [
     questionNum: 4,
     questionType: 'select',
     choices: ['Morning', 'Afternoon', 'Evening'],
-    multichoiceGenerator: function res(): Array<string>{
-      var choices: Array<string>;
-      var i: number = 0;
-      while (i < 3) {
-        var myRandom = Math.floor(Math.random() * 3);
-        if (myRandom == 0 && !choices.includes("Morning")) {
-          choices.push("Morning");
-          i++;
-        } else if (myRandom == 1 && !choices.includes("Afternoon")) {
-          choices.push("Afternoon");
-          i++;
-        } else if (myRandom == 2 && !choices.includes("Evening")) {
-          choices.push("Evening");
-          i++;
-        }
-      }
-      return choices;
-    },
+    multichoiceGenerator: (): Array<string> => [
+      'Morning',
+      'Afternoon',
+      'Evening',
+    ],
     correctAnswerGenerator: function res(): string {
-      var date:Date = new Date();
-      var hour:number = date.getHours();
+      var date: Date = new Date();
+      var hour: number = date.getHours();
       if (hour >= 12 && hour <= 17) {
-        return "Afternoon";
+        return 'Afternoon';
       } else if (hour >= 17) {
-        return "Evening";
+        return 'Evening';
       } else {
-        return "Morning";
+        return 'Morning';
       }
-    }
+    },
   },
 
   {
@@ -241,160 +234,167 @@ const questions: Array<WPTASQuestion> = [
       'Saturday',
       'Sunday',
     ],
-    multichoiceGenerator: function res(correctAnswer:string):Array<string>{
-      var choices:Array<number>;
-      var i: number = 0;
-      var correctDay:number;
-      var finalChoices:Array<string>;
-      if (correctAnswer === "Sunday") {
+    multichoiceGenerator: function res(correctAnswer: string): Array<string> {
+      var choices: Array<number> = [];
+      var correctDay: number;
+      if (correctAnswer === 'Sunday') {
         correctDay = 0;
-      } else if (correctAnswer === "Monday"){
+      } else if (correctAnswer === 'Monday') {
         correctDay = 1;
-      } else if (correctAnswer === "Tuesday") {
+      } else if (correctAnswer === 'Tuesday') {
         correctDay = 2;
-      } else if (correctAnswer === "Wednesday") {
+      } else if (correctAnswer === 'Wednesday') {
         correctDay = 3;
-      } else if (correctAnswer === "Thursday") {
+      } else if (correctAnswer === 'Thursday') {
         correctDay = 4;
-      } else if (correctAnswer === "Friday") {
+      } else if (correctAnswer === 'Friday') {
         correctDay = 5;
-      } else if (correctAnswer === "Saturday") {
+      } else if (correctAnswer === 'Saturday') {
         correctDay = 6;
       }
-      choices.push(correctDay);
-      var max: number = correctDay;
-      var min: number = correctDay;
-      var myRandom: number;
-      var around:number;
-      while (i < 2) {
-        myRandom = Math.floor(Math.random() * 2);
-        if (myRandom < 1 ){
-          if ((min - 1) < 0) {
-            around = 6 + (min - 1) + 1;
-            choices.push(around);
-          } else {
-            choices.push(min - 1);
-          }
-          min -= 1;
-          i++;
-        } else if (myRandom > 0) {
-          if ((max + 1) > 6){
-            around = max + 1 - 7
-            choices.push(around);
-          } else {
-            choices.push(max + 1);
-          }
-          max += 1;
-          i++;
-        }
+      var myRandom = getRandom(3);
+      switch (myRandom) {
+        case 0:
+          choices.push(correctDay, (correctDay + 1) % 7, (correctDay + 2) % 7);
+          break;
+        case 1:
+          choices.push((correctDay - 1) % 7, correctDay, (correctDay + 1) % 7);
+          break;
+        default:
+          choices.push((correctDay - 2) % 7, (correctDay - 1) % 7, correctDay);
+          break;
       }
-      while (finalChoices.length < 3) {
-        myRandom = Math.floor(Math.random() * choices.length);
-        var day: number = (choices.splice(myRandom, 1)).pop();
-        if (day == 0) {
-          finalChoices.push("Sunday");
-        } else if (day == 1){
-          finalChoices.push("Monday");
-        } else if (day == 2) {
-          finalChoices.push("Tuesday");
-        } else if (day == 3) {
-          finalChoices.push("Wednesday");
-        } else if (day == 4) {
-          finalChoices.push("Thursday");
-        } else if (day == 5) {
-          finalChoices.push("Friday");
+
+      let indexToDay = (i) => {
+        if (i === 0) {
+          return 'Sunday';
+        } else if (i === 1) {
+          return 'Monday';
+        } else if (i === 2) {
+          return 'Tuesday';
+        } else if (i === 3) {
+          return 'Wednesday';
+        } else if (i === 4) {
+          return 'Thursday';
+        } else if (i === 5) {
+          return 'Friday';
         } else {
-          finalChoices.push("Saturday");
+          return 'Saturday';
         }
-      }
-      return finalChoices;
+      };
+
+      return choices.map(indexToDay);
     },
     correctAnswerGenerator: function res(): string {
       var date = new Date();
       var day = date.getDay();
-      if (day == 0) {
-        return "Sunday";
-      } else if (day == 1){
-        return "Monday";
-      } else if (day == 2) {
-        return "Tuesday";
-      } else if (day == 3) {
-        return "Wednesday";
-      } else if (day == 4) {
-        return "Thursday";
-      } else if (day == 5) {
-        return "Friday";
-      } else if (day == 6) {
-        return "Saturday";
+      if (day === 0) {
+        return 'Sunday';
+      } else if (day === 1) {
+        return 'Monday';
+      } else if (day === 2) {
+        return 'Tuesday';
+      } else if (day === 3) {
+        return 'Wednesday';
+      } else if (day === 4) {
+        return 'Thursday';
+      } else if (day === 5) {
+        return 'Friday';
+      } else if (day === 6) {
+        return 'Saturday';
       }
-    }
-    
+    },
   },
 
-  { 
-    title: 'What year are we in?', 
-    questionNum: 6, 
+  {
+    title: 'What year are we in?',
+    questionNum: 6,
     questionType: 'text',
-    multichoiceGenerator: function res(correctAnswer: number): Array<number> {
-      var choices: Array<number> = [correctAnswer];
-      var i: number = 0;
-      var myRandom:number;
-      var max: number = correctAnswer;
-      var min: number = correctAnswer;
-      while (i < 2) {
-        myRandom = Math.floor(Math.random() * 2);
-        if (myRandom < 1 && (min - 1) > 0){
-          choices.push(min - 1);
-          min -= 1;
-        } else {
-          choices.push(max + 1)
-          max += 1;
-        }
-        i++;
+    multichoiceGenerator: function res(correctAnswer: string): Array<string> {
+      let correctAnswerNum = parseInt(correctAnswer);
+      var myRandom = getRandom(3);
+      switch (myRandom) {
+        case 0:
+          return [
+            correctAnswerNum,
+            correctAnswerNum,
+            1,
+            correctAnswerNum + 2,
+          ].map((d) => d.toString());
+        case 1:
+          return [
+            correctAnswerNum - 1,
+            correctAnswerNum,
+            correctAnswerNum + 2,
+          ].map((d) => d.toString());
+        default:
+          return [
+            correctAnswerNum - 2,
+            correctAnswerNum - 1,
+            correctAnswerNum,
+          ].map((d) => d.toString());
       }
-      var finalChoices: Array<number>;
-      while (finalChoices.length < 3) {
-        myRandom = Math.floor(Math.random() * choices.length);
-        finalChoices.push((choices.splice(myRandom, 1)).pop());
-      }
-      return finalChoices;
     },
-    correctAnswerGenerator: function res(): number {
+    correctAnswerGenerator: function res(): string {
       var date = new Date();
       var year = date.getUTCFullYear();
-      return year;
-    }
-   },
-  
+      return year.toString();
+    },
+  },
+
   {
     title: 'What is the name of this place?',
     questionNum: 7,
     questionType: 'text',
+    multichoiceGenerator: (answer: string): Array<string> => {
+      return [answer, 'Alfred Hospital', 'Wilamstown Hospital'];
+    },
+    correctAnswerGenerator: (): string => CORRECT_LOCATION,
   },
 
   // Or change question type to 'special'?
-  { 
-    title: 'Face', 
-    questionNum: 8, 
+  {
+    title: 'Face',
+    questionNum: 8,
     questionType: 'face_question',
-    image_names: ["lungile", "florence", "rin"],
-    correctAnswerGenerator: () => 'lungile'
+    image_names: ['lungile', 'florence', 'rin'],
+    correctAnswerGenerator: () => 'lungile',
   },
-  { 
-    title: 'Name', 
-    questionNum: 9, 
+  {
+    title: 'Name',
+    questionNum: 9,
     questionType: 'text',
-    multichoiceGenerator: c => [c, 'steve', 'bobby'],
-    correctAnswerGenerator: () => 'lungile'
+    multichoiceGenerator: (c: string): Array<string> => [c, 'Steve', 'Bobby'],
+    correctAnswerGenerator: (): string => CORRECT_NAME,
   },
 
-  { 
-    title: 'Pictures', 
-    questionNum: [10, 11, 12], 
+  {
+    title: 'Pictures',
+    questionNum: [10, 11, 12],
     questionType: 'pictures_question',
-    image_names: ['clock', 'fork', 'scissors', 'teacup', 'toothbrush', 'sunflower', 'pen', 'keys', 'bird'],
-    correctAnswerGenerator: () => ['fork', 'scissors', 'bird']
+    image_names: [
+      'clock',
+      'fork',
+      'scissors',
+      'teacup',
+      'toothbrush',
+      'sunflower',
+      'pen',
+      'keys',
+      'bird',
+    ],
+    correctAnswerGenerator: () => ['fork', 'scissors', 'bird'],
   },
 ];
+
+const addDays = (date, days) => {
+  var result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+};
+
+const getRandom = (max) => {
+  return Math.floor(Math.random() * max);
+};
 
 export default questions;
