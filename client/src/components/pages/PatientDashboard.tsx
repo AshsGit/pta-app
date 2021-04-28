@@ -58,62 +58,6 @@ const styles: Styles<Theme, any> = (theme: any) => ({
   },
 });
 
-// // TO CHANGE
-// const showQR = () => {};
-
-// const navigateHome = () => {};
-
-// const options = [
-//   { label: 'Show QR code', callback: showQR },
-//   { label: 'Exit patient view', callback: navigateHome },
-// ];
-
-// const PatientMenu = withStyles(styles)(({ classes }: any) => {
-//   const [anchorEl, setAnchorEl] = useState(null);
-//   const open = Boolean(anchorEl);
-
-//   const handleMenuClick = (event: any) => {
-//     setAnchorEl(event.currentTarget);
-//   };
-
-//   const handleMenuClose = () => {
-//     setAnchorEl(null);
-//   };
-
-//   const handleMenuItemClick = (event: any, index: number) => {
-//     options[index].callback();
-//     setAnchorEl(null);
-//   };
-
-//   return (
-//     <div>
-//       <IconButton
-//         aria-label='more'
-//         aria-controls='long-menu'
-//         aria-haspopup='true'
-//         onClick={handleMenuClick}
-//       >
-//         <MoreVertIcon classes={{ root: classes.menuIcon }} />
-//       </IconButton>
-//       <Menu
-//         anchorEl={anchorEl}
-//         keepMounted
-//         open={open}
-//         onClose={handleMenuClose}
-//       >
-//         {options.map((option, index) => (
-//           <MenuItem
-//             key={option.label}
-//             onClick={(event) => handleMenuItemClick(event, index)}
-//           >
-//             {option.label}
-//           </MenuItem>
-//         ))}
-//       </Menu>
-//     </div>
-//   );
-// });
-
 const DashboardHeader = withStyles(styles)(({ classes }: any) => {
   const { id } = useParams() as any;
 
@@ -130,9 +74,6 @@ const DashboardButton = withStyles(styles)(
     return (
       <Button className={`card ${classes.card}`} onClick={onClick}>
         {children}
-        {/* <div className={`card ${classes.card}`}> */}
-
-        {/* </div> */}
       </Button>
     );
   }

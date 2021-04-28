@@ -582,13 +582,14 @@ export const PatientHistory = withStyles(styles)(({ classes }: any) => {
               <ABSTable absService={absService} />
             )}
           </ResultsCard>
-          <ResultsCard>
+          {/* Submission History: */}
+          {/* <ResultsCard>
             {testType === 'wptas' ? (
               <WPTASHistory absService={absService} />
             ) : (
               <ABSHistory absService={absService} />
             )}
-          </ResultsCard>
+          </ResultsCard> */}
         </div>
       </div>
     </div>
