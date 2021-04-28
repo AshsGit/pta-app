@@ -4,7 +4,11 @@ import {
   CssBaseline,
   FormControl,
   FormControlLabel,
+  FormHelperText,
   FormLabel,
+  Grid,
+  GridList,
+  GridListTile,
   IconButton,
   Input,
   MenuItem,
@@ -22,18 +26,32 @@ import {
   ThemeProvider,
 } from '@material-ui/core/styles';
 import { WPTASTheme } from '../../themes';
-import questions from '../../data/wptas';
-import { WPTASQuestion } from '../../types/WPTAS';
+import questions from '../../data/wptas_questions';
+import { WPTASFaceQuestion, WPTASNonImageQuestion, WPTASPicturesQuestion, WPTASQuestion } from '../../types/WPTAS';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
+import CorrectIcon from '@material-ui/icons/CheckCircleTwoTone';
+import IncorrectIcon from '@material-ui/icons/CancelTwoTone';
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
+import CheckIcon from '@material-ui/icons/Check';
+
 import DateFnsUtils from '@date-io/date-fns';
 import { useHistory, useParams } from 'react-router-dom';
 
+import { FilledButton } from '../layout/Buttons';
+import { face_images, photo_question_images } from '../../data/wptas_images'; 
+
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    correct: {
+      color: "#4caf50"
+    },
+    incorrect: {
+      color: "#eb4034"
+    },
     form_group_row: {
       display: 'inline-flex',
       justifyContent: 'space-between',
@@ -98,7 +116,26 @@ const useStyles = makeStyles((theme: Theme) =>
       position: 'relative',
       height: '230px',
     },
+    imageQuestion: {
+      '&>*': { marginBottom: '1.5rem' },
+      position: 'relative',
+      height: 'auto',
+      margin: 0,
+    },
     questionLabel: { marginBottom: '0.5rem', fontWeight: 500 },
+    image_wrapper: {
+      position: "relative",
+      display: "inline-flex"
+    },
+    image_icon_overlay: {
+      position: "absolute",
+      top: 0,
+      right: 0,
+      margin: '2px',
+      zIndex: 1,
+      width: "25px",
+      height: "25px",
+    },
     backButton: {
       position: 'absolute',
       left: '.5rem',
@@ -137,10 +174,9 @@ export const WPTASForm: FunctionComponent = () => {
                   className={classes.questionsContainer}
                 >
                   {questions
-                    .filter((_, i) => i < 7)
                     .map((question) => (
                       <WPTASQuestionComponent
-                        key={question.questionNum}
+                        key={`${question.questionNum}`}
                         question={question}
                       />
                     ))}
@@ -246,7 +282,7 @@ const PatientResponseInput = ({ type, choices }: any) => {
   }
 };
 
-const WPTASMultiChoiceQuestion = () => {
+const WPTASMultiChoiceQuestion = ( question: WPTASNonImageQuestion ) => {
   const [selectedMultiChoice, setSelectedMultiChoice] = useState('');
   const classes = useStyles();
   return (
@@ -261,7 +297,7 @@ const WPTASMultiChoiceQuestion = () => {
       {
         // TODO replace with multiple choice generator. Expect an array of strings
         // TODO DECIDE if we generate these every time the component is rendered or once at the start when the form is initialised
-        ['option 1', 'option 2', 'option 3'].map((choice) => (
+        question.multichoiceGenerator(question.correctAnswerGenerator()).map((choice) => (
           <FormControlLabel
             key={choice}
             value={choice}
@@ -274,7 +310,193 @@ const WPTASMultiChoiceQuestion = () => {
   );
 };
 
-const WPTASQuestionComponent = ({ question }: { question: WPTASQuestion }) => {
+const WPTASQuestionComponent = ({ question }: { question: WPTASQuestion }) => question.questionType === 'face_question' 
+  ? WPTASFaceQuestionComponent( {question} )
+  : question.questionType === 'pictures_question'
+    ? WPTASPictureQuestionComponent({ question })
+    : WPTASNonImageQuestionComponent({ question })
+
+
+const WPTASFaceQuestionComponent = ({ question }: { question: WPTASFaceQuestion }) => {
+  const classes = useStyles();
+  const { title, questionNum, image_names, correctAnswerGenerator } = question;
+  const correctAnswerIndex = image_names.indexOf(correctAnswerGenerator());
+
+  const [selectedImage, setSelectedImage] = useState('');
+  const [multiChoiceGiven, setMultiChoiceGiven] = useState(false);
+  const [error, setError] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const toggleShowAnswer = () => setShowAnswer(!showAnswer)
+
+  // State for 'answered correctly?' question
+  const [answeredCorrectly, setAnsweredCorrectly] = useState(null);
+  const answeredCorrectlySelected = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setAnsweredCorrectly((event.target as HTMLInputElement).value);
+  };
+
+  return (
+    <Box
+      display='flex'
+      flexDirection='column'
+      alignItems='stretch'
+      className={classes.imageQuestion}
+    >
+      <Box className={classes.switch} display='flex' alignItems='center'>
+        <span style={{ fontSize: '11px' }}>Multiple choice given?</span>
+        <Switch
+          color='primary'
+          checked={multiChoiceGiven}
+          onChange={() => setMultiChoiceGiven(!multiChoiceGiven)}
+        />
+      </Box>
+      <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
+      <FormControl component='fieldset' fullWidth error={error}>
+        <GridList cols={3}>
+          {image_names.filter((_, i) => i < 3).map((img_name, index) => (
+            <GridListTile key={img_name} cols={1} className={classes.image_wrapper}>
+              <img
+                src={face_images[img_name]}
+                onClick={(_) => setSelectedImage(`${index}`)}
+                style={showAnswer && selectedImage !== `${index}` ? {opacity: 0.4} : {}}
+              />
+              {showAnswer ? (
+                correctAnswerIndex ===  index ? (
+                  <CorrectIcon 
+                    className={`${classes.image_icon_overlay} ${classes.correct}`} />
+                ) : selectedImage === `${index}` ? (
+                  <IncorrectIcon 
+                    className={`${classes.image_icon_overlay} ${classes.incorrect}`} />
+                ) : null
+              ) : null}
+            </GridListTile>
+          ))}
+        </GridList>
+        <RadioGroup 
+          aria-label='multiple choice'
+          value={selectedImage}
+          row 
+          onChange={(event) => {
+            setSelectedImage((event.target as HTMLInputElement).value);
+          }}
+        >
+          <Grid container direction='row' justify='space-around'>
+            <Grid item>
+              <Radio color='primary' checked={selectedImage === '0'} value="0" />
+            </Grid>
+            <Grid item>
+              <Radio color='primary' checked={selectedImage === '1'} value="1" /> 
+            </Grid>
+            <Grid item>
+              <Radio color='primary' checked={selectedImage === '2'} value="2" />
+            </Grid>
+          </Grid>
+        </RadioGroup>
+        {error ? (
+          <FormHelperText>
+            This question must be answered!
+          </FormHelperText>
+        ) : null}
+        <Grid container justify='flex-end'>
+          <FilledButton fullWidth={false} onClick={toggleShowAnswer}>{showAnswer ? 'Hide Answer' : 'Show Answer'}</FilledButton>
+        </Grid>
+        
+      </FormControl>
+    </Box>
+  );
+};
+
+
+const WPTASPictureQuestionComponent = ({ question }: { question: WPTASPicturesQuestion }) => {
+  const classes = useStyles();
+  const { title, questionNum, image_names, correctAnswerGenerator } = question;
+  const correctAnswerCoords = correctAnswerGenerator()
+    .map(img_name => image_names.findIndex( v=> v===img_name ))
+    .map(index => [index % 3, index / 3 >> 0]);
+
+  const [selected, setSelected] = useState({
+    total: 0,
+    arr: [
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+    ]
+  });
+
+  const [error, setError] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [isMultiChoice, setIsMultiChoice] = useState(false);
+
+  // State for 'answered correctly?' question
+  const [answeredCorrectly, setAnsweredCorrectly] = useState(null);
+  const answeredCorrectlySelected = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setAnsweredCorrectly((event.target as HTMLInputElement).value);
+  };
+
+  const rows = image_names.filter((_, i) => i < 9).reduce((list, img_name, index) => {
+    if (index % 3 === 0) 
+      return [...list, [img_name]];
+    else {
+      let tmp = [...list];
+      tmp[tmp.length-1].push(img_name);
+      return tmp;
+    }}, []);
+    
+  const onClickImage = (x: number, y: number) => (_) => {
+    if (selected.total < 3 || selected.arr[x][y] === true) {
+      const total = selected.total + (selected.arr[x][y] === true ? -1 : 1);
+      const arr = [...selected.arr];
+      arr[x] = [...arr[x]];
+      arr[x][y] = !arr[x][y];
+      setSelected({
+        total, 
+        arr
+      });
+    }
+  }
+
+  return (
+    <Box
+      display='flex'
+      flexDirection='column'
+      alignItems='stretch'
+      className={classes.imageQuestion}
+    >
+      <Box className={classes.switch} display='flex' alignItems='center'>
+        <span style={{ fontSize: '11px' }}>Multiple choice given?</span>
+        <Switch
+          color='primary'
+          checked={isMultiChoice}
+          onChange={() => setIsMultiChoice(!isMultiChoice)}
+        />
+      </Box>
+      <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
+      <FormControl component='fieldset' fullWidth error={error}>
+        <Grid container direction="column" justify="space-between" spacing={3}>
+          {rows.map((row, y) => (
+            <Grid container item xs direction="row" justify="space-around" >
+              {row.map((img_name, x) => (
+                <Grid item xs style={{flexGrow: 0}}>
+                  <img
+                    src={photo_question_images[img_name]}
+                    onClick={onClickImage(x, y)}
+                    width={150}
+                    height={190} />
+                </Grid>
+              ))}
+            </Grid>
+          ))}
+        </Grid>
+      </FormControl>
+    </Box>
+  );
+};
+
+const WPTASNonImageQuestionComponent = ({ question }: { question: WPTASNonImageQuestion }) => {
+
   const classes = useStyles();
   const { title, questionNum, questionType, choices } = question;
 
@@ -304,7 +526,7 @@ const WPTASQuestionComponent = ({ question }: { question: WPTASQuestion }) => {
       </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       {isMultiChoice ? (
-        <WPTASMultiChoiceQuestion />
+        <WPTASMultiChoiceQuestion {...question} />
       ) : (
         <React.Fragment>
           <FormControl>
@@ -341,216 +563,3 @@ const WPTASQuestionComponent = ({ question }: { question: WPTASQuestion }) => {
     </Box>
   );
 };
-
-// type WPTASInputComponent = 'text' | 'date' | React.Component;
-
-// type WPTASQuestionMarkup<T> = {
-//   title: string;
-//   multi_choice: MultiChoiceEval<T>;
-//   correct_answer?: T;
-//   identifying?: boolean;
-//   input_component?: WPTASInputComponent;
-// };
-
-// //const generate_q_components = <T, >(questions: (T extends WPTASQuestionMarkup<infer R> ? WPTASQuestionMarkup<R> : any)) => (
-// const generate_q_component = <T,>(
-//   question: WPTASQuestionMarkup<T>,
-//   index: number
-// ): JSX.Element => (
-//   <WPTASQuestion
-//     index={index}
-//     title={question.title}
-//     correct_answer={question.correct_answer}
-//     multi_choice={question.multi_choice}
-//     identifying={question.identifying}
-//   />
-// );
-
-// type MultiChoiceAnswers<T> = T[];
-// type MultiChoiceEval<T> = (correct_answer: T) => MultiChoiceAnswers<T>;
-
-// type Question_props<T> = {
-//   index: number;
-//   title: string;
-//   multi_choice: MultiChoiceEval<T>;
-//   identifying?: boolean;
-//   correct_answer?: T;
-//   input_component?: WPTASInputComponent;
-// };
-
-// const WPTASQuestion1 = <T,>({
-//   index,
-//   title,
-//   multi_choice: multi_choice_answers,
-//   identifying = false,
-//   correct_answer = undefined,
-//   input_component = 'text',
-// }: Question_props<T>) => {
-//   const classes = useStyles();
-
-//   const [mc, set_multi_choice] = useState(false);
-//   const [mc_answers, set_mc_answers] = useState<(T | null)[]>(
-//     correct_answer === undefined ? [] : multi_choice_answers(correct_answer)
-//   );
-//   const [selected_mc, set_selected_mc] = useState({
-//     answer: null as string | null,
-//     correct: null as string | null,
-//   });
-
-//   const toggle_mc = () => set_multi_choice(!mc);
-//   const add_mc_answer = (answer: T | null) =>
-//     set_mc_answers([...mc_answers, answer]);
-//   const edit_mc_answer = (index: number, edit: T | null) => {
-//     const copy = [...mc_answers];
-//     copy[index] = edit;
-//     set_mc_answers(copy);
-//   };
-//   const select_mc = (event: any) => {
-//     const new_val = event.target.value;
-//     set_selected_mc({
-//       ...selected_mc,
-//       answer: new_val === selected_mc.answer ? null : new_val,
-//     });
-//   };
-//   const select_correct_mc = (event: any) => {
-//     const new_val = event.target.value;
-//     set_selected_mc({
-//       ...selected_mc,
-//       correct: new_val === selected_mc.correct ? null : new_val,
-//     });
-//   };
-
-//   const inputComponent = ({ value, ...props }: any) =>
-//     input_component === 'text' ? (
-//       <TextField
-//         id={'' + index}
-//         label=''
-//         defaultValue={value}
-//         color='secondary'
-//         type='text'
-//         multiline
-//         rows={1}
-//         rowsMax={4}
-//       />
-//     ) : input_component === 'date' ? (
-//       <TextField
-//         id={'' + index}
-//         label=''
-//         defaultValue={value}
-//         color='secondary'
-//         type='date'
-//         multiline
-//         rows={1}
-//         rowsMax={4}
-//       />
-//     ) : undefined;
-
-//   const question_section = (
-//     <FormGroup>
-//       {mc ? (
-//         <List dense>
-//           <ListItem>
-//             <Grid container direction='row'>
-//               <Grid item xs={9}>
-//                 <Typography variant='h3' color='textSecondary'>
-//                   Pick patient's response
-//                 </Typography>
-//               </Grid>
-//               <Grid item xs={3}>
-//                 <Typography variant='h3' color='textSecondary'>
-//                   Correct answer
-//                 </Typography>
-//               </Grid>
-//             </Grid>
-//           </ListItem>
-//           {(mc_answers.length === 0 ? [null] : mc_answers).map(
-//             (option, index) => (
-//               <ListItem>
-//                 <Grid container direction='row'>
-//                   <Grid item xs={9}>
-//                     <Radio
-//                       value={index}
-//                       checked={selected_mc.answer === '' + index}
-//                       onClick={select_mc}
-//                     />
-//                     <TextField
-//                       id={'' + index}
-//                       label=''
-//                       defaultValue={option}
-//                       color='secondary'
-//                       type={input_component as string}
-//                       multiline
-//                       rows={1}
-//                       rowsMax={4}
-//                     />
-//                   </Grid>
-//                   <Grid item xs={3}>
-//                     <Checkbox
-//                       value={index}
-//                       checked={selected_mc.correct === '' + index}
-//                       onClick={select_correct_mc}
-//                     />
-//                   </Grid>
-//                 </Grid>
-//               </ListItem>
-//             )
-//           )}
-//           <ListItem>
-//             <Button
-//               className={classes.addMultiChoiceButton}
-//               onClick={(_) => add_mc_answer(null)}
-//             >
-//               + add option
-//             </Button>
-//           </ListItem>
-//         </List>
-//       ) : (
-//         <React.Fragment>
-//           <TextField
-//             id='patient-response'
-//             label='Patient Response'
-//             color='secondary'
-//             type={input_component as string}
-//           />
-//           {identifying && (
-//             <TextField
-//               id='correct-answer'
-//               label='Correct Answer'
-//               defaultValue={correct_answer}
-//               color='secondary'
-//               type={input_component as string}
-//             />
-//           )}
-//           <FormControlLabel
-//             control={<Checkbox />}
-//             label={
-//               <Typography variant='h4' color='textSecondary'>
-//                 Correct?
-//               </Typography>
-//             }
-//             labelPlacement='start'
-//           />
-//         </React.Fragment>
-//       )}
-//     </FormGroup>
-//   );
-
-//   return (
-//     <FormControl component='fieldset' fullWidth>
-//       <FormGroup row className={classes.form_group_row}>
-//         <Typography variant='h2'>{`${index}. ${title}`}</Typography>
-//         <FormControlLabel
-//           control={<Switch checked={mc} onChange={toggle_mc} />}
-//           label={
-//             <Typography variant='h4' color='textSecondary'>
-//               Multiple choice?
-//             </Typography>
-//           }
-//           labelPlacement='start'
-//           color='textSecondary'
-//         />
-//       </FormGroup>
-//       {question_section}
-//     </FormControl>
-//   );
-// };

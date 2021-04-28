@@ -3,13 +3,13 @@ import Button from '@material-ui/core/Button';
 import { Styles } from '@material-ui/core/styles/withStyles';
 import { Theme, withStyles } from '@material-ui/core/styles';
 
-const styles: Styles<Theme, any> = (theme: any) => ({
+const styles: Styles<Theme, any> = (theme: Theme) => ({
   filledButton: {
     color: 'white !important',
-    backgroundColor: 'var(--color-accent)',
+    backgroundColor: theme.palette.primary.main,
     textTransform: 'none',
     '&:hover': {
-      backgroundColor: 'var(--color-accent-dark)',
+      backgroundColor: theme.palette.primary.dark,
       color: 'white',
     },
   },
