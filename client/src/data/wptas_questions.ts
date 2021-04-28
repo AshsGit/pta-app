@@ -1,5 +1,8 @@
 import { WPTASQuestion } from '../types/WPTAS';
-
+const CORRECT_AGE = '30';
+const CORRECT_DOB = new Date(1999, 0, 25);
+const CORRECT_LOCATION = 'Epworth Hospital';
+const CORRECT_NAME = 'Lungile';
 const questions: Array<WPTASQuestion> = [
   {
     title: 'How old are you?',
@@ -29,7 +32,7 @@ const questions: Array<WPTASQuestion> = [
           ].map((n) => n.toString());
       }
     },
-    correctAnswerGenerator: () => '30',
+    correctAnswerGenerator: () => CORRECT_AGE,
   },
 
   {
@@ -59,7 +62,7 @@ const questions: Array<WPTASQuestion> = [
           ].map((d) => d.toDateString());
       }
     },
-    correctAnswerGenerator: () => new Date(1999, 0, 25),
+    correctAnswerGenerator: () => CORRECT_DOB.toDateString(),
   },
 
   {
@@ -346,7 +349,7 @@ const questions: Array<WPTASQuestion> = [
     multichoiceGenerator: (answer: string): Array<string> => {
       return [answer, 'Alfred Hospital', 'Wilamstown Hospital'];
     },
-    correctAnswerGenerator: (): string => 'Epworth Hospital',
+    correctAnswerGenerator: (): string => CORRECT_LOCATION,
   },
 
   // Or change question type to 'special'?
@@ -361,8 +364,8 @@ const questions: Array<WPTASQuestion> = [
     title: 'Name',
     questionNum: 9,
     questionType: 'text',
-    multichoiceGenerator: (c: string): Array<string> => [c, 'steve', 'bobby'],
-    correctAnswerGenerator: (): string => 'lungile',
+    multichoiceGenerator: (c: string): Array<string> => [c, 'Steve', 'Bobby'],
+    correctAnswerGenerator: (): string => CORRECT_NAME,
   },
 
   {

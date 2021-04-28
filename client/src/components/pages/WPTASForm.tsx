@@ -40,7 +40,6 @@ import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
-import CheckIcon from '@material-ui/icons/Check';
 
 import DateFnsUtils from '@date-io/date-fns';
 import { useHistory, useParams } from 'react-router-dom';
@@ -48,6 +47,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { FilledButton } from '../layout/Buttons';
 import { face_images, photo_question_images } from '../../data/wptas_images';
 
+const WPTAS_QUESTION_HEIGHT = '260px';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     correct: {
@@ -118,7 +118,7 @@ const useStyles = makeStyles((theme: Theme) =>
     question: {
       '&>*:not(:last-child)': { marginBottom: '1.5rem' },
       position: 'relative',
-      height: '230px',
+      height: WPTAS_QUESTION_HEIGHT,
     },
     imageQuestion: {
       '&>*': { marginBottom: '1.5rem' },
@@ -155,6 +155,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     multiChoiceRadioGroup: {
       '&>*:not(:last-child)': { marginBottom: '1rem' },
+    },
+    correctAnswer: {
+      fontWeight: 500,
     },
   })
 );
@@ -285,7 +288,7 @@ const PatientResponseInput = ({ type, choices }: any) => {
   }
 };
 
-const WPTASMultiChoiceQuestion = (question: WPTASNonImageQuestion) => {
+const WPTASMultiChoiceQuestion = ({ choices, correctAnswer }) => {
   const [selectedMultiChoice, setSelectedMultiChoice] = useState('');
   const classes = useStyles();
   return (
@@ -300,16 +303,14 @@ const WPTASMultiChoiceQuestion = (question: WPTASNonImageQuestion) => {
       {
         // TODO replace with multiple choice generator. Expect an array of strings
         // TODO DECIDE if we generate these every time the component is rendered or once at the start when the form is initialised
-        question
-          .multichoiceGenerator(question.correctAnswerGenerator())
-          .map((choice) => (
-            <FormControlLabel
-              key={choice}
-              value={choice}
-              control={<Radio color='primary' />}
-              label={choice}
-            />
-          ))
+        choices.map((choice) => (
+          <FormControlLabel
+            key={choice}
+            value={choice}
+            control={<Radio color='primary' />}
+            label={choice}
+          />
+        ))
       }
     </RadioGroup>
   );
@@ -567,7 +568,12 @@ const WPTASNonImageQuestionComponent = ({
       </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       {isMultiChoice ? (
-        <WPTASMultiChoiceQuestion {...question} />
+        <WPTASMultiChoiceQuestion
+          choices={question.multichoiceGenerator(
+            question.correctAnswerGenerator()
+          )}
+          correctAnswer={question.correctAnswerGenerator()}
+        />
       ) : (
         <React.Fragment>
           <FormControl>
@@ -601,6 +607,9 @@ const WPTASNonImageQuestionComponent = ({
           <PatientResponseInput type={questionType} choices={choices || []} />
         </React.Fragment>
       )}
+      <div
+        className={classes.correctAnswer}
+      >{`Correct answer: ${question.correctAnswerGenerator()}`}</div>
     </Box>
   );
 };
