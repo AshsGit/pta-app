@@ -1,4 +1,6 @@
 import { WPTASQuestion } from '../types/WPTAS';
+import { getRandom } from './getRandom';
+
 const CORRECT_AGE = '30';
 const CORRECT_DOB = new Date(1999, 0, 25);
 const CORRECT_LOCATION = 'Epworth Hospital';
@@ -39,27 +41,28 @@ const questions: Array<WPTASQuestion> = [
     title: 'What is your date of birth?',
     questionNum: 2,
     questionType: 'date',
-    multichoiceGenerator: function res(correctAnswer: Date): Array<string> {
+    multichoiceGenerator: function res(correctAnswer: string): Array<string> {
+      let correctAnswerDate = new Date(correctAnswer);
       var myRandom = getRandom(3);
       switch (myRandom) {
         case 0:
           return [
-            correctAnswer,
-            addDays(correctAnswer, 1),
-            addDays(correctAnswer, 2),
-          ].map((d) => d.toDateString());
+            correctAnswerDate,
+            addDays(correctAnswerDate, 1),
+            addDays(correctAnswerDate, 2),
+          ].map((d: Date) => d.toDateString());
         case 1:
           return [
-            addDays(correctAnswer, -1),
-            correctAnswer,
-            addDays(correctAnswer, 1),
-          ].map((d) => d.toDateString());
+            addDays(correctAnswerDate, -1),
+            correctAnswerDate,
+            addDays(correctAnswerDate, 1),
+          ].map((d: Date) => d.toDateString());
         default:
           return [
-            addDays(correctAnswer, -2),
-            addDays(correctAnswer, -1),
-            correctAnswer,
-          ].map((d) => d.toDateString());
+            addDays(correctAnswerDate, -2),
+            addDays(correctAnswerDate, -1),
+            correctAnswerDate,
+          ].map((d: Date) => d.toDateString());
       }
     },
     correctAnswerGenerator: () => CORRECT_DOB.toDateString(),
@@ -211,7 +214,7 @@ const questions: Array<WPTASQuestion> = [
     correctAnswerGenerator: function res(): string {
       var date: Date = new Date();
       var hour: number = date.getHours();
-      if (hour >= 12 && hour <= 17) {
+      if (hour >= 12 && hour < 17) {
         return 'Afternoon';
       } else if (hour >= 17) {
         return 'Evening';
@@ -391,10 +394,6 @@ const addDays = (date, days) => {
   var result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
-};
-
-const getRandom = (max) => {
-  return Math.floor(Math.random() * max);
 };
 
 export default questions;

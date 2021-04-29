@@ -8,6 +8,7 @@
     "start": "tsc && node dist/server.js",
     "server": "nodemon --watch src/server.ts --exec \"npm run start\"",
     "client": "npm start --prefix client",
+    "test": "npm test --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "repository": {

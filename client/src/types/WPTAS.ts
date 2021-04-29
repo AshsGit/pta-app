@@ -13,8 +13,8 @@ export interface WPTASNonImageQuestion {
   questionNum: number;
   questionType: 'date' | 'select' | 'text';
   choices?: Array<string>;
-  multichoiceGenerator: (answer: string | Date) => Array<string>;
-  correctAnswerGenerator: () => string | Date; //change any type to () => Promise<string>
+  multichoiceGenerator: (answer: string) => Array<string>;
+  correctAnswerGenerator: () => string; //change any type to () => Promise<string>
 }
 
 export interface WPTASFaceQuestion {
