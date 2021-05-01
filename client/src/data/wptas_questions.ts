@@ -317,15 +317,14 @@ const questions: Array<WPTASQuestion> = [
         case 0:
           return [
             correctAnswerNum,
-            correctAnswerNum,
-            1,
+            correctAnswerNum + 1,
             correctAnswerNum + 2,
           ].map((d) => d.toString());
         case 1:
           return [
             correctAnswerNum - 1,
             correctAnswerNum,
-            correctAnswerNum + 2,
+            correctAnswerNum + 1,
           ].map((d) => d.toString());
         default:
           return [
