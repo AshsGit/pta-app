@@ -5,12 +5,14 @@ import { PatientDashboard } from './components/pages/PatientDashboard';
 import { PatientHistory } from './components/pages/PatientHistory';
 import { WPTASForm } from './components/pages/WPTASForm';
 import { ABSForm } from './components/pages/ABSForm';
+import {Message} from './components/pages/Message';
 // import { Home } from './components/pages/Home';
 
 function App() {
   return (
     <div className='App'>
       <Router>
+        <Route exact={true} path="/" component={Message}/>
         <Route exact={true} path='/:id' component={PatientDashboard} />
         {/* <Route exact={true} path="/dashboard/:id" component={PatientDashboard} /> */}
         <Route exact={true} path='/:id/history' component={PatientHistory} />
