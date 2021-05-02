@@ -445,7 +445,7 @@ const WPTASHistory = withStyles(styles)(({ classes }: any) => {
               <TableCell>Date</TableCell>
               <TableCell>Examiner</TableCell>
               <TableCell>Score</TableCell>
-              <TableCell></TableCell>
+              {/* <TableCell></TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -459,7 +459,7 @@ const WPTASHistory = withStyles(styles)(({ classes }: any) => {
                 </TableCell>
                 <TableCell>{row.examiner}</TableCell>
                 <TableCell>{row.score}</TableCell>
-                <TableCell className={classes.btnCell}>
+                {/* <TableCell className={classes.btnCell}>
                   <OutlineButton
                     style={{ maxWidth: '150px' }}
                     onClick={() => {
@@ -470,7 +470,7 @@ const WPTASHistory = withStyles(styles)(({ classes }: any) => {
                   >
                     View
                   </OutlineButton>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>
@@ -521,7 +521,7 @@ const ABSHistory = withStyles(styles)(({ classes, absService }: any) => {
               <TableCell>Date</TableCell>
               <TableCell>Examiner</TableCell>
               <TableCell>Score</TableCell>
-              <TableCell></TableCell>
+              {/* <TableCell></TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -535,7 +535,7 @@ const ABSHistory = withStyles(styles)(({ classes, absService }: any) => {
                 </TableCell>
                 <TableCell>{row.examinerInitials || '-'}</TableCell>
                 <TableCell>{row.total}</TableCell>
-                <TableCell className={classes.btnCell}>
+                {/* <TableCell className={classes.btnCell}>
                   <OutlineButton
                     style={{ maxWidth: '150px' }}
                     onClick={() => {
@@ -544,7 +544,7 @@ const ABSHistory = withStyles(styles)(({ classes, absService }: any) => {
                   >
                     View
                   </OutlineButton>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>
@@ -583,13 +583,13 @@ export const PatientHistory = withStyles(styles)(({ classes }: any) => {
             )}
           </ResultsCard>
           {/* Submission History: */}
-          {/* <ResultsCard>
+          <ResultsCard>
             {testType === 'wptas' ? (
               <WPTASHistory absService={absService} />
             ) : (
               <ABSHistory absService={absService} />
             )}
-          </ResultsCard> */}
+          </ResultsCard>
         </div>
       </div>
     </div>
