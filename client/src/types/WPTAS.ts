@@ -8,21 +8,33 @@ export interface WPTASSubmission {
   submissionId: string;
 }
 
-export interface WPTASNonImageQuestion {
+interface NonImageQuestionBase<T, QType extends 'date' | 'text' | 'select'> {
   title: string;
   questionNum: number;
-  questionType: 'date' | 'select' | 'text';
-  choices?: Array<string>;
-  multichoiceGenerator?: any;
-  correctAnswerGenerator?: any; //change any type to () => Promise<string>
+  questionType: QType;
+  multichoiceGenerator: (correctAnswer: T) => T[],
+  correctAnswerGenerator: ()=>T; //change any type to () => Promise<string>
 }
+
+export type WPTASTextQuestion = NonImageQuestionBase<string | number, 'text'>;
+export type WPTASDateQuestion = NonImageQuestionBase<Date, 'date'>;
+export type WPTASSelectQuestion = NonImageQuestionBase<string | number, 'select'>; //& {
+//  choices: Array<string | number>;
+//};
+
+
+export type WPTASNonImageQuestion = 
+  | WPTASTextQuestion
+  | WPTASDateQuestion 
+  | WPTASSelectQuestion
+  | any;
 
 export interface WPTASFaceQuestion {
   title: string;
   questionNum: number;
   questionType: 'face_question';
   image_names: string[]; //there must be exactly enough images to fill dimensions
-  correctAnswerGenerator?: any; //change any type to () => Promise<string>
+  correctAnswerGenerator: ()=>string; //change any type to () => Promise<string>
 }
 
 export interface WPTASPicturesQuestion {
@@ -30,10 +42,14 @@ export interface WPTASPicturesQuestion {
   questionNum: number[];
   questionType: 'pictures_question';
   image_names: string[]; //there must be exactly enough images to fill dimensions
-  correctAnswerGenerator?: () => string[];
+  correctAnswerGenerator: () => string[];
+  newPics: (thisWeeksPics: string[]) => string[];
 }
 
-export type WPTASQuestion = WPTASNonImageQuestion | WPTASFaceQuestion | WPTASPicturesQuestion;
+export type WPTASQuestion = 
+  | WPTASNonImageQuestion
+  | WPTASFaceQuestion 
+  | WPTASPicturesQuestion;
 export interface WPTASAnswer {
   questionNum: number;
   score: number; // 0 - 1

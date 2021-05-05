@@ -27,9 +27,9 @@ const questions: Array<WPTASQuestion> = [
         finalChoices.push((choices.splice(myRandom, 1)).pop());
       }
       return finalChoices;
-    }
+    },
+    correctAnswerGenerator: () => 5
   },
-
   {
     title: 'What is your date of birth?',
     questionNum: 2,
@@ -61,7 +61,8 @@ const questions: Array<WPTASQuestion> = [
         finalChoices.push((choices.splice(myRandom, 1)).pop());
       }
       return finalChoices;
-    }
+    },
+    correctAnswerGenerator: () => new Date(1990, 5, 18),
   },
 
   {
@@ -227,7 +228,6 @@ const questions: Array<WPTASQuestion> = [
       }
     }
   },
-
   {
     title: 'What day of the week is it?',
     questionNum: 5,
@@ -370,6 +370,8 @@ const questions: Array<WPTASQuestion> = [
     title: 'What is the name of this place?',
     questionNum: 7,
     questionType: 'text',
+    multichoiceGenerator: (correctAnswer: string) => [correctAnswer, 'The Royal Melbourne Hospital', "St. Vincent's Hospital"].sort(Math.random),
+    correctAnswerGenerator: () => 'Epworth Hospital',
   },
 
   // Or change question type to 'special'?
@@ -393,7 +395,8 @@ const questions: Array<WPTASQuestion> = [
     questionNum: [10, 11, 12], 
     questionType: 'pictures_question',
     image_names: ['clock', 'fork', 'scissors', 'teacup', 'toothbrush', 'sunflower', 'pen', 'keys', 'bird'],
-    correctAnswerGenerator: () => ['fork', 'scissors', 'bird']
+    correctAnswerGenerator: () => ['fork', 'scissors', 'bird'],
+    newPics: (_) => ["clock", "keys", "pen"],
   },
 ];
 
