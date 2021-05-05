@@ -176,6 +176,15 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: '10rem',
       '&>*:not(:last-child)': { marginRight: '26px' },
     },
+    page: {
+      display: 'flex',
+      alignItems: 'flex-start',
+      height: '100%',
+      minHeight: '100vh',
+      maxWidth: 'var(--max-app-width)',
+      flexGrow: 1,
+      zIndex: 1,
+    },
   })
 );
 
@@ -188,7 +197,7 @@ export const WPTASForm: FunctionComponent = () => {
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <CssBaseline />
         <Background />
-        <div className='page'>
+        <div className={classes.page}>
           <Paper variant='outlined' className={classes.root_content}>
             <Header />
             <Box>

@@ -37,7 +37,7 @@ export const WPTASTheme = createMuiTheme({
     h3: {
       fontStyle: 'normal',
       fontWeight: 'bold',
-      fontSize: '20px',
+      fontSize: '18px',
       lineHeight: '1.313rem',
     },
     body1: {
