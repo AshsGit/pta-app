@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import './App.css';
 import { PatientDashboard } from './components/pages/PatientDashboard';
 import { PatientHistory } from './components/pages/patientHistory/PatientHistory';
-import { WPTASForm } from './components/pages/WPTASForm';
+import { WPTASForm } from './components/pages/wptasForm/WPTASForm';
 import { ABSForm } from './components/pages/absForm/ABSForm';
 import { PlaceholderScreen } from './components/pages/PlaceholderScreen';
 

@@ -26,8 +26,8 @@ import {
   Theme,
   ThemeProvider,
 } from '@material-ui/core/styles';
-import { WPTASTheme } from '../../themes';
-import questions from '../../data/wptas_questions';
+import { WPTASTheme } from '../../../themes';
+import questions from '../../../data/wptas_questions';
 import {
   WPTASNonImageQuestion,
   WPTASTextQuestion,
@@ -36,7 +36,7 @@ import {
   WPTASFaceQuestion,
   WPTASPicturesQuestion,
   WPTASQuestion,
-} from '../../types/WPTAS';
+} from '../../../types/WPTAS';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
 import CorrectIcon from '@material-ui/icons/CheckCircleTwoTone';
 import IncorrectIcon from '@material-ui/icons/CancelTwoTone';
@@ -48,8 +48,8 @@ import {
 import DateFnsUtils from '@date-io/date-fns';
 import { useHistory, useParams } from 'react-router-dom';
 
-import { FilledButton } from '../layout/Buttons';
-import { face_images, photo_question_images } from '../../data/wptas_images';
+import { FilledButton } from '../../layout/Buttons';
+import { face_images, photo_question_images } from '../../../data/wptas_images';
 
 const WPTAS_QUESTION_HEIGHT = '260px';
 const useStyles = makeStyles((theme: Theme) =>
