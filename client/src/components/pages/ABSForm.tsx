@@ -26,11 +26,7 @@ import {
   ThemeProvider,
 } from '@material-ui/core/styles';
 import { ABSTheme } from '../../themes';
-import {
-  DateTimePicker,
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
+import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
 import { ABSAnswer, ABSQuestion, ABSSubmission } from '../../types/ABS';
@@ -267,14 +263,10 @@ export const ABSForm: FunctionComponent = () => {
                                 value={fromDate}
                                 onChange={fromDateOnChange}
                                 error={errors.fromDateError}
-                                autoOk
-                                okLabel={false}
-                                clearable
                                 showTodayButton
-                                disablePast
                                 InputProps={{
                                   endAdornment: (
-                                    <InputAdornment position="end">
+                                    <InputAdornment position='end'>
                                       <IconButton>
                                         <InsertInvitation />
                                       </IconButton>
@@ -301,14 +293,10 @@ export const ABSForm: FunctionComponent = () => {
                                 value={toDate}
                                 onChange={toDateOnChange}
                                 error={errors.toDateError}
-                                autoOk
-                                okLabel={false}
-                                clearable
                                 showTodayButton
-                                disablePast
                                 InputProps={{
                                   endAdornment: (
-                                    <InputAdornment position="end">
+                                    <InputAdornment position='end'>
                                       <IconButton>
                                         <InsertInvitation />
                                       </IconButton>
