@@ -38,7 +38,7 @@ const questions: Array<WPTASQuestion> = [
     title: 'What is your date of birth?',
     questionNum: 2,
     questionType: 'date',
-    multichoiceGenerator: function res(correctAnswer: Date): Array<string> {
+    multichoiceGenerator: function res(correctAnswer: Date): Array<Date> {
       var myRandom = getRandom(3);
       switch (myRandom) {
         case 0:
@@ -46,22 +46,22 @@ const questions: Array<WPTASQuestion> = [
             correctAnswer,
             addDays(correctAnswer, 1),
             addDays(correctAnswer, 2),
-          ].map((d) => d.toDateString());
+          ]; //.map((d) => d.toDateString());
         case 1:
           return [
             addDays(correctAnswer, -1),
             correctAnswer,
             addDays(correctAnswer, 1),
-          ].map((d) => d.toDateString());
+          ]; //.map((d) => d.toDateString());
         default:
           return [
             addDays(correctAnswer, -2),
             addDays(correctAnswer, -1),
             correctAnswer,
-          ].map((d) => d.toDateString());
+          ]; //.map((d) => d.toDateString());
       }
     },
-    correctAnswerGenerator: () => CORRECT_DOB.toDateString(),
+    correctAnswerGenerator: () => CORRECT_DOB, //.toDateString(),
   },
 
   {

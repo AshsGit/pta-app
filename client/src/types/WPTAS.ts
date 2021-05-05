@@ -12,22 +12,21 @@ interface NonImageQuestionBase<T, QType extends 'date' | 'text' | 'select'> {
   title: string;
   questionNum: number;
   questionType: QType;
-  multichoiceGenerator: (correctAnswer: T) => T[],
-  correctAnswerGenerator: ()=>T; //change any type to () => Promise<string>
+  multichoiceGenerator: (correctAnswer: string | number | Date) => T[],
+  correctAnswerGenerator: ()=>string | number | Date; //change any type to () => Promise<string>
 }
 
 export type WPTASTextQuestion = NonImageQuestionBase<string | number, 'text'>;
 export type WPTASDateQuestion = NonImageQuestionBase<Date, 'date'>;
-export type WPTASSelectQuestion = NonImageQuestionBase<string | number, 'select'>; //& {
-//  choices: Array<string | number>;
-//};
+export type WPTASSelectQuestion = NonImageQuestionBase<string | number, 'select'> & {
+  choices: Array<string | number>;
+};
 
 
 export type WPTASNonImageQuestion = 
   | WPTASTextQuestion
   | WPTASDateQuestion 
-  | WPTASSelectQuestion
-  | any;
+  | WPTASSelectQuestion;
 
 export interface WPTASFaceQuestion {
   title: string;

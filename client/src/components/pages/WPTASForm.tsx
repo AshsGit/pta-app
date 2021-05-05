@@ -314,8 +314,9 @@ const PatientResponseInput = ({ type, choices }: any) => {
 };
 
 //function WPTASMultiChoiceQuestion( { multichoiceGenerator, correctAnswerGenerator }: Partial<WPTASTextQuestion<number>> );
-function WPTASMultiChoiceQuestion( { multichoiceGenerator, correctAnswerGenerator }: Partial<WPTASNonImageQuestion> ) {
+function WPTASMultiChoiceQuestion( { question }: {question: WPTASNonImageQuestion} ) {
   const [selectedMultiChoice, setSelectedMultiChoice] = useState('');
+  const {multichoiceGenerator, correctAnswerGenerator} = question;
   const classes = useStyles();
   return (
     <RadioGroup
@@ -663,10 +664,7 @@ const WPTASNonImageQuestionComponent = ({ question, showAnswers }: { question: W
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       {isMultiChoice ? (
         <WPTASMultiChoiceQuestion
-          choices={question.multichoiceGenerator(
-            question.correctAnswerGenerator()
-          )}
-          correctAnswer={question.correctAnswerGenerator()}
+          question={question}
         />
       ) : (
         <React.Fragment>
