@@ -1,12 +1,9 @@
-import React, { FunctionComponent, useState, FC, ChangeEvent } from 'react';
+import React, { FunctionComponent, useState, ChangeEvent } from 'react';
 import {
   Box,
-  Button,
   CircularProgress,
   CssBaseline,
   FormControl,
-  FormControlLabel,
-  FormControlProps,
   FormHelperText,
   FormLabel,
   Grid,
@@ -14,9 +11,6 @@ import {
   Input,
   InputAdornment,
   Paper,
-  Radio,
-  RadioGroup,
-  RadioGroupProps,
   TextField,
   Typography,
 } from '@material-ui/core';
@@ -26,16 +20,17 @@ import {
   Theme,
   ThemeProvider,
 } from '@material-ui/core/styles';
-import { ABSTheme } from '../../themes';
+import { ABSTheme } from '../../../themes';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
-import { ABSAnswer, ABSQuestion, ABSSubmission } from '../../types/ABS';
+import { ABSAnswer, ABSSubmission } from '../../../types/ABS';
+import { ABSQuestion as ABSQuestionComponent } from './ABSQuestion';
 import { useHistory, useParams } from 'react-router-dom';
-import questions from '../../data/abs';
-import { AbsService } from '../../services/AbsService';
+import questions from '../../../data/abs';
+import { AbsService } from '../../../services/AbsService';
 import { InsertInvitation } from '@material-ui/icons';
-import { FilledButton } from '../layout/Buttons';
+import { FilledButton } from '../../layout/Buttons';
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -67,6 +62,15 @@ export const useStyles = makeStyles((theme: Theme) =>
       marginBottom: '0.5rem',
       fontSize: '16px',
     },
+    page: {
+      display: 'flex',
+      alignItems: 'flex-start',
+      height: '100%',
+      minHeight: '100vh',
+      maxWidth: 'var(--max-app-width)',
+      flexGrow: 1,
+      zIndex: 1,
+    },
   })
 );
 
@@ -80,6 +84,7 @@ const Background: FunctionComponent = () => {
   );
 };
 
+// Error handling
 type InputErrors = {
   toDateError: boolean;
   fromDateError: boolean;
@@ -94,15 +99,21 @@ const hasError = (e: InputErrors): boolean =>
   e.obsEnvError ||
   e.initials ||
   e.answerErrors.some((v) => v);
+
 const questionError = (index: number, e: InputErrors) => e.answerErrors[index];
 
 export const ABSForm: FunctionComponent = () => {
-  const absService = new AbsService();
   const classes = useStyles();
+  const history = useHistory();
+  const { id } = useParams() as any;
+  const absService = new AbsService();
 
+  // Form state variables
   const [loading, setLoading] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [submitPressed, setSubmitPressed] = useState<boolean>(false);
 
+  // Form input states
   const [toDate, setToDate] = useState<Date | null>(null);
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [obsEnv, setObsEnv] = useState('');
@@ -110,6 +121,8 @@ export const ABSForm: FunctionComponent = () => {
   const [questionAnswers, setQuestionAnswers] = useState<string[]>(
     new Array(questions.length).fill('')
   );
+
+  // Error handling
   const [errors, setErrors] = useState<InputErrors>({
     toDateError: false,
     fromDateError: false,
@@ -118,6 +131,7 @@ export const ABSForm: FunctionComponent = () => {
     answerErrors: new Array(questions.length).fill(false),
   });
 
+  // Change handlers
   const obsEnvOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     setObsEnv(event.target.value);
     setErrors({ ...errors, obsEnvError: event.target.value === '' });
@@ -130,7 +144,10 @@ export const ABSForm: FunctionComponent = () => {
     setFromDate(d);
     setErrors({ ...errors, fromDateError: false });
   };
-
+  const initialsOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInitials(event.target.value);
+    setErrors({ ...errors, obsEnvError: event.target.value === '' });
+  };
   const getChangeHandle = (question_index: number) => (
     event: ChangeEvent<HTMLInputElement>
   ) => {
@@ -145,6 +162,8 @@ export const ABSForm: FunctionComponent = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>, id) => {
     event.preventDefault();
+
+    setSubmitPressed(true);
 
     const newErrors: InputErrors = {
       toDateError: false,
@@ -170,6 +189,7 @@ export const ABSForm: FunctionComponent = () => {
     if (formIncomplete) {
       setErrors(newErrors);
     } else {
+      // Submit form if no errors
       setLoading(true);
       const submission: ABSSubmission = {
         patientId: id,
@@ -186,6 +206,7 @@ export const ABSForm: FunctionComponent = () => {
             } as ABSAnswer)
         ),
       };
+
       absService.submit(submission).subscribe(
         (result) => {
           console.log('submit done', result);
@@ -195,22 +216,19 @@ export const ABSForm: FunctionComponent = () => {
         (err) => {
           console.log('Error:', err);
           setLoading(false);
-          // TODO provide a ui error
+          // TODO: provide a ui error
         }
       );
     }
   };
-  const { id } = useParams() as any;
-  const history = useHistory();
 
   return (
     <ThemeProvider theme={ABSTheme}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <CssBaseline />
         <Background />
-        <div className='page'>
+        <div className={classes.page}>
           <Paper variant='outlined' className={classes.root_content}>
-            {/* TODO: show error under submit button if submit failes / form inputs fail */}
             <form onSubmit={($event) => handleSubmit($event, id)}>
               <Grid container direction='column' spacing={5}>
                 <IconButton
@@ -234,114 +252,17 @@ export const ABSForm: FunctionComponent = () => {
                 ) : (
                   <React.Fragment>
                     <Grid item container direction='column' spacing={5}>
-                      <Grid item container direction='column'>
-                        <Typography
-                          className={classes.headerQuestion}
-                          variant='h3'
-                        >
-                          Period of Observation
-                        </Typography>
-                        <Grid
-                          item
-                          container
-                          direction='row'
-                          spacing={10}
-                          wrap='nowrap'
-                        >
-                          <Grid item xs={5}>
-                            <FormControl
-                              component='fieldset'
-                              fullWidth
-                              error={errors.fromDateError}
-                            >
-                              <FormLabel>From:</FormLabel>
-                              <DateTimePicker
-                                margin='normal'
-                                value={fromDate}
-                                onChange={fromDateOnChange}
-                                error={errors.fromDateError}
-                                showTodayButton
-                                InputProps={{
-                                  endAdornment: (
-                                    <InputAdornment position='end'>
-                                      <IconButton>
-                                        <InsertInvitation />
-                                      </IconButton>
-                                    </InputAdornment>
-                                  ),
-                                }}
-                              />
-                              <FormHelperText>
-                                {errors.fromDateError
-                                  ? 'This field is compulsory!'
-                                  : ' '}
-                              </FormHelperText>
-                            </FormControl>
-                          </Grid>
-                          <Grid item xs={5}>
-                            <FormControl
-                              component='fieldset'
-                              fullWidth
-                              error={errors.toDateError}
-                            >
-                              <FormLabel>To:</FormLabel>
-                              <DateTimePicker
-                                margin='normal'
-                                value={toDate}
-                                onChange={toDateOnChange}
-                                error={errors.toDateError}
-                                showTodayButton
-                                InputProps={{
-                                  endAdornment: (
-                                    <InputAdornment position='end'>
-                                      <IconButton>
-                                        <InsertInvitation />
-                                      </IconButton>
-                                    </InputAdornment>
-                                  ),
-                                }}
-                              />
-                              <FormHelperText>
-                                {!errors.toDateError
-                                  ? ' '
-                                  : fromDate !== null &&
-                                    toDate !== null &&
-                                    fromDate > toDate
-                                  ? "'To' date cannot be less than 'From' date!"
-                                  : 'This field is compulsory!'}
-                              </FormHelperText>
-                            </FormControl>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                      <Grid item>
-                        <Typography
-                          className={classes.headerQuestion}
-                          variant='h3'
-                        >
-                          Observation Environment
-                        </Typography>
-                        <FormControl
-                          component='fieldset'
-                          fullWidth
-                          error={errors.obsEnvError}
-                        >
-                          <Input
-                            placeholder='e.g. hospital ward bed'
-                            fullWidth
-                            inputProps={{ 'aria-label': 'description' }}
-                            onChange={obsEnvOnChange}
-                          />
-                          <FormHelperText>
-                            {errors.obsEnvError
-                              ? 'This field is compulsory!'
-                              : ' '}
-                          </FormHelperText>
-                        </FormControl>
-                      </Grid>
-                      <Grid item>
-                        <ABSInfoText />
-                      </Grid>
+                      <ABSMetadata
+                        {...{
+                          errors,
+                          fromDate,
+                          fromDateOnChange,
+                          toDate,
+                          toDateOnChange,
+                          obsEnv,
+                          obsEnvOnChange,
+                        }}
+                      />
                     </Grid>
                     <br />
                     <Grid item container spacing={8} direction='column'>
@@ -370,9 +291,7 @@ export const ABSForm: FunctionComponent = () => {
                             marginBottom: '0.5rem',
                           }}
                           value={initials}
-                          onChange={(e) => {
-                            setInitials(e.target.value);
-                          }}
+                          onChange={initialsOnChange}
                           label='Initials...'
                           placeholder=''
                           size='medium'
@@ -384,14 +303,6 @@ export const ABSForm: FunctionComponent = () => {
                         {loading ? (
                           <CircularProgress />
                         ) : (
-                          // <Button
-                          //   type='submit'
-                          //   size='large'
-                          //   variant='outlined'
-                          //   color='primary'
-                          // >
-                          //   Submit
-                          // </Button>
                           <FilledButton
                             type='submit'
                             width={400}
@@ -410,7 +321,9 @@ export const ABSForm: FunctionComponent = () => {
                         style={{ textAlign: 'end' }}
                         error={hasError(errors)}
                       >
-                        {hasError(errors) ? 'Please complete all fields' : ''}
+                        {hasError(errors) && submitPressed
+                          ? 'Please complete all fields'
+                          : ''}
                       </FormHelperText>
                     </Box>
                   </React.Fragment>
@@ -424,60 +337,106 @@ export const ABSForm: FunctionComponent = () => {
   );
 };
 
-type ABSQuestionProps = {
-  question: ABSQuestion;
-  onChange?: RadioGroupProps['onChange'] | undefined;
-  error?: FormControlProps['error'] | undefined;
-};
-
-const ABSQuestionComponent: FC<ABSQuestionProps> = ({
-  question,
-  onChange,
-  error,
+const ABSMetadata = ({
+  errors,
+  fromDate,
+  fromDateOnChange,
+  toDate,
+  toDateOnChange,
+  obsEnv,
+  obsEnvOnChange,
 }) => {
+  const classes = useStyles();
+
   return (
-    <Grid container direction='column' spacing={5}>
-      <Grid item>
-        <Typography variant='h3'>
-          {question.questionNum}. {question.title}
+    <React.Fragment>
+      <Grid item container direction='column'>
+        <Typography className={classes.headerQuestion} variant='h3'>
+          Period of Observation
         </Typography>
+        <Grid item container direction='row' spacing={10} wrap='nowrap'>
+          <Grid item xs={5}>
+            <FormControl
+              component='fieldset'
+              fullWidth
+              error={errors.fromDateError}
+            >
+              <FormLabel>From:</FormLabel>
+              <DateTimePicker
+                margin='normal'
+                value={fromDate}
+                onChange={fromDateOnChange}
+                error={errors.fromDateError}
+                showTodayButton
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <IconButton>
+                        <InsertInvitation />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <FormHelperText>
+                {errors.fromDateError ? 'This field is compulsory!' : ' '}
+              </FormHelperText>
+            </FormControl>
+          </Grid>
+          <Grid item xs={5}>
+            <FormControl
+              component='fieldset'
+              fullWidth
+              error={errors.toDateError}
+            >
+              <FormLabel>To:</FormLabel>
+              <DateTimePicker
+                margin='normal'
+                value={toDate}
+                onChange={toDateOnChange}
+                error={errors.toDateError}
+                showTodayButton
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <IconButton>
+                        <InsertInvitation />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <FormHelperText>
+                {!errors.toDateError
+                  ? ' '
+                  : fromDate !== null && toDate !== null && fromDate > toDate
+                  ? "'To' date cannot be less than 'From' date!"
+                  : 'This field is compulsory!'}
+              </FormHelperText>
+            </FormControl>
+          </Grid>
+        </Grid>
       </Grid>
       <Grid item>
-        <FormControl component='fieldset' fullWidth error={error}>
-          <RadioGroup row onChange={onChange}>
-            <Grid item container direction='row' justify='space-between'>
-              <FormControlLabel
-                value='1'
-                control={<Radio color='primary' />}
-                label='1'
-                labelPlacement='end'
-              />
-              <FormControlLabel
-                value='2'
-                control={<Radio color='primary' />}
-                label='2'
-                labelPlacement='end'
-              />
-              <FormControlLabel
-                value='3'
-                control={<Radio color='primary' />}
-                label='3'
-                labelPlacement='end'
-              />
-              <FormControlLabel
-                value='4'
-                control={<Radio color='primary' />}
-                label='4'
-                labelPlacement='end'
-              />
-            </Grid>
-          </RadioGroup>
+        <Typography className={classes.headerQuestion} variant='h3'>
+          Observation Environment
+        </Typography>
+        <FormControl component='fieldset' fullWidth error={errors.obsEnvError}>
+          <Input
+            placeholder='e.g. hospital ward bed'
+            fullWidth
+            inputProps={{ 'aria-label': 'description' }}
+            onChange={obsEnvOnChange}
+          />
           <FormHelperText>
-            {error ? 'This question must be answered!' : ' '}
+            {errors.obsEnvError ? 'This field is compulsory!' : ' '}
           </FormHelperText>
         </FormControl>
       </Grid>
-    </Grid>
+      <Grid item>
+        <ABSInfoText />
+      </Grid>
+    </React.Fragment>
   );
 };
 

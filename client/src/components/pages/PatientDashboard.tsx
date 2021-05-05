@@ -14,7 +14,6 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     padding: '1rem 1rem',
     color: 'white',
   },
-  menuIcon: { color: 'white' },
   backdrop: {
     backgroundColor: 'var(--color-neutral)',
     height: 'var(--backdrop-height)',
@@ -23,9 +22,9 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     top: 0,
   },
   card: {
+    backgroundColor: 'white',
     display: 'flex',
     justifyContent: 'flex-start',
-    backgroundColor: 'white',
     padding: '1.5rem',
     textTransform: 'none',
     fontSize: '20px',
@@ -48,36 +47,31 @@ const styles: Styles<Theme, any> = (theme: any) => ({
   historyIcon: {
     color: '#777',
   },
-  page: {
-    '&>.card:not(:last-child)': {
-      marginBottom: '2rem',
-    },
-  },
   label: {
     textAlign: 'left',
   },
+  page: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    height: '100%',
+    minHeight: '100vh',
+    maxWidth: '600px',
+    flexGrow: 1,
+    zIndex: 1,
+    '&>button:not(:last-child)': {
+      marginBottom: '2rem',
+    },
+  },
+  pageWrapper: {
+    display: 'flex',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    padding: '0 1rem',
+  },
 });
-
-const DashboardHeader = withStyles(styles)(({ classes }: any) => {
-  const { id } = useParams() as any;
-
-  return (
-    <div className={classes.header}>
-      <h2>{`Patient ${id}`}</h2>
-      {/* <PatientMenu /> */}
-    </div>
-  );
-});
-
-const DashboardButton = withStyles(styles)(
-  ({ classes, children, onClick }: any) => {
-    return (
-      <Button className={`card ${classes.card}`} onClick={onClick}>
-        {children}
-      </Button>
-    );
-  }
-);
 
 export const PatientDashboard = withStyles(styles)(({ classes }: any) => {
   const history = useHistory();
@@ -96,9 +90,9 @@ export const PatientDashboard = withStyles(styles)(({ classes }: any) => {
   };
 
   return (
-    <div className='page-wrapper'>
+    <div className={classes.pageWrapper}>
       <div className={classes.backdrop}></div>
-      <div className={`page dashboard ${classes.page}`}>
+      <div className={classes.page}>
         <DashboardHeader />
         <DashboardButton onClick={WPTASTest}>
           <NoteAddIcon className={`${classes.icon} ${classes.wptasIcon}`} />
@@ -116,3 +110,23 @@ export const PatientDashboard = withStyles(styles)(({ classes }: any) => {
     </div>
   );
 });
+
+const DashboardHeader = withStyles(styles)(({ classes }: any) => {
+  const { id } = useParams() as any;
+
+  return (
+    <div className={classes.header}>
+      <h2>{`Patient ${id}`}</h2>
+    </div>
+  );
+});
+
+const DashboardButton = withStyles(styles)(
+  ({ classes, children, onClick }: any) => {
+    return (
+      <Button className={classes.card} onClick={onClick}>
+        {children}
+      </Button>
+    );
+  }
+);

@@ -1,5 +1,5 @@
 import { createMuiTheme } from '@material-ui/core';
-import { deepOrange, blue, green } from '@material-ui/core/colors';
+import { deepOrange, blue } from '@material-ui/core/colors';
 import { MuiPickersOverrides } from '@material-ui/pickers/typings/overrides';
 
 //Modifies override type within themes
@@ -14,7 +14,7 @@ declare module '@material-ui/core/styles/overrides' {
 export const WPTASTheme = createMuiTheme({
   palette: {
     type: 'light',
-    primary: { main: '#5C88F6', dark: "#7496ec" },
+    primary: { main: '#5C88F6', dark: '#7496ec' },
     background: {
       default: '#E5E5E5',
     },
@@ -40,12 +40,6 @@ export const WPTASTheme = createMuiTheme({
       fontSize: '20px',
       lineHeight: '1.313rem',
     },
-    // h4: {
-    //   fontStyle: 'normal',
-    //   fontWeight: 'bold',
-    //   fontSize: '0.875rem',
-    //   lineHeight: '1rem',
-    // },
     body1: {
       fontStyle: 'normal',
       fontWeight: 'normal',
@@ -62,10 +56,6 @@ export const ABSTheme = createMuiTheme({
         backgroundColor: deepOrange[400],
       },
     },
-
-    //MuiPickersCalendarHeader: {
-            
-    //},
   },
   palette: {
     type: 'light',
