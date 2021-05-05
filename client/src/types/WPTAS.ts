@@ -8,24 +8,23 @@ export interface WPTASSubmission {
   submissionId: string;
 }
 
-interface NonImageQuestionBase<T, QType extends 'date' | 'text' | 'select'> {
+interface NonImageQuestionBase<QType extends 'date' | 'text' | 'select'> {
   title: string;
   questionNum: number;
   questionType: QType;
-  multichoiceGenerator: (correctAnswer: string | number | Date) => T[],
-  correctAnswerGenerator: ()=>string | number | Date; //change any type to () => Promise<string>
+  multichoiceGenerator: (correctAnswer: string) => string[];
+  correctAnswerGenerator: () => string; //change any type to () => Promise<string>
 }
 
-export type WPTASTextQuestion = NonImageQuestionBase<string | number, 'text'>;
-export type WPTASDateQuestion = NonImageQuestionBase<Date, 'date'>;
-export type WPTASSelectQuestion = NonImageQuestionBase<string | number, 'select'> & {
+export type WPTASTextQuestion = NonImageQuestionBase<'text'>;
+export type WPTASDateQuestion = NonImageQuestionBase<'date'>;
+export type WPTASSelectQuestion = NonImageQuestionBase<'select'> & {
   choices: Array<string | number>;
 };
 
-
-export type WPTASNonImageQuestion = 
+export type WPTASNonImageQuestion =
   | WPTASTextQuestion
-  | WPTASDateQuestion 
+  | WPTASDateQuestion
   | WPTASSelectQuestion;
 
 export interface WPTASFaceQuestion {
@@ -33,7 +32,7 @@ export interface WPTASFaceQuestion {
   questionNum: number;
   questionType: 'face_question';
   image_names: string[]; //there must be exactly enough images to fill dimensions
-  correctAnswerGenerator: ()=>string; //change any type to () => Promise<string>
+  correctAnswerGenerator: () => string; //change any type to () => Promise<string>
 }
 
 export interface WPTASPicturesQuestion {
@@ -45,13 +44,13 @@ export interface WPTASPicturesQuestion {
   newPics: (thisWeeksPics: string[]) => string[];
 }
 
-export type WPTASQuestion = 
+export type WPTASQuestion =
   | WPTASNonImageQuestion
   | WPTASFaceQuestion
   | WPTASPicturesQuestion;
 export interface WPTASAnswer {
   questionNum: number;
   score: number; // 0 - 1
-  answer?: string | Date; // bother with the date type?
+  answer?: string;
   isMultipleChoice: boolean;
 }
