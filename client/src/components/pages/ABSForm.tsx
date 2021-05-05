@@ -35,6 +35,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import questions from '../../data/abs';
 import { AbsService } from '../../services/AbsService';
 import { InsertInvitation } from '@material-ui/icons';
+import { FilledButton } from '../layout/Buttons';
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -383,14 +384,21 @@ export const ABSForm: FunctionComponent = () => {
                         {loading ? (
                           <CircularProgress />
                         ) : (
-                          <Button
+                          // <Button
+                          //   type='submit'
+                          //   size='large'
+                          //   variant='outlined'
+                          //   color='primary'
+                          // >
+                          //   Submit
+                          // </Button>
+                          <FilledButton
                             type='submit'
-                            size='large'
-                            variant='outlined'
-                            color='primary'
+                            width={400}
+                            style={{ fontSize: '18px' }}
                           >
                             Submit
-                          </Button>
+                          </FilledButton>
                         )}
                       </Box>
                     </Grid>
