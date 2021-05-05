@@ -48,7 +48,7 @@ export interface WPTASPicturesQuestion {
 
 export type WPTASQuestion = 
   | WPTASNonImageQuestion
-  | WPTASFaceQuestion 
+  | WPTASFaceQuestion
   | WPTASPicturesQuestion;
 export interface WPTASAnswer {
   questionNum: number;

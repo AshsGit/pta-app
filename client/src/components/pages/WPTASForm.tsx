@@ -43,15 +43,14 @@ import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
-import CheckIcon from '@material-ui/icons/Check';
 
 import DateFnsUtils from '@date-io/date-fns';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { FilledButton } from '../layout/Buttons';
-import { face_images, photo_question_images } from '../../data/wptas_images'; 
+import { face_images, photo_question_images } from '../../data/wptas_images';
 
-
+const WPTAS_QUESTION_HEIGHT = '260px';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     correct: {
@@ -124,7 +123,7 @@ const useStyles = makeStyles((theme: Theme) =>
     question: {
       '&>*:not(:last-child)': { marginBottom: '1.5rem' },
       position: 'relative',
-      height: '230px',
+      height: WPTAS_QUESTION_HEIGHT,
     },
     imageQuestion: {
       '&>*': { marginBottom: '1.5rem' },
@@ -134,17 +133,17 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     questionLabel: { marginBottom: '0.5rem', fontWeight: 500 },
     image_wrapper: {
-      position: "relative",
-      display: "inline-flex"
+      position: 'relative',
+      display: 'inline-flex',
     },
     image_icon_overlay: {
-      position: "absolute",
+      position: 'absolute',
       top: 0,
       right: 0,
       margin: '3px',
       zIndex: 1,
-      width: "25px",
-      height: "25px",
+      width: '25px',
+      height: '25px',
     },
     selectedPic: {
       borderWidth: "5px",
@@ -172,7 +171,7 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: "flex-end",
       marginTop: "10rem",
       '&>*:not(:last-child)': { marginRight: '26px' },
-    },
+    }
   })
 );
 
@@ -231,7 +230,7 @@ const Header: FunctionComponent = () => {
       <IconButton
         aria-label='back'
         className={classes.backButton}
-        onClick={() => history.goBack()}
+        onClick={() => history.push(`/${id}`)}
       >
         <ArrowBackSharpIcon fontSize='large' />
       </IconButton>
@@ -388,54 +387,77 @@ const WPTASFaceQuestionComponent = ({ question, showAnswers }: { question: WPTAS
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       <FormControl component='fieldset' fullWidth error={error}>
         <GridList cols={3}>
-          {image_names.filter((_, i) => i < 3).map((img_name, index) => (
-            <GridListTile key={img_name} cols={1} className={classes.image_wrapper}>
-              <img
-                src={face_images[img_name]}
-                onClick={(_) => setSelectedImage(`${index}`)}
-                style={showAnswer && selectedImage !== `${index}` ? {opacity: 0.4} : {}}
-              />
-              {showAnswer ? (
-                correctAnswerIndex ===  index ? (
-                  <CorrectIcon 
-                    className={`${classes.image_icon_overlay} ${classes.correct}`} />
-                ) : selectedImage === `${index}` ? (
-                  <IncorrectIcon 
-                    className={`${classes.image_icon_overlay} ${classes.incorrect}`} />
-                ) : null
-              ) : null}
-            </GridListTile>
-          ))}
+          {image_names
+            .filter((_, i) => i < 3)
+            .map((img_name, index) => (
+              <GridListTile
+                key={img_name}
+                cols={1}
+                className={classes.image_wrapper}
+              >
+                <img
+                  src={face_images[img_name]}
+                  onClick={(_) => setSelectedImage(`${index}`)}
+                  style={
+                    showAnswer && selectedImage !== `${index}`
+                      ? { opacity: 0.4 }
+                      : {}
+                  }
+                />
+                {showAnswer ? (
+                  correctAnswerIndex === index ? (
+                    <CorrectIcon
+                      className={`${classes.image_icon_overlay} ${classes.correct}`}
+                    />
+                  ) : selectedImage === `${index}` ? (
+                    <IncorrectIcon
+                      className={`${classes.image_icon_overlay} ${classes.incorrect}`}
+                    />
+                  ) : null
+                ) : null}
+              </GridListTile>
+            ))}
         </GridList>
-        <RadioGroup 
+        <RadioGroup
           aria-label='multiple choice'
           value={selectedImage}
-          row 
+          row
           onChange={(event) => {
             setSelectedImage((event.target as HTMLInputElement).value);
           }}
         >
           <Grid container direction='row' justify='space-around'>
             <Grid item>
-              <Radio color='primary' checked={selectedImage === '0'} value="0" />
+              <Radio
+                color='primary'
+                checked={selectedImage === '0'}
+                value='0'
+              />
             </Grid>
             <Grid item>
-              <Radio color='primary' checked={selectedImage === '1'} value="1" /> 
+              <Radio
+                color='primary'
+                checked={selectedImage === '1'}
+                value='1'
+              />
             </Grid>
             <Grid item>
-              <Radio color='primary' checked={selectedImage === '2'} value="2" />
+              <Radio
+                color='primary'
+                checked={selectedImage === '2'}
+                value='2'
+              />
             </Grid>
           </Grid>
         </RadioGroup>
         {error ? (
-          <FormHelperText>
-            This question must be answered!
-          </FormHelperText>
+          <FormHelperText>This question must be answered!</FormHelperText>
         ) : null}
         <Grid container justify='flex-end'>
-          <FilledButton fullWidth={false} onClick={toggleShowAnswer}>{showAnswer ? 'Hide Answer' : 'Show Answer'}</FilledButton>
+          <FilledButton fullWidth={false} onClick={toggleShowAnswer}>
+            {showAnswer ? 'Hide Answer' : 'Show Answer'}
+          </FilledButton>
         </Grid>
-        
       </FormControl>
     </Box>
   );
@@ -477,7 +499,7 @@ const WPTASPictureQuestionComponent = ({ question, showAnswers }: { question: WP
       [false, false, false],
       [false, false, false],
       [false, false, false],
-    ]
+    ],
   });
 
   const [error, setError] = useState(false);
@@ -495,15 +517,17 @@ const WPTASPictureQuestionComponent = ({ question, showAnswers }: { question: WP
     setAnsweredCorrectly((event.target as HTMLInputElement).value);
   };
 
-  const rows = image_names.filter((_, i) => i < 9).reduce((list, img_name, index) => {
-    if (index % 3 === 0) 
-      return [...list, [img_name]];
-    else {
-      let tmp = [...list];
-      tmp[tmp.length-1].push(img_name);
-      return tmp;
-    }}, []);
-    
+  const rows = image_names
+    .filter((_, i) => i < 9)
+    .reduce((list, img_name, index) => {
+      if (index % 3 === 0) return [...list, [img_name]];
+      else {
+        let tmp = [...list];
+        tmp[tmp.length - 1].push(img_name);
+        return tmp;
+      }
+    }, []);
+
   const onClickImage = (x: number, y: number) => (_) => {
     if (selected.total < 3 || selected.arr[x][y] === true) {
       if (selected.arr[x][y] === true) {
@@ -523,7 +547,7 @@ const WPTASPictureQuestionComponent = ({ question, showAnswers }: { question: WP
         arr
       });
     }
-  }
+  };
 
   return (
     <Box
@@ -638,7 +662,12 @@ const WPTASNonImageQuestionComponent = ({ question, showAnswers }: { question: W
       </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       {isMultiChoice ? (
-        <WPTASMultiChoiceQuestion {...question} />
+        <WPTASMultiChoiceQuestion
+          choices={question.multichoiceGenerator(
+            question.correctAnswerGenerator()
+          )}
+          correctAnswer={question.correctAnswerGenerator()}
+        />
       ) : (
         <React.Fragment>
           <FormControl>
