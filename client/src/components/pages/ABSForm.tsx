@@ -12,6 +12,7 @@ import {
   Grid,
   IconButton,
   Input,
+  InputAdornment,
   Paper,
   Radio,
   RadioGroup,
@@ -26,6 +27,7 @@ import {
 } from '@material-ui/core/styles';
 import { ABSTheme } from '../../themes';
 import {
+  DateTimePicker,
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
@@ -35,6 +37,7 @@ import { ABSAnswer, ABSQuestion, ABSSubmission } from '../../types/ABS';
 import { useHistory, useParams } from 'react-router-dom';
 import questions from '../../data/abs';
 import { AbsService } from '../../services/AbsService';
+import { InsertInvitation } from '@material-ui/icons';
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -259,15 +262,25 @@ export const ABSForm: FunctionComponent = () => {
                               error={errors.fromDateError}
                             >
                               <FormLabel>From:</FormLabel>
-                              <KeyboardDatePicker
+                              <DateTimePicker
                                 margin='normal'
-                                format='dd/MM/yyyy'
                                 value={fromDate}
                                 onChange={fromDateOnChange}
                                 error={errors.fromDateError}
                                 autoOk
                                 okLabel={false}
                                 clearable
+                                showTodayButton
+                                disablePast
+                                InputProps={{
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <IconButton>
+                                        <InsertInvitation />
+                                      </IconButton>
+                                    </InputAdornment>
+                                  ),
+                                }}
                               />
                               <FormHelperText>
                                 {errors.fromDateError
@@ -283,15 +296,25 @@ export const ABSForm: FunctionComponent = () => {
                               error={errors.toDateError}
                             >
                               <FormLabel>To:</FormLabel>
-                              <KeyboardDatePicker
+                              <DateTimePicker
                                 margin='normal'
-                                format='dd/MM/yyyy'
                                 value={toDate}
                                 onChange={toDateOnChange}
                                 error={errors.toDateError}
                                 autoOk
                                 okLabel={false}
                                 clearable
+                                showTodayButton
+                                disablePast
+                                InputProps={{
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <IconButton>
+                                        <InsertInvitation />
+                                      </IconButton>
+                                    </InputAdornment>
+                                  ),
+                                }}
                               />
                               <FormHelperText>
                                 {!errors.toDateError
