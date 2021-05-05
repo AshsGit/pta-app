@@ -17,6 +17,7 @@ import {
   Radio,
   RadioGroup,
   RadioGroupProps,
+  TextField,
   Typography,
 } from '@material-ui/core';
 import {
@@ -38,19 +39,10 @@ import { InsertInvitation } from '@material-ui/icons';
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root_content: {
-      // position: 'absolute',
-      // top: '5%',
-      // left: '5%',
-      // right: '5%',
-      // minHeight: '90%',
       width: '100%',
       margin: '3rem 2rem 2rem 2rem',
-      // padding: '2.875rem',
       padding: '2rem',
       zIndex: 2,
-      // '&>*': {
-      //   marginBottom: '5.625rem',
-      // },
       textAlign: 'left',
     },
     background: {
@@ -59,8 +51,6 @@ export const useStyles = makeStyles((theme: Theme) =>
       height: '18rem',
       top: 0,
       backgroundColor: 'var(--color-accent-dark)',
-      // overflowY: 'hidden',
-      // scrollBehavior: 'unset',
     },
     backButton: {
       position: 'absolute',
@@ -94,12 +84,14 @@ type InputErrors = {
   fromDateError: boolean;
   obsEnvError: boolean;
   answerErrors: boolean[];
+  initials: boolean;
 };
 
 const hasError = (e: InputErrors): boolean =>
   e.toDateError ||
   e.fromDateError ||
   e.obsEnvError ||
+  e.initials ||
   e.answerErrors.some((v) => v);
 const questionError = (index: number, e: InputErrors) => e.answerErrors[index];
 
@@ -113,6 +105,7 @@ export const ABSForm: FunctionComponent = () => {
   const [toDate, setToDate] = useState<Date | null>(null);
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [obsEnv, setObsEnv] = useState('');
+  const [initials, setInitials] = useState('');
   const [questionAnswers, setQuestionAnswers] = useState<string[]>(
     new Array(questions.length).fill('')
   );
@@ -120,6 +113,7 @@ export const ABSForm: FunctionComponent = () => {
     toDateError: false,
     fromDateError: false,
     obsEnvError: false,
+    initials: false,
     answerErrors: new Array(questions.length).fill(false),
   });
 
@@ -156,6 +150,7 @@ export const ABSForm: FunctionComponent = () => {
       fromDateError: false,
       obsEnvError: false,
       answerErrors: new Array(questions.length).fill(false),
+      initials: false,
     };
 
     if (toDate === null) newErrors.toDateError = true;
@@ -163,6 +158,7 @@ export const ABSForm: FunctionComponent = () => {
     if (fromDate !== null && toDate !== null && fromDate > toDate)
       newErrors.toDateError = true;
     if (obsEnv === '') newErrors.obsEnvError = true;
+    if (initials === '') newErrors.initials = true;
 
     questionAnswers.forEach((val, index) => {
       if (val === '') newErrors.answerErrors[index] = true;
@@ -177,7 +173,7 @@ export const ABSForm: FunctionComponent = () => {
       const submission: ABSSubmission = {
         patientId: id,
         submissionId: '',
-        examinerInitials: '',
+        examinerInitials: initials,
         periodOfObs_to: toDate as Date,
         periodOfObs_from: fromDate as Date,
         obsEnv,
@@ -361,19 +357,48 @@ export const ABSForm: FunctionComponent = () => {
                       ))}
                     </Grid>
                     <Grid item container justify='flex-end'>
-                      {loading ? (
-                        <CircularProgress />
-                      ) : (
-                        <Button
-                          type='submit'
-                          size='large'
-                          variant='outlined'
-                          color='primary'
-                        >
-                          Submit
-                        </Button>
-                      )}
+                      <Box
+                        display='flex'
+                        alignItems='center'
+                        justifyContent='flex-end'
+                      >
+                        <TextField
+                          style={{
+                            width: 150,
+                            marginRight: '2rem',
+                            marginBottom: '0.5rem',
+                          }}
+                          value={initials}
+                          onChange={(e) => {
+                            setInitials(e.target.value);
+                          }}
+                          label='Initials...'
+                          placeholder=''
+                          size='medium'
+                          error={errors.initials}
+                          helperText={
+                            errors.initials ? 'Please enter your initials' : ''
+                          }
+                        />
+                        {loading ? (
+                          <CircularProgress />
+                        ) : (
+                          <Button
+                            type='submit'
+                            size='large'
+                            variant='outlined'
+                            color='primary'
+                          >
+                            Submit
+                          </Button>
+                        )}
+                      </Box>
                     </Grid>
+                    <Box style={{ textAlign: 'end' }} justifyContent='flex-end'>
+                      <FormHelperText error={hasError(errors)}>
+                        {hasError(errors) ? 'Please complete all fields' : ''}
+                      </FormHelperText>
+                    </Box>
                   </React.Fragment>
                 )}
               </Grid>

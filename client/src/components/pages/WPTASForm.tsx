@@ -182,6 +182,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const WPTASForm: FunctionComponent = () => {
   const classes = useStyles();
+  const [initials, setInitials] = useState('');
+
   return (
     <ThemeProvider theme={WPTASTheme}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -211,9 +213,13 @@ export const WPTASForm: FunctionComponent = () => {
                   >
                     <TextField
                       style={{
-                        width: 100,
+                        width: 150,
                         marginRight: '2rem',
                         marginBottom: '0.5rem',
+                      }}
+                      value={initials}
+                      onChange={(e) => {
+                        setInitials(e.target.value);
                       }}
                       label='Initials...'
                       placeholder=''
