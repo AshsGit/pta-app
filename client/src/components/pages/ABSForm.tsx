@@ -402,8 +402,14 @@ export const ABSForm: FunctionComponent = () => {
                         )}
                       </Box>
                     </Grid>
-                    <Box style={{ textAlign: 'end' }} justifyContent='flex-end'>
-                      <FormHelperText error={hasError(errors)}>
+                    <Box
+                      justifyContent='flex-end'
+                      style={{ padding: '0 20px 10px 20px' }}
+                    >
+                      <FormHelperText
+                        style={{ textAlign: 'end' }}
+                        error={hasError(errors)}
+                      >
                         {hasError(errors) ? 'Please complete all fields' : ''}
                       </FormHelperText>
                     </Box>
