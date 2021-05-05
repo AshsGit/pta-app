@@ -148,6 +148,15 @@ const styles: Styles<Theme, any> = (theme: any) => ({
     width: '30px',
     padding: 0,
   },
+  backButtonHidden: {
+    pointerEvents: 'none',
+    visibility: 'hidden',
+    color: 'white',
+    maxWidth: '30px',
+    minWidth: '30px',
+    width: '30px',
+    padding: 0,
+  },
   page: {
     paddingBottom: '2rem',
   },
@@ -261,7 +270,10 @@ const Header = withStyles(styles)(({ testType, setTestType, classes }: any) => {
           <MenuItem value='abs'>ABS</MenuItem>
         </Select>
       </FormControl>
-      <ExportMenu />
+      <Button className={classes.backButtonHidden}>
+        <ArrowBackIcon />
+      </Button>
+      {/* <ExportMenu /> */}
     </div>
   );
 });
@@ -271,9 +283,6 @@ const ResultsCard = withStyles(styles)(
     return (
       <div {...other} className={`card ${classes.card}`}>
         {children}
-        {/* <div className={`card ${classes.card}`}> */}
-
-        {/* </div> */}
       </div>
     );
   }
@@ -316,25 +325,21 @@ const WPTASTable = withStyles(styles)(({ classes }: any) => {
               >
                 {row.question}
               </TableCell>
-              {
-                Object.keys(wptasRows[0])
-                  .filter((key) => key !== 'question')
-                  .map((key: string) => (
-                    <TableCell
-                      className={`${classes.cell} ${
-                        i === wptasRows.length - 1
-                          ? classes.footerCell
-                          : classes.tableCell
-                      }`}
-                      key={key}
-                      align='center'
-                    >
-                      {row[key]}
-                    </TableCell>
-                  ))
-                // .map((key: string) => (<TableCell classes={{ root: classes.root, footer: classes.footer, head: classes.head, body: classes.body }} variant={i === wptasRows
-                // .length - 1 ? 'footer' : 'body'} key={key} align="center">{row[key]}</TableCell>))
-              }
+              {Object.keys(wptasRows[0])
+                .filter((key) => key !== 'question')
+                .map((key: string) => (
+                  <TableCell
+                    className={`${classes.cell} ${
+                      i === wptasRows.length - 1
+                        ? classes.footerCell
+                        : classes.tableCell
+                    }`}
+                    key={key}
+                    align='center'
+                  >
+                    {row[key]}
+                  </TableCell>
+                ))}
             </TableRow>
           ))}
         </TableBody>
@@ -404,25 +409,21 @@ const ABSTable = withStyles(styles)(({ classes, absService }: any) => {
               >
                 {row.question}
               </TableCell>
-              {
-                Object.keys(summary[0])
-                  .filter((key) => key !== 'question')
-                  .map((key: string) => (
-                    <TableCell
-                      className={`${classes.cell} ${
-                        i === summary.length - 1
-                          ? classes.footerCell
-                          : classes.tableCell
-                      }`}
-                      key={key}
-                      align='center'
-                    >
-                      {row[key]}
-                    </TableCell>
-                  ))
-                // .map((key: string) => (<TableCell classes={{ root: classes.root, footer: classes.footer, head: classes.head, body: classes.body }} variant={i === wptasRows
-                // .length - 1 ? 'footer' : 'body'} key={key} align="center">{row[key]}</TableCell>))
-              }
+              {Object.keys(summary[0])
+                .filter((key) => key !== 'question')
+                .map((key: string) => (
+                  <TableCell
+                    className={`${classes.cell} ${
+                      i === summary.length - 1
+                        ? classes.footerCell
+                        : classes.tableCell
+                    }`}
+                    key={key}
+                    align='center'
+                  >
+                    {row[key]}
+                  </TableCell>
+                ))}
             </TableRow>
           ))}
         </TableBody>
@@ -459,6 +460,7 @@ const WPTASHistory = withStyles(styles)(({ classes }: any) => {
                 </TableCell>
                 <TableCell>{row.examiner}</TableCell>
                 <TableCell>{row.score}</TableCell>
+                {/* View individual submission: */}
                 {/* <TableCell className={classes.btnCell}>
                   <OutlineButton
                     style={{ maxWidth: '150px' }}
