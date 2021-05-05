@@ -343,7 +343,10 @@ const questions: Array<WPTASQuestion> = [
     title: 'What is the name of this place?',
     questionNum: 7,
     questionType: 'text',
-    multichoiceGenerator: (correctAnswer: string) => [correctAnswer, 'Alfred Hospital', 'Wilamstown Hospital'].sort(Math.random),
+    multichoiceGenerator: (correctAnswer: string) =>
+      [correctAnswer, 'Alfred Hospital', 'Wilamstown Hospital'].sort(
+        Math.random
+      ),
     correctAnswerGenerator: (): string => CORRECT_LOCATION,
   },
 
@@ -368,17 +371,18 @@ const questions: Array<WPTASQuestion> = [
     questionNum: [10, 11, 12],
     questionType: 'pictures_question',
     image_names: [
-      'clock', 
-      'fork', 
-      'scissors', 
-      'teacup', 
-      'toothbrush', 
-      'sunflower', 
-      'pen', 
-      'keys', 
-      'bird'],
+      'clock',
+      'fork',
+      'scissors',
+      'teacup',
+      'toothbrush',
+      'sunflower',
+      'pen',
+      'keys',
+      'bird',
+    ],
     correctAnswerGenerator: () => ['fork', 'scissors', 'bird'],
-    newPics: (_) => ["clock", "keys", "pen"],
+    newPics: (_) => ['fork', 'scissors', 'bird'],
   },
 ];
 

@@ -28,14 +28,15 @@ import {
 } from '@material-ui/core/styles';
 import { WPTASTheme } from '../../themes';
 import questions from '../../data/wptas_questions';
-import { 
+import {
   WPTASNonImageQuestion,
   WPTASTextQuestion,
   WPTASSelectQuestion,
   WPTASDateQuestion,
-  WPTASFaceQuestion, 
-  WPTASPicturesQuestion, 
-  WPTASQuestion } from '../../types/WPTAS';
+  WPTASFaceQuestion,
+  WPTASPicturesQuestion,
+  WPTASQuestion,
+} from '../../types/WPTAS';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
 import CorrectIcon from '@material-ui/icons/CheckCircleTwoTone';
 import IncorrectIcon from '@material-ui/icons/CancelTwoTone';
@@ -54,12 +55,12 @@ const WPTAS_QUESTION_HEIGHT = '260px';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     correct: {
-      color: "#4caf50",
-      fontSize: 40
+      color: '#4caf50',
+      fontSize: 40,
     },
     incorrect: {
-      color: "#eb4034",
-      fontSize: 40
+      color: '#eb4034',
+      fontSize: 40,
     },
     form_group_row: {
       display: 'inline-flex',
@@ -134,7 +135,8 @@ const useStyles = makeStyles((theme: Theme) =>
     questionLabel: { marginBottom: '0.5rem', fontWeight: 500 },
     image_wrapper: {
       position: 'relative',
-      display: 'inline-flex',
+      display: 'flex',
+      justifyContent: 'center',
     },
     image_icon_overlay: {
       position: 'absolute',
@@ -146,8 +148,8 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '25px',
     },
     selectedPic: {
-      borderWidth: "5px",
-      borderStyle: "solid",
+      borderWidth: '5px',
+      borderStyle: 'solid',
       borderColor: theme.palette.primary.main,
     },
     backButton: {
@@ -166,19 +168,20 @@ const useStyles = makeStyles((theme: Theme) =>
     multiChoiceRadioGroup: {
       '&>*:not(:last-child)': { marginBottom: '1rem' },
     },
+    correctAnswer: {
+      fontWeight: 500,
+    },
     submitButtonBox: {
-      display: "inline-flex",
-      justifyContent: "flex-end",
-      marginTop: "10rem",
+      display: 'inline-flex',
+      justifyContent: 'flex-end',
+      marginTop: '10rem',
       '&>*:not(:last-child)': { marginRight: '26px' },
-    }
+    },
   })
 );
 
 export const WPTASForm: FunctionComponent = () => {
   const classes = useStyles();
-  const [showAnswers, setShowAnswers] = useState(false);
-
   return (
     <ThemeProvider theme={WPTASTheme}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -194,24 +197,37 @@ export const WPTASForm: FunctionComponent = () => {
                   flexDirection='column'
                   className={classes.questionsContainer}
                 >
-                  {questions
-                    .map((question) => (
-                      <WPTASQuestionComponent
-                        key={`${question.questionNum}`}
-                        question={question}
-                        showAnswers={showAnswers}
-                      />
-                    ))}
-                  <TextField style={{marginTop: "7rem", width: 150}} label="Initials..." placeholder="" size="medium" />
-                  <Box display='flex' alignItems='center' justifyContent="flex-end">
-                    {showAnswers ? (
-                      <FilledButton type="submit" width={300} >Submit</FilledButton>
-                    ) : (
-                      <FilledButton onClick={() => setShowAnswers(true)} width={300} >Save & Show Answers</FilledButton>
-                    )}
+                  {questions.map((question) => (
+                    <WPTASQuestionComponent
+                      key={`${question.questionNum}`}
+                      question={question}
+                    />
+                  ))}
+                  <Box
+                    style={{ marginTop: '6rem' }}
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='flex-end'
+                  >
+                    <TextField
+                      style={{
+                        width: 100,
+                        marginRight: '2rem',
+                        marginBottom: '0.5rem',
+                      }}
+                      label='Initials...'
+                      placeholder=''
+                      size='medium'
+                    />
+                    <FilledButton
+                      type='submit'
+                      width={400}
+                      style={{ fontSize: '18px' }}
+                    >
+                      Submit
+                    </FilledButton>
                   </Box>
                 </Box>
-                
               </form>
             </Box>
           </Paper>
@@ -314,9 +330,13 @@ const PatientResponseInput = ({ type, choices }: any) => {
 };
 
 //function WPTASMultiChoiceQuestion( { multichoiceGenerator, correctAnswerGenerator }: Partial<WPTASTextQuestion<number>> );
-function WPTASMultiChoiceQuestion( { question }: {question: WPTASNonImageQuestion} ) {
+function WPTASMultiChoiceQuestion({
+  question,
+}: {
+  question: WPTASNonImageQuestion;
+}) {
   const [selectedMultiChoice, setSelectedMultiChoice] = useState('');
-  const {multichoiceGenerator, correctAnswerGenerator} = question;
+  const { multichoiceGenerator, correctAnswerGenerator } = question;
   const classes = useStyles();
   return (
     <RadioGroup
@@ -341,17 +361,20 @@ function WPTASMultiChoiceQuestion( { question }: {question: WPTASNonImageQuestio
       }
     </RadioGroup>
   );
-};
+}
 
-const WPTASQuestionComponent = ({ question, showAnswers }: { question: WPTASQuestion, showAnswers: boolean }) => 
-  question.questionType === 'face_question' 
-    ? WPTASFaceQuestionComponent( {question, showAnswers} )
+const WPTASQuestionComponent = ({ question }: { question: WPTASQuestion }) =>
+  question.questionType === 'face_question'
+    ? WPTASFaceQuestionComponent({ question })
     : question.questionType === 'pictures_question'
-      ? WPTASPictureQuestionComponent({ question, showAnswers })
-      : WPTASNonImageQuestionComponent({ question, showAnswers })
+    ? WPTASPictureQuestionComponent({ question })
+    : WPTASNonImageQuestionComponent({ question });
 
-
-const WPTASFaceQuestionComponent = ({ question, showAnswers }: { question: WPTASFaceQuestion, showAnswers: boolean }) => {
+const WPTASFaceQuestionComponent = ({
+  question,
+}: {
+  question: WPTASFaceQuestion;
+}) => {
   const classes = useStyles();
   const { title, questionNum, image_names, correctAnswerGenerator } = question;
   const correctAnswerIndex = image_names.indexOf(correctAnswerGenerator());
@@ -359,8 +382,8 @@ const WPTASFaceQuestionComponent = ({ question, showAnswers }: { question: WPTAS
   const [selectedImage, setSelectedImage] = useState('');
   const [multiChoiceGiven, setMultiChoiceGiven] = useState(false);
   const [error, setError] = useState(false);
-  const [showAnswer, setShowAnswer] = useState(showAnswers);
-  const toggleShowAnswer = () => setShowAnswer(!showAnswer)
+  const [showAnswer, setShowAnswer] = useState(false);
+  const toggleShowAnswer = () => setShowAnswer(!showAnswer);
 
   // State for 'answered correctly?' question
   const [answeredCorrectly, setAnsweredCorrectly] = useState(null);
@@ -464,7 +487,7 @@ const WPTASFaceQuestionComponent = ({ question, showAnswers }: { question: WPTAS
   );
 };
 
-const WPTASNextWeekPics = ({nextWeeksQuestions}) => {
+const WPTASNextWeekPics = ({ nextWeeksQuestions }) => {
   const classes = useStyles();
   return (
     <GridList cols={3}>
@@ -474,12 +497,22 @@ const WPTASNextWeekPics = ({nextWeeksQuestions}) => {
         </GridListTile>
       ))}
     </GridList>
-  )
-}
+  );
+};
 
-const WPTASPictureQuestionComponent = ({ question, showAnswers }: { question: WPTASPicturesQuestion, showAnswers: boolean }) => {
+const WPTASPictureQuestionComponent = ({
+  question,
+}: {
+  question: WPTASPicturesQuestion;
+}) => {
   const classes = useStyles();
-  const { title, questionNum, image_names, correctAnswerGenerator, newPics } = question;
+  const {
+    title,
+    questionNum,
+    image_names,
+    correctAnswerGenerator,
+    newPics,
+  } = question;
 
   const correctAnswers = correctAnswerGenerator();
 
@@ -489,9 +522,11 @@ const WPTASPictureQuestionComponent = ({ question, showAnswers }: { question: WP
     [false, false, false],
   ];
   correctAnswers
-    .map(img_name => image_names.findIndex( v=> v===img_name ))
-    .map(index => [index % 3, index / 3 >> 0])
-    .map(([x,y])=>{correctAnswerCoords[x][y] = true});
+    .map((img_name) => image_names.findIndex((v) => v === img_name))
+    .map((index) => [index % 3, (index / 3) >> 0])
+    .map(([x, y]) => {
+      correctAnswerCoords[x][y] = true;
+    });
 
   const [selected, setSelected] = useState({
     total: 0,
@@ -504,10 +539,11 @@ const WPTASPictureQuestionComponent = ({ question, showAnswers }: { question: WP
   });
 
   const [error, setError] = useState(false);
-  const [showAnswer, setShowAnswer] = useState(showAnswers);
+  const [showAnswer, setShowAnswer] = useState(false);
   const toggleShowAnswer = () => setShowAnswer(!showAnswer);
   const [showTomorrowsPics, setShowTomorrowsPics] = useState(false);
-  const toggleShowTomorrowsPics = () => setShowTomorrowsPics(!showTomorrowsPics);
+  const toggleShowTomorrowsPics = () =>
+    setShowTomorrowsPics(!showTomorrowsPics);
   const [isMultiChoice, setIsMultiChoice] = useState(false);
 
   // State for 'answered correctly?' question
@@ -532,20 +568,18 @@ const WPTASPictureQuestionComponent = ({ question, showAnswers }: { question: WP
   const onClickImage = (x: number, y: number) => (_) => {
     if (selected.total < 3 || selected.arr[x][y] === true) {
       if (selected.arr[x][y] === true) {
-        
       }
       const total = selected.total + (selected.arr[x][y] === true ? -1 : 1);
-      const correct = (correctAnswerCoords[x][y] 
+      const correct = correctAnswerCoords[x][y]
         ? selected.correct + (selected.arr[x][y] ? -1 : 1)
-        : selected.correct
-      );
+        : selected.correct;
       const arr = [...selected.arr];
       arr[x] = [...arr[x]];
       arr[x][y] = !arr[x][y];
       setSelected({
-        total, 
+        total,
         correct,
-        arr
+        arr,
       });
     }
   };
@@ -568,72 +602,127 @@ const WPTASPictureQuestionComponent = ({ question, showAnswers }: { question: WP
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       <FormControl component='fieldset' fullWidth error={error}>
         {showTomorrowsPics ? (
-          <WPTASNextWeekPics nextWeeksQuestions={selected.correct === 3 ? newPics(correctAnswers) : correctAnswers} />
+          <WPTASNextWeekPics
+            nextWeeksQuestions={
+              selected.correct === 3 ? newPics(correctAnswers) : correctAnswers
+            }
+          />
         ) : (
           <React.Fragment>
-            <Grid container direction="column" justify="space-between" spacing={3}>
+            <Grid
+              container
+              direction='column'
+              justify='space-between'
+              spacing={3}
+            >
               {rows.map((row, y) => (
-                <Grid container item xs direction="row" justify="space-around" >
+                <Grid container item xs direction='row' justify='space-around'>
                   {row.map((img_name, x) => (
-                    <Grid item xs style={{flexGrow: 0}} className={`${classes.image_wrapper} ${selected.arr[x][y] ? classes.selectedPic : ''}`}>
+                    <Grid
+                      item
+                      xs
+                      style={{ flexGrow: 0 }}
+                      className={`${classes.image_wrapper} ${
+                        selected.arr[x][y] ? classes.selectedPic : ''
+                      }`}
+                    >
                       <img
                         src={photo_question_images[img_name]}
                         onClick={onClickImage(x, y)}
                         width={150}
                         height={190}
-                        
-                        style={showAnswer && !selected.arr[x][y] ? {opacity: 0.5} : {}} />
+                        style={
+                          showAnswer && !selected.arr[x][y]
+                            ? { opacity: 0.5 }
+                            : {}
+                        }
+                      />
                       {showAnswer ? (
                         correctAnswerCoords[x][y] ? (
-                          <CorrectIcon 
-                            className={`${classes.image_icon_overlay} ${classes.correct}`} />
-                          ) : selected.arr[x][y] ? (
-                            <IncorrectIcon 
-                              className={`${classes.image_icon_overlay} ${classes.incorrect}`} />
-                          ) : null
-                        ) : null}
+                          <CorrectIcon
+                            className={`${classes.image_icon_overlay} ${classes.correct}`}
+                          />
+                        ) : selected.arr[x][y] ? (
+                          <IncorrectIcon
+                            className={`${classes.image_icon_overlay} ${classes.incorrect}`}
+                          />
+                        ) : null
+                      ) : null}
                     </Grid>
                   ))}
                 </Grid>
               ))}
             </Grid>
             {error ? (
-              <FormHelperText>
-                This question must be answered!
-              </FormHelperText>
+              <FormHelperText>This question must be answered!</FormHelperText>
             ) : null}
           </React.Fragment>
         )}
-        <Box marginTop="1.5rem">
+        <Box marginTop='1.5rem'>
           {showAnswer && showTomorrowsPics && (
-            <Box style={{position: "absolute", left: 0}} display='flex' alignItems='center'>
-              <FilledButton fullWidth={false} onClick={() => {toggleShowTomorrowsPics();}}>{'< Change Selections'}</FilledButton>
+            <Box
+              style={{ position: 'absolute', left: 0 }}
+              display='flex'
+              alignItems='center'
+            >
+              <FilledButton
+                fullWidth={false}
+                onClick={() => {
+                  toggleShowTomorrowsPics();
+                }}
+              >
+                {'< Change Selections'}
+              </FilledButton>
             </Box>
           )}
           {showAnswer && !showTomorrowsPics && (
-            <Box style={{position: "absolute", left: 0}} display='flex' alignItems='center'>
-              <FilledButton fullWidth={false} onClick={toggleShowAnswer}>{'< Hide Answers'}</FilledButton>
+            <Box
+              style={{ position: 'absolute', left: 0 }}
+              display='flex'
+              alignItems='center'
+            >
+              <FilledButton fullWidth={false} onClick={toggleShowAnswer}>
+                {'< Hide Answers'}
+              </FilledButton>
             </Box>
           )}
           {showAnswer && !showTomorrowsPics && (
-            <Box style={{position: "absolute", right: 0}} display='flex' alignItems='center'>
-              <FilledButton fullWidth={false} disabled={selected.total === 3 ? false : true} onClick={toggleShowTomorrowsPics}>{'Tomorrows Pictures >'}</FilledButton>
+            <Box
+              style={{ position: 'absolute', right: 0 }}
+              display='flex'
+              alignItems='center'
+            >
+              <FilledButton
+                fullWidth={false}
+                disabled={selected.total === 3 ? false : true}
+                onClick={toggleShowTomorrowsPics}
+              >
+                {'Tomorrows Pictures >'}
+              </FilledButton>
             </Box>
           )}
           {!showAnswer && !showTomorrowsPics && (
-            <Box style={{position: "absolute", right: 0}} display='flex' alignItems='center'>
-              <FilledButton fullWidth={false} onClick={toggleShowAnswer}>{'Show Answers >'}</FilledButton>
+            <Box
+              style={{ position: 'absolute', right: 0 }}
+              display='flex'
+              alignItems='center'
+            >
+              <FilledButton fullWidth={false} onClick={toggleShowAnswer}>
+                {'Show Answers >'}
+              </FilledButton>
             </Box>
           )}
-
         </Box>
       </FormControl>
     </Box>
   );
 };
 
-const WPTASNonImageQuestionComponent = ({ question, showAnswers }: { question: WPTASNonImageQuestion, showAnswers: boolean }) => {
-
+const WPTASNonImageQuestionComponent = ({
+  question,
+}: {
+  question: WPTASNonImageQuestion;
+}) => {
   const classes = useStyles();
   const { title, questionNum, questionType, correctAnswerGenerator } = question;
 
@@ -663,9 +752,7 @@ const WPTASNonImageQuestionComponent = ({ question, showAnswers }: { question: W
       </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       {isMultiChoice ? (
-        <WPTASMultiChoiceQuestion
-          question={question}
-        />
+        <WPTASMultiChoiceQuestion question={question} />
       ) : (
         <React.Fragment>
           <FormControl>
@@ -696,16 +783,15 @@ const WPTASNonImageQuestionComponent = ({ question, showAnswers }: { question: W
               </Box>
             </RadioGroup>
           </FormControl>
-          <PatientResponseInput type={questionType} choices={'choices' in question ? question.choices : []} />
+          <PatientResponseInput
+            type={questionType}
+            choices={'choices' in question ? question.choices : []}
+          />
         </React.Fragment>
       )}
-      {showAnswers && (
-        <Box marginTop="21px">
-          <Box style={{position: "absolute", right: 0}} display='flex' alignItems='center'>
-            <Typography variant="subtitle1">{`Correct Answer: ${correctAnswerGenerator()}`}</Typography>
-          </Box>
-        </Box>
-      )}
+      <div
+        className={classes.correctAnswer}
+      >{`Correct answer: ${correctAnswerGenerator()}`}</div>
     </Box>
   );
 };
