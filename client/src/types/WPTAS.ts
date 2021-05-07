@@ -1,11 +1,17 @@
 export interface WPTASSubmission {
-  periodOfObs_to: Date;
-  periodOfObs_from: Date;
-  obsEnv: string;
-  //examinerInitials: string, //is this needed for ABS
+  submissionDate?: Date;
   answers: Array<WPTASAnswer>;
+  examinerInitials?: string, 
   patientId: string;
-  submissionId: string;
+  submissionId?: string;
+  total?: number;
+}
+
+export interface WPTASAnswer {
+  questionNum: number;
+  score: number; // 0 - 1 
+  answer?: string;
+  multiChoiceGiven: boolean;
 }
 
 interface NonImageQuestionBase<QType extends 'date' | 'text' | 'select'> {
@@ -48,9 +54,4 @@ export type WPTASQuestion =
   | WPTASNonImageQuestion
   | WPTASFaceQuestion
   | WPTASPicturesQuestion;
-export interface WPTASAnswer {
-  questionNum: number;
-  score: number; // 0 - 1
-  answer?: string;
-  isMultipleChoice: boolean;
-}
+

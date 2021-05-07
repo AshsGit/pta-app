@@ -5,46 +5,21 @@ const router = express.Router();
 
 const { WPTASSubmission, WPTASResponse } = require('../../models/WPTAS');
 
-// // @route   GET api/wptas/questions
-// // @desc    Get all items
-// // @access  Public
-// router.get('/questions', (req, res) => {
-//     WPTASQues.find(function (err, questions) {
-//         if (err) {
-//             return res.json(err);
-//         } else {
-//             res.json(questions);
-//         }
-//     });
-// });
-
-// // @route POST api/wptas/questions
-// // @desc Create a question
-// // @access Public
-// router.post('/questions', (req, res) => {
-//     let newQuestionDetails = req.body;
-//     newQuestionDetails._id = new mongoose.Types.ObjectId();
-//     let question = new WPTASQues(newQuestionDetails);
-//     question.save(function(err: any) {
-//         question.save(function(err: any) {
-//             console.log('Done');
-//             res.json(question);
-//         });
-//     });
-// });
 
 // @route GET api/wptas/submissions/:id
 // @desc get submissions for a patient id
 // @access Public
 router.get('/submissions/:patientId', async (req: any, res: any) => {
-  try {
-    const submissions = await WPTASSubmission.find({
-      patient: req.params.patientId,
+  WPTASSubmission.find({ patient: req.params.patientId })
+    .sort([['date_of_submission', 1]])
+    .populate('responses')
+    .exec((err, submissions) => {
+      if (err) {
+        res.status(400).json({ msg: err.message });
+        return;
+      }
+      res.status(200).json(submissions);
     });
-    res.status(200).json(submissions);
-  } catch (e) {
-    res.status(400).json({ msg: e.message });
-  }
 });
 
 // @route GET api/wptas/submission/:id
@@ -60,41 +35,52 @@ router.get('/submission/:id', async (req, res) => {
       }
       res.status(200).json(submission);
     });
-  // try {
-  //   const patient = await WPTASSubmission.findOne({
-  //     _id: req.params.id,
-  //   })
-  //   res.status(200).json(patient);
-  // } catch (e) {
-  //   res.status(400).json({ msg: e.message });
-  // }
 });
 
-// // @route GET api/wptas/images
-// // @desc get all images
-// // @access Public
-// router.get('/images', (req, res) => {
-//   WPTASImage.find((err, images) => {
-//     if (err) {
-//       return res.json(err);
-//     } else {
-//       res.json(images);
-//     }
-//   });
-// });
 
-// // @route GET api/wptas/images/:id
-// // @desc get an images
-// // @access Public
-// router.get('/images/:id', (req, res) => {
-//   WPTASImage.findOne({ _id: req.params.id })
-//     .populate('wptas_questions')
-//     .exec(function (err, image) {
-//       if (err) return res.status(400).json(err);
-//       if (!image) return res.status(404).json();
+router.post('/submit', async (req: any, res: any) => {
+  console.log(req.body)
+  let newSubmission = req.body;
+  let newResponses = newSubmission.answers;
+  
 
-//       res.json(image);
-//     });
-// });
+  if (!newSubmission.answers || !newSubmission.patientId) {
+    res.status(400).json({ msg: 'Missing submission information.' });
+    return;
+  }
+
+  newSubmission.total = newResponses.reduce((acc, { score }) => acc + score, 0);
+  //delete newSubmission.responses;
+  //delete newSubmission.submissionId;
+  try {
+    // Store responses
+    const responses = await WPTASResponse.insertMany(
+      newResponses.map(({ questionNum, score, multiChoiceGiven }) => ({
+        question_num: questionNum,
+        multiple_choice_given: multiChoiceGiven,
+        score,
+      }))
+    );
+
+    let {
+      examinerInitials,
+      patientId,
+      total,
+    } = newSubmission;
+
+    const submission = await WPTASSubmission.create({
+      examiner_initials: examinerInitials,
+      date_of_submission: new Date(),
+      total,
+      patient: patientId,
+      responses: responses.map(({ _id }) => _id),
+    });
+
+    res.status(200).json(submission);
+  } catch (e) {
+    res.status(400).json({ msg: e.message });
+  }
+});
+
 
 module.exports = router;

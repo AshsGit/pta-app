@@ -10,12 +10,13 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { photo_question_images } from '../../../data/wptas_images';
 import { WPTASPicturesQuestion } from '../../../types/WPTAS';
 import { FilledButton } from '../../layout/Buttons';
 import CorrectIcon from '@material-ui/icons/CheckCircleTwoTone';
 import IncorrectIcon from '@material-ui/icons/CancelTwoTone';
+import { question_count } from '../../../data/wptas_questions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,8 +63,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const WPTASPictureQuestion = ({
   question,
+  setMultiChoiceUsed,
+  setQuestionCorrect,
 }: {
   question: WPTASPicturesQuestion;
+  setMultiChoiceUsed: (q_index: number, val: boolean) => void;
+  setQuestionCorrect: (q_index: number, val: boolean) => void;
+  getResponseOnChange: (q_index: number) => (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const classes = useStyles();
   const {
@@ -81,12 +87,17 @@ export const WPTASPictureQuestion = ({
     [false, false, false],
     [false, false, false],
   ];
+  const correctCoordQuestionNum = Array(question_count).fill('');
+  
   correctAnswers
     .map((img_name) => image_names.findIndex((v) => v === img_name))
     .map((index) => [index % 3, (index / 3) >> 0])
-    .forEach(([x, y]) => {
+    .forEach(([x, y], index) => {
       correctAnswerCoords[x][y] = true;
+      correctCoordQuestionNum[index] = `${x} ${y}`;
     });
+
+  
 
   const [selected, setSelected] = useState({
     total: 0,
@@ -105,6 +116,10 @@ export const WPTASPictureQuestion = ({
   const toggleShowTomorrowsPics = () =>
     setShowTomorrowsPics(!showTomorrowsPics);
   const [isMultiChoice, setIsMultiChoice] = useState(false);
+  const multiChoiceToggle = () => {
+    questionNum.forEach((num, index) => setMultiChoiceUsed(num, !isMultiChoice));
+    setIsMultiChoice(!isMultiChoice);
+  }
 
   const rows = image_names
     .filter((_, i) => i < 9)
@@ -119,8 +134,11 @@ export const WPTASPictureQuestion = ({
 
   const onClickImage = (x: number, y: number) => (_) => {
     if (selected.total < 3 || selected.arr[x][y] === true) {
-      if (selected.arr[x][y] === true) {
+      const questionNum = 1 + correctCoordQuestionNum.findIndex(val=>val===`${x} ${y}`);
+      if (questionNum > 0) {
+        setQuestionCorrect(questionNum, selected.arr[x][y] === false);
       }
+
       const total = selected.total + (selected.arr[x][y] === true ? -1 : 1);
       const correct = correctAnswerCoords[x][y]
         ? selected.correct + (selected.arr[x][y] ? -1 : 1)
@@ -148,7 +166,7 @@ export const WPTASPictureQuestion = ({
         <Switch
           color='primary'
           checked={isMultiChoice}
-          onChange={() => setIsMultiChoice(!isMultiChoice)}
+          onChange={multiChoiceToggle}
         />
       </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>

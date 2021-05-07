@@ -4,42 +4,36 @@ const Schema = mongoose.Schema;
 
 const wptasResponseSchema = new Schema(
   {
-    submissions: {
-      type: Schema.Types.ObjectId,
-      ref: 'WPTASSubmission',
-    },
-    wptas_questions: {
-      type: Schema.Types.ObjectId,
-      ref: 'WPTASQuestion',
+    question_num: {
+      type: Number,
+      required: true,
     },
     score: {
+      validate: {
+        validator: Number.isInteger,
+        message: 'Score should be integer',
+      },
       type: Number,
       required: true,
     },
     answer: {
       type: String,
-      required: true,
+      required: false,
     },
-    correct_answer: {
-      type: String,
-      required: true,
-    },
-    is_multiple_choice: {
+    multiple_choice_given: {
+      validate: {
+        validator: (val: any) => typeof val === "boolean",
+        message: "multiple_choice_given should be boolean"
+      },
       type: Boolean,
       required: true,
-      default: false,
     },
   },
   { versionKey: false, collection: 'wptas.responses' }
 );
 
 const wptasSubmissionSchema = new Schema(
-  {
-    date_of_injury: {
-      type: Date,
-      max: Date.now,
-      required: true,
-    },
+  {    
     date_of_submission: {
       type: Date,
       max: Date.now,
@@ -58,7 +52,7 @@ const wptasSubmissionSchema = new Schema(
       type: String,
       required: true,
     },
-    patients: {
+    patient: {
       type: Schema.Types.ObjectId,
       ref: 'Patient',
     },

@@ -12,7 +12,7 @@ import {
   Radio,
   FormHelperText,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { face_images } from '../../../data/wptas_images';
 import { WPTASFaceQuestion as WPTASFaceQuestionType } from '../../../types/WPTAS';
 import { FilledButton } from '../../layout/Buttons';
@@ -59,8 +59,14 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const WPTASFaceQuestion = ({
   question,
+  setMultiChoiceUsed,
+  setQuestionCorrect,
+  getResponseOnChange,
 }: {
   question: WPTASFaceQuestionType;
+  setMultiChoiceUsed: (q_index: number, val: boolean) => void;
+  setQuestionCorrect: (q_index: number, val: boolean) => void;
+  getResponseOnChange: (q_index: number) => (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const classes = useStyles();
   const { title, questionNum, image_names, correctAnswerGenerator } = question;

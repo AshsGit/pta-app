@@ -3,7 +3,8 @@ const CORRECT_AGE = '30';
 const CORRECT_DOB = new Date(1999, 0, 25);
 const CORRECT_LOCATION = 'Epworth Hospital';
 const CORRECT_NAME = 'Lungile';
-const questions: Array<WPTASQuestion> = [
+
+export const questions: Array<WPTASQuestion> = [
   {
     title: 'How old are you?',
     questionNum: 1,
@@ -397,4 +398,13 @@ const getRandom = (max) => {
   return Math.floor(Math.random() * max);
 };
 
-export default questions;
+export const correct_answers = questions
+  .flatMap(question=>{
+    if (question.questionType === 'pictures_question')
+      return question.correctAnswerGenerator();
+    else 
+      return [question.correctAnswerGenerator()];
+  });
+
+
+export const question_count = correct_answers.length;
