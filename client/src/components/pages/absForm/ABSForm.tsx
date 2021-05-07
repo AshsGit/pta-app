@@ -90,14 +90,14 @@ type InputErrors = {
   fromDateError: boolean;
   obsEnvError: boolean;
   answerErrors: boolean[];
-  initials: boolean;
+  initialsError: boolean;
 };
 
 const hasError = (e: InputErrors): boolean =>
   e.toDateError ||
   e.fromDateError ||
   e.obsEnvError ||
-  e.initials ||
+  e.initialsError ||
   e.answerErrors.some((v) => v);
 
 const questionError = (index: number, e: InputErrors) => e.answerErrors[index];
@@ -127,7 +127,7 @@ export const ABSForm: FunctionComponent = () => {
     toDateError: false,
     fromDateError: false,
     obsEnvError: false,
-    initials: false,
+    initialsError: false,
     answerErrors: new Array(questions.length).fill(false),
   });
 
@@ -146,7 +146,7 @@ export const ABSForm: FunctionComponent = () => {
   };
   const initialsOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInitials(event.target.value);
-    setErrors({ ...errors, obsEnvError: event.target.value === '' });
+    setErrors({ ...errors, initialsError: event.target.value === '' });
   };
   const getChangeHandle = (question_index: number) => (
     event: ChangeEvent<HTMLInputElement>
@@ -170,7 +170,7 @@ export const ABSForm: FunctionComponent = () => {
       fromDateError: false,
       obsEnvError: false,
       answerErrors: new Array(questions.length).fill(false),
-      initials: false,
+      initialsError: false,
     };
 
     if (toDate === null) newErrors.toDateError = true;
@@ -178,7 +178,7 @@ export const ABSForm: FunctionComponent = () => {
     if (fromDate !== null && toDate !== null && fromDate > toDate)
       newErrors.toDateError = true;
     if (obsEnv === '') newErrors.obsEnvError = true;
-    if (initials === '') newErrors.initials = true;
+    if (initials === '') newErrors.initialsError = true;
 
     questionAnswers.forEach((val, index) => {
       if (val === '') newErrors.answerErrors[index] = true;
@@ -295,9 +295,9 @@ export const ABSForm: FunctionComponent = () => {
                           label='Initials...'
                           placeholder=''
                           size='medium'
-                          error={errors.initials}
+                          error={errors.initialsError}
                           helperText={
-                            errors.initials ? 'Please enter your initials' : ''
+                            errors.initialsError ? 'Please enter your initials' : ''
                           }
                         />
                         {loading ? (
