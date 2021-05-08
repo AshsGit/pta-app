@@ -1,4 +1,5 @@
 import { WPTASQuestion } from '../types/WPTAS';
+
 const CORRECT_AGE = '30';
 const CORRECT_DOB = new Date(1999, 0, 25);
 const CORRECT_LOCATION = 'Epworth Hospital';
@@ -60,19 +61,19 @@ export const questions: Array<WPTASQuestion> = [
             correctAnswerDate,
             addDays(correctAnswerDate, 1),
             addDays(correctAnswerDate, 2),
-          ].map((d) => d.toDateString());
+          ].map((d: Date) => d.toDateString());
         case 1:
           return [
             addDays(correctAnswerDate, -1),
             correctAnswerDate,
             addDays(correctAnswerDate, 1),
-          ].map((d) => d.toDateString());
+          ].map((d: Date) => d.toDateString());
         default:
           return [
             addDays(correctAnswerDate, -2),
             addDays(correctAnswerDate, -1),
             correctAnswerDate,
-          ].map((d) => d.toDateString());
+          ].map((d: Date) => d.toDateString());
       }
     },
     correctAnswerGenerator: () => CORRECT_DOB.toDateString(), //.toDateString(),
