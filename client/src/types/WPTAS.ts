@@ -1,7 +1,7 @@
 export interface WPTASSubmission {
   submissionDate?: Date;
   answers: Array<WPTASAnswer>;
-  examinerInitials?: string, 
+  examinerInitials?: string;
   patientId: string;
   submissionId?: string;
   total?: number;
@@ -9,7 +9,7 @@ export interface WPTASSubmission {
 
 export interface WPTASAnswer {
   questionNum: number;
-  score: number; // 0 - 1 
+  score: number; // 0 - 1
   answer?: string;
   multiChoiceGiven: boolean;
 }
@@ -18,8 +18,11 @@ interface NonImageQuestionBase<QType extends 'date' | 'text' | 'select'> {
   title: string;
   questionNum: number;
   questionType: QType;
-  multichoiceGenerator: (correctAnswer: string) => string[];
-  correctAnswerGenerator: () => string; //change any type to () => Promise<string>
+  multichoiceGenerator: (
+    correctAnswer: string,
+    correctAnswerPositionOverride?: number
+  ) => string[];
+  correctAnswerGenerator: () => string;
 }
 
 export type WPTASTextQuestion = NonImageQuestionBase<'text'>;
@@ -54,4 +57,3 @@ export type WPTASQuestion =
   | WPTASNonImageQuestion
   | WPTASFaceQuestion
   | WPTASPicturesQuestion;
-

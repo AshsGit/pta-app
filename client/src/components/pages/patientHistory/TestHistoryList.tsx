@@ -63,11 +63,11 @@ const styles: Styles<Theme, any> = (theme: any) => ({
 });
 
 export const TestHistoryList = withStyles(styles)(
-  ({ classes, testType, absService }: any) => {
+  ({ classes, testType, wptasService, absService }: any) => {
     return (
       <div className={classes.card}>
         {testType === 'wptas' ? (
-          <WPTASHistory absService={absService} />
+          <WPTASHistory wptasService={wptasService} />
         ) : (
           <ABSHistory absService={absService} />
         )}
@@ -76,34 +76,66 @@ export const TestHistoryList = withStyles(styles)(
   }
 );
 
-const WPTASHistory = withStyles(styles)(({ classes, ...other }: any) => {
-  return (
-    <div {...other} className={classes.historyContainer}>
-      <h4>WPTAS Test History</h4>
-      <TableContainer className={classes.tableContainer} component={Paper}>
-        <Table aria-label='WPTAS history'>
-          <TableHead>
-            <TableRow className={`${classes.historyHeader} wptas`}>
-              <TableCell>Date</TableCell>
-              <TableCell>Examiner</TableCell>
-              <TableCell>Score</TableCell>
-              {/* TODO: View individual submission: */}
-              {/* <TableCell></TableCell> */}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {wptasHistoryRows.map((row, i) => (
-              <TableRow
-                className={`${i % 2 === 0 ? classes.even : classes.odd}`}
-                key={row.submissionId}
-              >
-                <TableCell style={{ fontWeight: 600 }}>
-                  {row.date.toDateString()}
-                </TableCell>
-                <TableCell>{row.examiner}</TableCell>
-                <TableCell>{row.score}</TableCell>
+const WPTASHistory = withStyles(styles)(
+  ({ classes, wptasService, ...other }: any) => {
+    const { id } = useParams() as any;
+
+    const [submissions, setSubmissions] = useState([]);
+
+    useEffect(() => {
+      if (!submissions || !submissions.length) {
+        getWptasSubmissions();
+      }
+    });
+
+    const getWptasSubmissions = async () => {
+      wptasService.getWptasSubmissions(id).subscribe((submissions) => {
+        setSubmissions(submissions);
+      });
+    };
+
+    if (!submissions || submissions.length === 0) {
+      return (
+        <Box
+          display='flex'
+          alignItems='center'
+          justifyContent='center'
+          width='100%'
+        >
+          <CircularProgress />
+        </Box>
+      );
+    }
+
+    console.log(submissions);
+
+    return (
+      <div {...other} className={classes.historyContainer}>
+        <h4>WPTAS Test History</h4>
+        <TableContainer className={classes.tableContainer} component={Paper}>
+          <Table aria-label='WPTAS history'>
+            <TableHead>
+              <TableRow className={`${classes.historyHeader} wptas`}>
+                <TableCell>Date</TableCell>
+                <TableCell>Examiner</TableCell>
+                <TableCell>Score</TableCell>
                 {/* TODO: View individual submission: */}
-                {/* <TableCell className={classes.btnCell}>
+                {/* <TableCell></TableCell> */}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {submissions.map((row, i) => (
+                <TableRow
+                  className={`${i % 2 === 0 ? classes.even : classes.odd}`}
+                  key={row.submissionId}
+                >
+                  <TableCell style={{ fontWeight: 600 }}>
+                    {row.submissionDate.toDateString()}
+                  </TableCell>
+                  <TableCell>{row.examinerInitials || '-'}</TableCell>
+                  <TableCell>{row.total}</TableCell>
+                  {/* TODO: View individual submission: */}
+                  {/* <TableCell className={classes.btnCell}>
                   <OutlineButton
                     style={{ maxWidth: '150px' }}
                     onClick={() => {
@@ -115,14 +147,15 @@ const WPTASHistory = withStyles(styles)(({ classes, ...other }: any) => {
                     View
                   </OutlineButton>
                 </TableCell> */}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
-  );
-});
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
+    );
+  }
+);
 
 const ABSHistory = withStyles(styles)(({ classes, absService }: any) => {
   const { id } = useParams() as any;
@@ -198,41 +231,3 @@ const ABSHistory = withStyles(styles)(({ classes, absService }: any) => {
     </div>
   );
 });
-
-const ResultsCard = withStyles(styles)(
-  ({ classes, children, ...other }: any) => {
-    return (
-      <div {...other} className={classes.card}>
-        {children}
-      </div>
-    );
-  }
-);
-
-// Sorted by descending date
-const wptasHistoryRows = [
-  {
-    submissionId: '123',
-    date: new Date(2020, 10, 3),
-    examiner: 'E.S',
-    score: 8,
-  },
-  {
-    submissionId: '234',
-    date: new Date(2020, 10, 2),
-    examiner: 'J.Z',
-    score: 9,
-  },
-  {
-    submissionId: '345',
-    date: new Date(2020, 10, 1),
-    examiner: 'T.S',
-    score: 8,
-  },
-  {
-    submissionId: '456',
-    date: new Date(2020, 9, 31),
-    examiner: 'E.S',
-    score: 7,
-  },
-];

@@ -9,9 +9,15 @@ export const questions: Array<WPTASQuestion> = [
     title: 'How old are you?',
     questionNum: 1,
     questionType: 'text',
-    multichoiceGenerator: function res(correctAnswer: string): Array<string> {
+    multichoiceGenerator: function (
+      correctAnswer: string,
+      correctAnswerPositionOverride?: 0 | 1 | 2
+    ): Array<string> {
       let correctAnswerNum = parseInt(correctAnswer);
-      var myRandom = getRandom(3);
+      var myRandom =
+        correctAnswerPositionOverride !== undefined
+          ? correctAnswerPositionOverride
+          : getRandom(3);
       switch (myRandom) {
         case 0:
           return [
@@ -39,9 +45,15 @@ export const questions: Array<WPTASQuestion> = [
     title: 'What is your date of birth?',
     questionNum: 2,
     questionType: 'date',
-    multichoiceGenerator: function res(correctAnswer: string): Array<string> {
+    multichoiceGenerator: function (
+      correctAnswer: string,
+      correctAnswerPositionOverride?: 0 | 1 | 2
+    ): Array<string> {
       var correctAnswerDate = new Date(correctAnswer);
-      var myRandom = getRandom(3);
+      var myRandom =
+        correctAnswerPositionOverride !== undefined
+          ? correctAnswerPositionOverride
+          : getRandom(3);
       switch (myRandom) {
         case 0:
           return [
@@ -84,7 +96,10 @@ export const questions: Array<WPTASQuestion> = [
       'November',
       'December',
     ],
-    multichoiceGenerator: function res(correctAnswer: string): Array<string> {
+    multichoiceGenerator: function (
+      correctAnswer: string,
+      correctAnswerPositionOverride?: 0 | 1 | 2
+    ): Array<string> {
       var choices: Array<number> = [];
       var correctMonth: number;
       if (correctAnswer === 'January') {
@@ -113,7 +128,10 @@ export const questions: Array<WPTASQuestion> = [
         correctMonth = 11;
       }
 
-      var myRandom = getRandom(3);
+      var myRandom =
+        correctAnswerPositionOverride !== undefined
+          ? correctAnswerPositionOverride
+          : getRandom(3);
       switch (myRandom) {
         case 0:
           choices.push(
@@ -212,7 +230,7 @@ export const questions: Array<WPTASQuestion> = [
     correctAnswerGenerator: function res(): string {
       var date: Date = new Date();
       var hour: number = date.getHours();
-      if (hour >= 12 && hour <= 17) {
+      if (hour >= 12 && hour < 17) {
         return 'Afternoon';
       } else if (hour >= 17) {
         return 'Evening';
@@ -234,7 +252,10 @@ export const questions: Array<WPTASQuestion> = [
       'Saturday',
       'Sunday',
     ],
-    multichoiceGenerator: function res(correctAnswer: string): Array<string> {
+    multichoiceGenerator: function (
+      correctAnswer: string,
+      correctAnswerPositionOverride?: 0 | 1 | 2
+    ): Array<string> {
       var choices: Array<number> = [];
       var correctDay: number;
       if (correctAnswer === 'Sunday') {
@@ -252,7 +273,10 @@ export const questions: Array<WPTASQuestion> = [
       } else if (correctAnswer === 'Saturday') {
         correctDay = 6;
       }
-      var myRandom = getRandom(3);
+      var myRandom =
+        correctAnswerPositionOverride !== undefined
+          ? correctAnswerPositionOverride
+          : getRandom(3);
       switch (myRandom) {
         case 0:
           choices.push(correctDay, (correctDay + 1) % 7, (correctDay + 2) % 7);
@@ -310,9 +334,15 @@ export const questions: Array<WPTASQuestion> = [
     title: 'What year are we in?',
     questionNum: 6,
     questionType: 'text',
-    multichoiceGenerator: function res(correctAnswer: string): Array<string> {
+    multichoiceGenerator: function (
+      correctAnswer: string,
+      correctAnswerPositionOverride?: 0 | 1 | 2
+    ): Array<string> {
       let correctAnswerNum = parseInt(correctAnswer);
-      var myRandom = getRandom(3);
+      var myRandom =
+        correctAnswerPositionOverride !== undefined
+          ? correctAnswerPositionOverride
+          : getRandom(3);
       switch (myRandom) {
         case 0:
           return [
@@ -345,7 +375,10 @@ export const questions: Array<WPTASQuestion> = [
     title: 'What is the name of this place?',
     questionNum: 7,
     questionType: 'text',
-    multichoiceGenerator: (correctAnswer: string) =>
+    multichoiceGenerator: (
+      correctAnswer: string,
+      correctAnswerPositionOverride?: 0 | 1 | 2
+    ) =>
       [correctAnswer, 'Alfred Hospital', 'Wilamstown Hospital'].sort(
         Math.random
       ),
@@ -364,7 +397,10 @@ export const questions: Array<WPTASQuestion> = [
     title: 'Name',
     questionNum: 9,
     questionType: 'text',
-    multichoiceGenerator: (c: string): Array<string> => [c, 'Steve', 'Bobby'],
+    multichoiceGenerator: (
+      c: string,
+      correctAnswerPositionOverride?: 0 | 1 | 2
+    ): Array<string> => [c, 'Steve', 'Bobby'],
     correctAnswerGenerator: (): string => CORRECT_NAME,
   },
 
@@ -388,6 +424,21 @@ export const questions: Array<WPTASQuestion> = [
   },
 ];
 
+export const questionTitles = [
+  'How old are you?',
+  'What is your date of birth?',
+  'What month are we in?',
+  'What time of day is it?',
+  'What day of the week is it?',
+  'What year are we in?',
+  'What is the name of this place?',
+  'Face',
+  'Name',
+  'Picutre I',
+  'Picutre II',
+  'Picutre III',
+];
+
 const addDays = (date, days) => {
   var result = new Date(date);
   result.setDate(result.getDate() + days);
@@ -398,13 +449,10 @@ const getRandom = (max) => {
   return Math.floor(Math.random() * max);
 };
 
-export const correct_answers = questions
-  .flatMap(question=>{
-    if (question.questionType === 'pictures_question')
-      return question.correctAnswerGenerator();
-    else 
-      return [question.correctAnswerGenerator()];
-  });
-
+export const correct_answers = questions.flatMap((question) => {
+  if (question.questionType === 'pictures_question')
+    return question.correctAnswerGenerator();
+  else return [question.correctAnswerGenerator()];
+});
 
 export const question_count = correct_answers.length;

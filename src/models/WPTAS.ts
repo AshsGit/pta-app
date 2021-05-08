@@ -16,14 +16,14 @@ const wptasResponseSchema = new Schema(
       type: Number,
       required: true,
     },
-    answer: {
-      type: String,
-      required: false,
-    },
+    // answer: {
+    //   type: String,
+    //   required: false,
+    // },
     multiple_choice_given: {
       validate: {
-        validator: (val: any) => typeof val === "boolean",
-        message: "multiple_choice_given should be boolean"
+        validator: (val: any) => typeof val === 'boolean',
+        message: 'multiple_choice_given should be boolean',
       },
       type: Boolean,
       required: true,
@@ -33,7 +33,7 @@ const wptasResponseSchema = new Schema(
 );
 
 const wptasSubmissionSchema = new Schema(
-  {    
+  {
     date_of_submission: {
       type: Date,
       max: Date.now,
@@ -69,5 +69,5 @@ const WPTASSubmission = mongoose.model(
 
 module.exports = {
   WPTASSubmission: WPTASSubmission,
-  WPTASResopnse: WPTASResponse,
+  WPTASResponse: WPTASResponse,
 };

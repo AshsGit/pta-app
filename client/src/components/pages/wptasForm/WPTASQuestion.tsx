@@ -6,12 +6,22 @@ import { WPTASQuestion as WPTASQuestionType } from '../../../types/WPTAS';
 
 export const WPTASQuestion: FC<any> = ({
   question,
+  correctAnswerPositionOverride,
   ...rest
 }: {
   question: WPTASQuestionType;
-  setMultiChoiceUsed: (q_index: number, val: boolean) => void;
-  setQuestionCorrect: (q_index: number, val: boolean) => void;
-  getResponseOnChange: (q_index: number) => (event: ChangeEvent<HTMLInputElement>) => void;
+  correctAnswerPositionOverride?: number;
+  setQuestionMultiChoiceGiven: (
+    q_index: number | Array<number>,
+    val: boolean
+  ) => void;
+  setQuestionCorrect: (
+    questoinNum: number | Array<number>,
+    val: boolean
+  ) => void;
+  getResponseOnChange: (
+    q_index: number
+  ) => (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
   switch (question.questionType) {
     case 'face_question':
@@ -19,6 +29,12 @@ export const WPTASQuestion: FC<any> = ({
     case 'pictures_question':
       return <WPTASPictureQuestion question={question} {...rest} />;
     default:
-      return <WPTASNonImageQuestion question={question} {...rest} />;
+      return (
+        <WPTASNonImageQuestion
+          correctAnswerPositionOverride={correctAnswerPositionOverride}
+          question={question}
+          {...rest}
+        />
+      );
   }
 };

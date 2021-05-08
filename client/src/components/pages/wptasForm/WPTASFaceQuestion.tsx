@@ -59,14 +59,22 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const WPTASFaceQuestion = ({
   question,
-  setMultiChoiceUsed,
+  setQuestionMultiChoiceGiven,
   setQuestionCorrect,
   getResponseOnChange,
 }: {
   question: WPTASFaceQuestionType;
-  setMultiChoiceUsed: (q_index: number, val: boolean) => void;
-  setQuestionCorrect: (q_index: number, val: boolean) => void;
-  getResponseOnChange: (q_index: number) => (event: ChangeEvent<HTMLInputElement>) => void;
+  setQuestionMultiChoiceGiven: (
+    q_index: number | Array<number>,
+    val: boolean
+  ) => void;
+  setQuestionCorrect: (
+    questoinNum: number | Array<number>,
+    val: boolean
+  ) => void;
+  getResponseOnChange: (
+    q_index: number
+  ) => (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const classes = useStyles();
   const { title, questionNum, image_names, correctAnswerGenerator } = question;
@@ -77,6 +85,8 @@ export const WPTASFaceQuestion = ({
   const [error, setError] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const toggleShowAnswer = () => setShowAnswer(!showAnswer);
+
+  const onChangeResponse = getResponseOnChange(questionNum);
 
   return (
     <Box
@@ -90,7 +100,10 @@ export const WPTASFaceQuestion = ({
         <Switch
           color='primary'
           checked={multiChoiceGiven}
-          onChange={() => setMultiChoiceGiven(!multiChoiceGiven)}
+          onChange={(e) => {
+            setMultiChoiceGiven(e.target.checked);
+            setQuestionMultiChoiceGiven(questionNum, e.target.checked);
+          }}
         />
       </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
@@ -133,6 +146,11 @@ export const WPTASFaceQuestion = ({
           row
           onChange={(event) => {
             setSelectedImage((event.target as HTMLInputElement).value);
+            onChangeResponse(event);
+            setQuestionCorrect(
+              questionNum,
+              event.target.value === correctAnswerIndex.toString()
+            );
           }}
         >
           <Grid container direction='row' justify='space-around'>

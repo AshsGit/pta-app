@@ -3,9 +3,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-const { ABSSubmission } = require('../../models/ABS');
-const { ABSQuestion } = require('../../models/ABS');
-const { ABSResponse } = require('../../models/ABS');
+const { ABSSubmission, ABSResponse } = require('../../models/ABS');
 
 // @route GET api/abs/submissions/:id
 // @desc get submissions for a patient id
@@ -46,6 +44,8 @@ router.post('/submit', async (req: any, res: any) => {
     res.status(400).json({ msg: 'Missing submission information.' });
     return;
   }
+
+  // TODO: CHECK PATIENT ID EXISTS
 
   newSubmission.total = newResponses.reduce((acc, { score }) => acc + score, 0);
   delete newSubmission.responses;

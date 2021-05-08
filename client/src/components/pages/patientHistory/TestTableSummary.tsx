@@ -18,7 +18,8 @@ import { useParams } from 'react-router-dom';
 const styles: Styles<Theme, any> = (theme: any) => ({
   card: {
     display: 'flex',
-    justifyContent: 'flex-start',
+    flexDirection: 'column',
+    alignItems: 'stretch',
     backgroundColor: 'white',
     padding: '1rem',
     textTransform: 'none',
@@ -78,14 +79,25 @@ const styles: Styles<Theme, any> = (theme: any) => ({
   even: {
     '& td': { backgroundColor: 'white' },
   },
+  note: {
+    fontSize: '13px',
+    textAlign: 'end',
+    marginTop: '1rem',
+  },
 });
 
 export const TestTableSummary = withStyles(styles)(
-  ({ classes, absService, testType, ...other }: any) => {
+  ({ classes, wptasService, absService, testType, ...other }: any) => {
     return (
       <div {...other} className={classes.card}>
         {testType === 'wptas' ? (
-          <WPTASTable absService={absService} />
+          <Box display='flex' flexDirection='column'>
+            <WPTASTable wptasService={wptasService} />
+            <span className={classes.note}>
+              Scores are marked with an asterisk (*) if multiple choice options
+              were used
+            </span>
+          </Box>
         ) : (
           <ABSTable absService={absService} />
         )}
@@ -94,17 +106,45 @@ export const TestTableSummary = withStyles(styles)(
   }
 );
 
-const WPTASTable = withStyles(styles)(({ classes }: any) => {
+const WPTASTable = withStyles(styles)(({ classes, wptasService }: any) => {
+  const { id } = useParams() as any;
+  const [summary, setSummary] = useState([]);
+
+  useEffect(() => {
+    if (!summary || !summary.length) {
+      getWptasSummary();
+    }
+  });
+
+  // Service calls:
+  const getWptasSummary = async () => {
+    wptasService.getWptasSummary(id).subscribe((summary) => {
+      setSummary(summary);
+    });
+  };
+
+  if (summary.length === 0) {
+    return (
+      <Box
+        display='flex'
+        alignItems='center'
+        justifyContent='center'
+        width='100%'
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <TableContainer className={classes.tableContainer} component={Paper}>
       <Table size='small' aria-label='WPTAS table'>
         <TableHead>
           <TableRow>
-            {Object.keys(wptasRows[0]).map((key, i) => (
+            {Object.keys(summary[0]).map((key, i) => (
               <TableCell
                 className={`${classes.cell} ${
                   i === 0 ? classes.questionCell : ''
-                } ${i === wptasRows.length - 1 ? classes.footerCell : ''} ${
+                } ${i === summary.length - 1 ? classes.footerCell : ''} ${
                   classes.headCell
                 } wptas`}
                 key={key}
@@ -115,24 +155,24 @@ const WPTASTable = withStyles(styles)(({ classes }: any) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {wptasRows.map((row, i) => (
+          {summary.map((row, i) => (
             <TableRow
               className={`${i % 2 === 0 ? classes.even : classes.odd}`}
               key={row.question}
             >
               <TableCell
                 className={`${classes.cell} ${
-                  i === wptasRows.length - 1 ? classes.footerCell : ''
+                  i === summary.length - 1 ? classes.footerCell : ''
                 } ${classes.questionCell} wptas`}
               >
                 {row.question}
               </TableCell>
-              {Object.keys(wptasRows[0])
+              {Object.keys(summary[0])
                 .filter((key) => key !== 'question')
                 .map((key: string) => (
                   <TableCell
                     className={`${classes.cell} ${
-                      i === wptasRows.length - 1
+                      i === summary.length - 1
                         ? classes.footerCell
                         : classes.bodyCell
                     }`}
@@ -237,175 +277,3 @@ const ABSTable = withStyles(styles)(({ classes, absService }: any) => {
 function capitalise(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
-const wptasRows = [
-  {
-    question: '1. How old are you?',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-  {
-    question: '2. What is your date of birth?',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-  {
-    question: '3. What month are we in?',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-  {
-    question: '4. What time of day is it?',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-  {
-    question: '5. What day of the week is it?',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-  {
-    question: '6. What year are we in?',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-  {
-    question: '7. What is the name of this place?',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-  {
-    question: '8. Face',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-  {
-    question: '9. Name',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-  {
-    question: '10. Picture 1',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-  {
-    question: '11. Picture 2',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-  {
-    question: '12. Picture 3',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-  {
-    question: 'Total',
-    '31/10': 0,
-    '1/11': 1,
-    '2/11': 0,
-    '3/11': 1,
-    '4/11': 1,
-    '5/11': 0,
-    '6/11': 1,
-    '7/11': 0,
-    '8/11': 1,
-    '9/11': 1,
-  },
-];

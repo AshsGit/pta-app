@@ -1,6 +1,7 @@
-import React, { ChangeEvent, FunctionComponent, useState } from 'react';
+import React, { ChangeEvent, FC, FunctionComponent, useState } from 'react';
 import {
   Box,
+  CircularProgress,
   CssBaseline,
   IconButton,
   Paper,
@@ -14,10 +15,10 @@ import {
   ThemeProvider,
 } from '@material-ui/core/styles';
 import { WPTASTheme } from '../../../themes';
-import { 
-  questions, 
-  correct_answers, 
-  question_count 
+import {
+  questions,
+  correct_answers,
+  question_count,
 } from '../../../data/wptas_questions';
 import { WptasService } from '../../../services/WptasService';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
@@ -58,6 +59,10 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingTop: '2rem',
       paddingBottom: '1rem',
     },
+    successfulSubmit: {
+      marginTop: '1rem',
+      fontSize: '16px',
+    },
     page: {
       display: 'flex',
       alignItems: 'flex-start',
@@ -70,7 +75,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-
 // Error handling
 type InputErrors = {
   answerErrors: boolean[];
@@ -78,23 +82,31 @@ type InputErrors = {
 };
 
 const hasError = (e: InputErrors): boolean =>
-  e.initialsError ||
-  e.answerErrors.some((v) => v);
-
+  e.initialsError || e.answerErrors.some((v) => v);
 
 export const WPTASForm: FunctionComponent = () => {
+  // Quick fix for child component reload - multiple choice order kept changing when clicked.
+  const getRandom = (max) => {
+    return Math.floor(Math.random() * max);
+  };
+  const correctAnswerPositionOverrides = new Array(question_count)
+    .fill(1)
+    .map((_) => getRandom(3));
+  return (
+    <WPTASFormContent
+      correctAnswerPositionOverrides={correctAnswerPositionOverrides}
+    />
+  );
+};
+
+const WPTASFormContent: FC<any> = ({
+  correctAnswerPositionOverrides,
+}: {
+  correctAnswerPositionOverrides: Array<number>;
+}) => {
   const classes = useStyles();
-  const history = useHistory();
   const { id } = useParams() as any;
   const wptasService = new WptasService();
-  const correctAnswers = questions.map(question => {
-    if (question.questionType === 'pictures_question') {
-
-    } else if (question.questionType === 'face_question') {
-    } else {
-
-    }
-  });
 
   // Form state variables
   const [loading, setLoading] = useState<boolean>(false);
@@ -102,9 +114,13 @@ export const WPTASForm: FunctionComponent = () => {
   const [submitPressed, setSubmitPressed] = useState<boolean>(false);
 
   // Form input states
-  const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean[]>(
-    new Array(question_count).fill(false)
-  );
+
+  // answeredCorrectlyInput reflects the yes/no question titled 'Answered Correctly?'.
+  // For questions 1 - 7, 9 this does not reflect if we are in multichoice mode and the correct answer is selected.
+  // However for qustions 8, 10 - 12, it is true if the question is answered correctly.
+  const [answeredCorrectlyInput, setAnsweredCorrectlyInput] = useState<
+    boolean[]
+  >(new Array(question_count).fill(null));
   const [questionResponses, setQuestionResponses] = useState<string[]>(
     new Array(question_count).fill('')
   );
@@ -124,42 +140,69 @@ export const WPTASForm: FunctionComponent = () => {
     setInitials(event.target.value);
     setErrors({ ...errors, initialsError: event.target.value === '' });
   };
-  const setMultiChoiceUsed = (question_index: number, val: boolean) => { //used by all questions
+  const setQuestionMultiChoiceGiven = (
+    questionNum: number | Array<number>,
+    val: boolean
+  ) => {
+    console.log('set multi choice used', questionNum, val);
+    if (typeof questionNum === 'number') {
+      questionNum = [questionNum];
+    }
+    //used by all questions
     const temp = [...multiChoiceGiven];
-    temp[question_index] = val;
+    questionNum.forEach((num: number) => (temp[num - 1] = val));
+    // temp[questionNum - 1] = val;
     setMultiChoiceGiven(temp);
-  }
-  const setQuestionCorrect = (question_index: number, val: boolean) => { //used by all questions
-    const temp = [...answeredCorrectly];
-    temp[question_index] = val;
-    setAnsweredCorrectly(temp);
-  }
-  const getResponseOnChange = (question_index: number) => ( //used by non-image questions
+  };
+  const setQuestionCorrect = (
+    questionNum: number | Array<number>,
+    val: boolean | Array<boolean> // Should be same length at questionNum array
+  ) => {
+    if (typeof questionNum === 'number') {
+      questionNum = [questionNum];
+    }
+    if (typeof val === 'boolean') {
+      val = new Array(questionNum.length).fill(val);
+    }
+    //used by all questions
+    const temp = [...answeredCorrectlyInput];
+    questionNum.forEach((num: number, i) => (temp[num - 1] = val[i]));
+    setAnsweredCorrectlyInput(temp);
+  };
+  const getResponseOnChange = (questionNum: number) => (
+    //used by non-image questions
     event: ChangeEvent<HTMLInputElement>
   ) => {
     const temp = [...questionResponses];
-    temp[question_index] = event.target.value;
+    temp[questionNum - 1] = event.target.value;
     setQuestionResponses(temp);
-  }
-  
+  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>, id) => {
+    console.log('handle submit');
     event.preventDefault();
 
     setSubmitPressed(true);
 
     const newErrors: InputErrors = {
       answerErrors: new Array(question_count).fill(false),
-      initialsError: (initials === ''),
+      initialsError: initials === '',
     };
 
-    multiChoiceGiven.forEach((mc_given, q_index) => {
-      if (mc_given) {
-        //TODO compare multi-choice answer to correct answer 
-        newErrors.answerErrors[q_index] = true; //Error always for now
-      } else {
-        newErrors.answerErrors[q_index] = answeredCorrectly[q_index];
-      }
-    });
+    // multiChoiceGiven.forEach((mc_given, q_index) => {
+    //   if (mc_given) {
+    //     //TODO compare multi-choice answer to correct answer
+    //     newErrors.answerErrors[q_index] = true; //Error always for now
+    //   } else {
+    //     newErrors.answerErrors[q_index] = answeredCorrectlyInput[q_index];
+    //   }
+    // });
+
+    // TODO: throw an error if (not multiChoice and answered correctly is null) OR (multiChoice and response.length)
+
+    console.log('answered correctly', answeredCorrectlyInput);
+    console.log('question responses', questionResponses);
+    console.log('multichoice given', multiChoiceGiven);
 
     const formIncomplete = false; //hasError(newErrors);
 
@@ -168,42 +211,76 @@ export const WPTASForm: FunctionComponent = () => {
     } else {
       // Submit form if no errors
       setLoading(true);
-      /*const submission: WPTASSubmission = {
-        patientId: id,
-        submissionId: '', //FIXME?
-        examinerInitials: initials,
-        answers: answeredCorrectly.map(
-          (correct, i) =>
-            ({
-              questionNum: i + 1,
-              score: correct ? 1 : 0,
-              answer: questionResponses[i],
-              multiChoiceGiven: multiChoiceGiven[i],
-            } as WPTASAnswer)
-        ),
-      };*/
+
       const submission: WPTASSubmission = {
-        patientId: '1',
-        submissionId: '', //FIXME?
-        examinerInitials: 'ab',
-        answers: answeredCorrectly.map(
-          (correct, i) =>
-            ({
-              questionNum: i + 1,
-              score: 1,
-              answer: '',
-              multiChoiceGiven: false,
-            } as WPTASAnswer)
-        ),
+        patientId: id,
+        examinerInitials: initials,
+        answers: multiChoiceGiven
+          .filter((_, i) => i < 7)
+          .map(
+            (mc, i) =>
+              ({
+                questionNum: i + 1,
+                multiChoiceGiven: mc,
+                score: mc
+                  ? questionResponses[i] ===
+                    questions[i].correctAnswerGenerator() // Check if mc answer is correct
+                    ? 1
+                    : 0
+                  : answeredCorrectlyInput[i] // Otherwise check the answered correctly input
+                  ? 1
+                  : 0,
+              } as WPTASAnswer)
+          )
+          // Face question
+          .concat([
+            {
+              questionNum: 8,
+              multiChoiceGiven: multiChoiceGiven[7],
+              score: answeredCorrectlyInput[7] // Otherwise check the answered correctly input
+                ? 1
+                : 0,
+            } as WPTASAnswer,
+          ])
+          // Name question
+          .concat([
+            {
+              questionNum: 9,
+              multiChoiceGiven: multiChoiceGiven[8],
+              score: multiChoiceGiven[8]
+                ? questionResponses[8] === questions[8].correctAnswerGenerator() // Check if mc answer is correct
+                  ? 1
+                  : 0
+                : answeredCorrectlyInput[8] // Otherwise check the answered correctly input
+                ? 1
+                : 0,
+            } as WPTASAnswer,
+          ])
+          // Picture questions
+          .concat(
+            multiChoiceGiven
+              .filter((_, i) => i >= 9)
+              .map((mc, i) => {
+                let questionNum = [10, 11, 12][i];
+                return {
+                  questionNum: questionNum,
+                  multiChoiceGiven: mc,
+                  score: answeredCorrectlyInput[questionNum - 1] ? 1 : 0,
+                } as WPTASAnswer;
+              })
+          ),
       };
 
+      console.log('submission', submission);
+      console.log('submission', JSON.stringify(submission));
+
       wptasService.submit(submission).subscribe(
-        result => {
+        (result) => {
           console.log('submit done', result);
           setLoading(false);
           setSubmitted(true);
         },
-        err => {
+        (err) => {
           console.log('Error:', err);
           setLoading(false);
           // TODO: provide a ui error
@@ -221,51 +298,65 @@ export const WPTASForm: FunctionComponent = () => {
           <Paper variant='outlined' className={classes.root_content}>
             <Header />
             <Box>
-              <form onSubmit={($event) => handleSubmit($event, id)}>
-                <Box
-                  display='flex'
-                  flexDirection='column'
-                  className={classes.questionsContainer}
-                >
-                  {questions.map((question) => (
-                    <WPTASQuestion
-                      key={`${question.questionNum}`}
-                      question={question}
-                      setMultiChoiceUsed={setMultiChoiceUsed}
-                      setQuestionCorrect={setQuestionCorrect}
-                      getResponseOnChange={getResponseOnChange}
-                    />
-                  ))}
+              {submitted ? (
+                <div className={classes.successfulSubmit}>
+                  You have successfully submitted your response!
+                </div>
+              ) : (
+                <form onSubmit={($event) => handleSubmit($event, id)}>
                   <Box
-                    style={{ marginTop: '6rem' }}
                     display='flex'
-                    alignItems='center'
-                    justifyContent='flex-end'
+                    flexDirection='column'
+                    className={classes.questionsContainer}
                   >
-                    <TextField
-                      style={{
-                        width: 150,
-                        marginRight: '2rem',
-                        marginBottom: '0.5rem',
-                      }}
-                      value={initials}
-                      onChange={(e) => {
-                        setInitials(e.target.value);
-                      }}
-                      label='Initials...'
-                      placeholder=''
-                      size='medium'
-                    />
-                    <FilledButton
-                      type='submit'
-                      width={400}
-                      style={{ fontSize: '18px' }}
+                    {questions.map((question, i) => (
+                      <WPTASQuestion
+                        correctAnswerPositionOverride={
+                          correctAnswerPositionOverrides[i]
+                        }
+                        key={`${question.questionNum}`}
+                        question={question}
+                        setQuestionMultiChoiceGiven={
+                          setQuestionMultiChoiceGiven
+                        }
+                        setQuestionCorrect={setQuestionCorrect}
+                        getResponseOnChange={getResponseOnChange}
+                      />
+                    ))}
+                    <Box
+                      style={{ marginTop: '6rem' }}
+                      display='flex'
+                      alignItems='center'
+                      justifyContent='flex-end'
                     >
-                      Submit
-                    </FilledButton>
+                      <TextField
+                        style={{
+                          width: 150,
+                          marginRight: '2rem',
+                          marginBottom: '0.5rem',
+                        }}
+                        value={initials}
+                        onChange={initialsOnChange}
+                        label='Initials...'
+                        placeholder=''
+                        size='medium'
+                        error={errors.initialsError}
+                      />
+                      {loading ? (
+                        <CircularProgress />
+                      ) : (
+                        <FilledButton
+                          type='submit'
+                          width={400}
+                          style={{ fontSize: '18px' }}
+                        >
+                          Submit
+                        </FilledButton>
+                      )}
+                    </Box>
                   </Box>
-                </Box>
-              </form>
+                </form>
+              )}
             </Box>
           </Paper>
         </div>

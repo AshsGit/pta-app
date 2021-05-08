@@ -14,7 +14,7 @@ import {
   Select,
 } from '@material-ui/core';
 import { KeyboardDatePicker } from '@material-ui/pickers';
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { WPTASNonImageQuestion as WPTASNonImageQuestionType } from '../../../types/WPTAS';
 
 const WPTAS_QUESTION_HEIGHT = '260px';
@@ -42,8 +42,21 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const WPTASNonImageQuestion = ({
   question,
+  correctAnswerPositionOverride,
+  setQuestionMultiChoiceGiven,
+  setQuestionCorrect,
+  getResponseOnChange,
 }: {
   question: WPTASNonImageQuestionType;
+  correctAnswerPositionOverride: number;
+  setQuestionMultiChoiceGiven: (
+    q_index: number | Array<number> | Array<number>,
+    val: boolean
+  ) => void;
+  setQuestionCorrect: (questoinNum: number, val: boolean) => void;
+  getResponseOnChange: (
+    q_index: number
+  ) => (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const classes = useStyles();
   const { title, questionNum, correctAnswerGenerator } = question;
@@ -57,6 +70,7 @@ export const WPTASNonImageQuestion = ({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setAnsweredCorrectly((event.target as HTMLInputElement).value);
+    setQuestionCorrect(questionNum, event.target.value === 'yes');
   };
 
   return (
@@ -71,15 +85,20 @@ export const WPTASNonImageQuestion = ({
         <Switch
           color='primary'
           checked={isMultiChoice}
-          onChange={() => setIsMultiChoice(!isMultiChoice)}
+          onChange={(e) => {
+            setIsMultiChoice(e.target.checked);
+            setQuestionMultiChoiceGiven(questionNum, e.target.checked);
+          }}
         />
       </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       {isMultiChoice ? (
         <WPTASMultiChoiceQuestion
           choices={question.multichoiceGenerator(
-            question.correctAnswerGenerator()
+            question.correctAnswerGenerator(),
+            correctAnswerPositionOverride
           )}
+          onChangeResponse={getResponseOnChange(questionNum)}
         />
       ) : (
         <WPTASDefaultQuestion
@@ -140,7 +159,13 @@ const WPTASDefaultQuestion = ({
   );
 };
 
-const WPTASMultiChoiceQuestion = ({ choices }: { choices: Array<string> }) => {
+const WPTASMultiChoiceQuestion = ({
+  choices,
+  onChangeResponse,
+}: {
+  choices: Array<string>;
+  onChangeResponse: (event: ChangeEvent<HTMLInputElement>) => void;
+}) => {
   const [selectedMultiChoice, setSelectedMultiChoice] = useState('');
   const classes = useStyles();
   return (
@@ -149,6 +174,7 @@ const WPTASMultiChoiceQuestion = ({ choices }: { choices: Array<string> }) => {
       value={selectedMultiChoice}
       onChange={(event) => {
         setSelectedMultiChoice((event.target as HTMLInputElement).value);
+        onChangeResponse(event);
       }}
       className={classes.multiChoiceRadioGroup}
     >

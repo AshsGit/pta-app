@@ -11,6 +11,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { AbsService } from '../../../services/AbsService';
+import { WptasService } from '../../../services/WptasService';
 import { TestHistoryList } from './TestHistoryList';
 import { TestTableSummary } from './TestTableSummary';
 
@@ -200,6 +201,7 @@ const Header = withStyles(styles)(({ testType, setTestType, classes }: any) => {
 
 export const PatientHistory = withStyles(styles)(({ classes }: any) => {
   const location = useLocation();
+  const wptasService = new WptasService();
   const absService = new AbsService();
 
   let type = new URLSearchParams(location.search).get('type');
@@ -219,11 +221,16 @@ export const PatientHistory = withStyles(styles)(({ classes }: any) => {
         <Header testType={testType} setTestType={setTestType} />
         <div style={{ padding: '0 1rem' }}>
           <TestTableSummary
+            wptasService={wptasService}
             absService={absService}
             testType={testType}
             style={{ marginBottom: '2rem' }}
           />
-          <TestHistoryList absService={absService} testType={testType} />
+          <TestHistoryList
+            wptasService={wptasService}
+            absService={absService}
+            testType={testType}
+          />
         </div>
       </div>
     </div>

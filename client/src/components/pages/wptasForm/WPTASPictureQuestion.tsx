@@ -17,6 +17,7 @@ import { FilledButton } from '../../layout/Buttons';
 import CorrectIcon from '@material-ui/icons/CheckCircleTwoTone';
 import IncorrectIcon from '@material-ui/icons/CancelTwoTone';
 import { question_count } from '../../../data/wptas_questions';
+import { truncate } from 'node:fs';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -63,13 +64,21 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const WPTASPictureQuestion = ({
   question,
-  setMultiChoiceUsed,
+  setQuestionMultiChoiceGiven,
   setQuestionCorrect,
 }: {
   question: WPTASPicturesQuestion;
-  setMultiChoiceUsed: (q_index: number, val: boolean) => void;
-  setQuestionCorrect: (q_index: number, val: boolean) => void;
-  getResponseOnChange: (q_index: number) => (event: ChangeEvent<HTMLInputElement>) => void;
+  setQuestionMultiChoiceGiven: (
+    q_index: number | Array<number>,
+    val: boolean
+  ) => void;
+  setQuestionCorrect: (
+    q_index: number | Array<number>,
+    val: boolean | Array<boolean>
+  ) => void;
+  getResponseOnChange: (
+    q_index: number
+  ) => (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const classes = useStyles();
   const {
@@ -88,7 +97,7 @@ export const WPTASPictureQuestion = ({
     [false, false, false],
   ];
   const correctCoordQuestionNum = Array(question_count).fill('');
-  
+
   correctAnswers
     .map((img_name) => image_names.findIndex((v) => v === img_name))
     .map((index) => [index % 3, (index / 3) >> 0])
@@ -96,8 +105,6 @@ export const WPTASPictureQuestion = ({
       correctAnswerCoords[x][y] = true;
       correctCoordQuestionNum[index] = `${x} ${y}`;
     });
-
-  
 
   const [selected, setSelected] = useState({
     total: 0,
@@ -116,10 +123,14 @@ export const WPTASPictureQuestion = ({
   const toggleShowTomorrowsPics = () =>
     setShowTomorrowsPics(!showTomorrowsPics);
   const [isMultiChoice, setIsMultiChoice] = useState(false);
-  const multiChoiceToggle = () => {
-    questionNum.forEach((num, index) => setMultiChoiceUsed(num, !isMultiChoice));
-    setIsMultiChoice(!isMultiChoice);
-  }
+
+  const multiChoiceToggle = (e) => {
+    setIsMultiChoice(e.target.checked);
+    setQuestionMultiChoiceGiven(questionNum, e.target.checked);
+    // console.log(questionNum);
+    // questionNum.forEach((num, index) =>
+    // );
+  };
 
   const rows = image_names
     .filter((_, i) => i < 9)
@@ -133,11 +144,14 @@ export const WPTASPictureQuestion = ({
     }, []);
 
   const onClickImage = (x: number, y: number) => (_) => {
+    console.log('onclickimage');
+    console.log('x, y', x, ', ', y);
     if (selected.total < 3 || selected.arr[x][y] === true) {
-      const questionNum = 1 + correctCoordQuestionNum.findIndex(val=>val===`${x} ${y}`);
-      if (questionNum > 0) {
-        setQuestionCorrect(questionNum, selected.arr[x][y] === false);
-      }
+      // const questionNum =
+      // 1 + correctCoordQuestionNum.findIndex((val) => val === `${x} ${y}`);
+      // if (questionNum > 0) {
+      // setQuestionCorrect(questionNum, selected.arr[x][y] === false);
+      // }
 
       const total = selected.total + (selected.arr[x][y] === true ? -1 : 1);
       const correct = correctAnswerCoords[x][y]
@@ -151,6 +165,22 @@ export const WPTASPictureQuestion = ({
         correct,
         arr,
       });
+      console.log('selected total, correct, arr', total, correct, arr);
+      console.log('queswtionNum', questionNum);
+      switch (correct) {
+        case 1:
+          setQuestionCorrect(questionNum, [true, false, false]);
+          break;
+        case 2:
+          setQuestionCorrect(questionNum, [true, true, false]);
+          break;
+        case 3:
+          setQuestionCorrect(questionNum, true);
+          break;
+        default:
+          setQuestionCorrect(questionNum, false);
+          break;
+      }
     }
   };
 

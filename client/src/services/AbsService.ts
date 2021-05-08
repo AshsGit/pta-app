@@ -96,11 +96,11 @@ export class AbsService {
       return of(this.submissions[patientId]);
     }
     return from(axios.get(`/api/abs/submissions/${patientId}`)).pipe(
-      // Reverse because we display history in reverse chronological order
       map((result) => result.data),
       map(this.dbAbsSubmissionsToAbsSubmissions),
       // Cache submissions
       tap((submissions) => (this.submissions[patientId] = [...submissions])),
+      // Reverse because we display history in reverse chronological order
       map((submissions) => submissions.reverse())
     );
   }
