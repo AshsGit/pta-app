@@ -178,7 +178,9 @@ export const PatientDashboard = withStyles(styles)(({ classes }: any) => {
     <div className={classes.pageWrapper}>
       <div className={classes.backdrop}></div>
       <div className={classes.page}>
-        {patientExists === null ? (
+        {patientExists === null ||
+        wptasDisabled === null ||
+        absDisabled === null ? (
           <Box
             display='flex'
             alignItems='center'

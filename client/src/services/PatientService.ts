@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { from, Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { get } from 'lodash';
 import { Patient } from '../types/Patient';
 

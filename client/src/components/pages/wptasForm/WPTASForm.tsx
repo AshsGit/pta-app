@@ -181,7 +181,6 @@ const WPTASFormContent: FC<any> = ({
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>, id) => {
-    console.log('handle submit');
     event.preventDefault();
 
     setSubmitPressed(true);
@@ -305,7 +304,7 @@ const WPTASFormContent: FC<any> = ({
                   You have successfully submitted your response!
                 </div>
               ) : (
-                <form onSubmit={($event) => handleSubmit($event, id)}>
+                <form>
                   <Box
                     display='flex'
                     flexDirection='column'
@@ -348,7 +347,12 @@ const WPTASFormContent: FC<any> = ({
                         <CircularProgress />
                       ) : (
                         <FilledButton
-                          type='submit'
+                          onClick={(e) => {
+                            if (
+                              window.confirm('Are you sure you wish to submit?')
+                            )
+                              handleSubmit(e, id);
+                          }}
                           width={400}
                           style={{ fontSize: '18px' }}
                         >
