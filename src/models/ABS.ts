@@ -25,12 +25,10 @@ const absSubmissionSchema = new Schema(
   {
     period_of_observation_to: {
       type: Date,
-      max: Date.now,
       required: true,
     },
     period_of_observation_from: {
       type: Date,
-      max: Date.now,
       required: true,
     },
     observation_environment: {

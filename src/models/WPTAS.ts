@@ -36,7 +36,6 @@ const wptasSubmissionSchema = new Schema(
   {
     date_of_submission: {
       type: Date,
-      max: Date.now,
       required: true,
     },
     responses: [{ type: Schema.Types.ObjectId, ref: 'WPTASResponse' }],
