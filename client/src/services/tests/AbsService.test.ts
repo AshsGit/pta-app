@@ -1,9 +1,9 @@
 import { jest } from '@jest/globals';
 import axios from 'axios';
-import questions from '../src/data/abs';
-import { AbsService } from '../src/services/AbsService';
+import questions from '../../data/abs';
+import { AbsService } from '../AbsService';
 import { get } from 'lodash';
-import { ABSSubmission } from '../src/types/ABS';
+import { ABSSubmission } from '../../types/ABS';
 
 jest.mock('axios');
 
@@ -32,9 +32,9 @@ describe('Testing AbsService', () => {
       period_of_observation_to: '2021-04-14T012:00:00Z',
       period_of_observation_from: '2021-04-14T04:00:00Z',
       observation_environment: 'hospital',
-      examiner_initials: '',
+      examiner_initials: 'AA',
       date_of_submission: '2021-04-14T05:00:00Z',
-      total: 6,
+      total: 29,
       patient: patientId,
     },
     {
@@ -58,9 +58,9 @@ describe('Testing AbsService', () => {
       period_of_observation_to: '2021-04-15T012:00:00Z',
       period_of_observation_from: '2021-04-15T04:00:00Z',
       observation_environment: 'bed',
-      examiner_initials: '',
+      examiner_initials: 'AB',
       date_of_submission: '2021-04-15T05:00:00Z',
-      total: 12,
+      total: 56,
       patient: patientId,
     },
   ];
@@ -70,7 +70,7 @@ describe('Testing AbsService', () => {
       periodOfObs_to: new Date('2021-04-14T012:00:00Z'),
       periodOfObs_from: new Date('2021-04-14T04:00:00Z'),
       obsEnv: 'hospital',
-      examinerInitials: '',
+      examinerInitials: 'AA',
       patientId,
       answers: [
         { questionNum: 1, score: 3 },
@@ -88,7 +88,7 @@ describe('Testing AbsService', () => {
         { questionNum: 13, score: 3 },
         { questionNum: 14, score: 2 },
       ],
-      total: 6,
+      total: 29,
       submissionId: 'submission-1',
     },
     {
@@ -96,7 +96,7 @@ describe('Testing AbsService', () => {
       periodOfObs_to: new Date('2021-04-15T012:00:00Z'),
       periodOfObs_from: new Date('2021-04-15T04:00:00Z'),
       obsEnv: 'bed',
-      examinerInitials: '',
+      examinerInitials: 'AB',
       patientId,
       answers: [
         { questionNum: 1, score: 4 },
@@ -114,35 +114,93 @@ describe('Testing AbsService', () => {
         { questionNum: 13, score: 4 },
         { questionNum: 14, score: 4 },
       ],
-      total: 12,
+      total: 56,
       submissionId: 'submission-2',
     },
   ];
 
-  const dataSummary = questions
-    .map((question) => ({
-      question: question.title,
-      '14/4/2021': get(data, [
-        0,
-        'responses',
-        question.questionNum - 1,
-        'score',
-      ]),
-      '15/4/2021': get(data, [
-        1,
-        'responses',
-        question.questionNum - 1,
-        'score',
-      ]),
-    }))
-    .concat([{ question: 'Total', '14/4/2021': 29, '15/4/2021': 56 }]);
+  const dataSummary = [
+    {
+      question:
+        'Short attention span, easy distractability, inability to concentrate',
+      '14/4/2021': 3,
+      '15/4/2021': 4,
+    },
+    {
+      question: 'Impulsive, impatient, low tolerance for pain or frustration',
+      '14/4/2021': 2,
+      '15/4/2021': 4,
+    },
+    {
+      question: 'Uncooperative, resistant to care, demanding',
+      '14/4/2021': 1,
+      '15/4/2021': 4,
+    },
+    {
+      question:
+        'Violent and / or threatening violence toward people or property',
+      '14/4/2021': 3,
+      '15/4/2021': 4,
+    },
+    {
+      question: 'Explosive and / or unpredictable anger',
+      '14/4/2021': 2,
+      '15/4/2021': 4,
+    },
+    {
+      question: 'Rocking, rubbing, moaning or other self-stimulating behavior',
+      '14/4/2021': 1,
+      '15/4/2021': 4,
+    },
+    {
+      question: 'Pulling at tubes, restraints, etc.',
+      '14/4/2021': 3,
+      '15/4/2021': 4,
+    },
+    {
+      question: 'Wandering from treatment areas',
+      '14/4/2021': 2,
+      '15/4/2021': 4,
+    },
+    {
+      question: 'Restlessness, pacing, excessive movement',
+      '14/4/2021': 1,
+      '15/4/2021': 4,
+    },
+    {
+      question: 'Repetitive behaviors, motor and / or verbal',
+      '14/4/2021': 3,
+      '15/4/2021': 4,
+    },
+    {
+      question: 'Rapid, loud or excessive talking',
+      '14/4/2021': 2,
+      '15/4/2021': 4,
+    },
+    {
+      question: 'Sudden changes of mood',
+      '14/4/2021': 1,
+      '15/4/2021': 4,
+    },
+    {
+      question: 'Easily initiated or excessive crying and / or laughter',
+      '14/4/2021': 3,
+      '15/4/2021': 4,
+    },
+    {
+      question: 'Self-abusiveness, physical and / or verbal',
+      '14/4/2021': 2,
+      '15/4/2021': 4,
+    },
+    { question: 'Total', '14/4/2021': 29, '15/4/2021': 56 },
+  ];
 
   const newSubmission: ABSSubmission = {
     submissionDate: new Date(),
     periodOfObs_to: new Date(),
     periodOfObs_from: new Date(),
     obsEnv: 'hospital bed',
-    examinerInitials: 'ES', //is this needed for ABS??
+    examinerInitials: 'AC',
     patientId: patientId,
     answers: [
       { questionNum: 1, score: 1 },

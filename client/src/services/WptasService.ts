@@ -50,7 +50,9 @@ export class WptasService {
               rows[questionNum - 1][formattedDate] = `${score}${
                 multiChoiceGiven ? '*' : ''
               }`;
-              totalRow[formattedDate] = (totalRow[formattedDate] || 0) + score;
+              totalRow[formattedDate] = (
+                parseInt(totalRow[formattedDate] || '0') + score
+              ).toString();
             }
           );
         });
