@@ -1,6 +1,6 @@
 import { WPTASQuestion } from '../types/WPTAS';
 
-const CORRECT_AGE = '30';
+const CORRECT_AGE = '22';
 const CORRECT_DOB = new Date(1999, 0, 25);
 const CORRECT_LOCATION = 'Epworth Hospital';
 const CORRECT_NAME = 'Lungile';

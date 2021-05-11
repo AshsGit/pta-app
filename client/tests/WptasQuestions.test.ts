@@ -1,9 +1,6 @@
 import sinon from 'sinon';
-import questions from '../src/data/wptas_questions';
+import { questions } from '../src/data/wptas_questions';
 import { WPTASNonImageQuestion } from '../src/types/WPTAS';
-import * as getRandomModule from '../src/data/getRandom';
-
-sinon.stub(getRandomModule, 'getRandom').returns(2);
 
 describe('Testing WPTAS Question Generators', () => {
   const age = '30';
@@ -20,7 +17,8 @@ describe('Testing WPTAS Question Generators', () => {
   describe('Question 1', () => {
     test('Multiple choice generator', () => {
       let choices = (questions[0] as WPTASNonImageQuestion).multichoiceGenerator(
-        age
+        age,
+        2
       );
       expect(choices).toEqual(['28', '29', '30']);
     });
@@ -29,7 +27,8 @@ describe('Testing WPTAS Question Generators', () => {
   describe('Question 2', () => {
     test('Multiple choice generator', () => {
       let choices = (questions[1] as WPTASNonImageQuestion).multichoiceGenerator(
-        dob
+        dob,
+        2
       );
       expect(choices).toEqual([
         'Sat Jan 23 1999',
@@ -42,7 +41,8 @@ describe('Testing WPTAS Question Generators', () => {
   describe('Question 3', () => {
     test('Multiple choice generator', () => {
       let choices = (questions[2] as WPTASNonImageQuestion).multichoiceGenerator(
-        'July'
+        'July',
+        2
       );
       expect(choices).toEqual(['May', 'June', 'July']);
     });
@@ -81,7 +81,8 @@ describe('Testing WPTAS Question Generators', () => {
   describe('Question 5', () => {
     test('Multiple choice generator', () => {
       let choices = (questions[4] as WPTASNonImageQuestion).multichoiceGenerator(
-        'Thursday'
+        'Thursday',
+        2
       );
       expect(choices).toEqual(['Tuesday', 'Wednesday', 'Thursday']);
     });
@@ -94,7 +95,8 @@ describe('Testing WPTAS Question Generators', () => {
   describe('Question 6', () => {
     test('Multiple choice generator', () => {
       let choices = (questions[5] as WPTASNonImageQuestion).multichoiceGenerator(
-        '2021'
+        '2021',
+        2
       );
       expect(choices).toEqual(['2019', '2020', '2021']);
     });
