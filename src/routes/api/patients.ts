@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 export {};
 const express = require('express');
 const router = express.Router();
@@ -32,7 +34,7 @@ router.post('/', async (req: any, res: any) => {
 // @access Public
 router.get('/:id', async (req: any, res: any) => {
   try {
-    const patient = await Patient.findOne({ _id: req.params.id });
+    const patient = await Patient.findById(req.params.id);
     res.status(200).json(patient);
   } catch (e) {
     res.status(400).json({ msg: e.message });

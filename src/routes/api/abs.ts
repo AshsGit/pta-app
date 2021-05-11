@@ -36,6 +36,22 @@ router.get('/submission/:id', (req: any, res: any) => {
     });
 });
 
+// @route GET api/abs/lastSubmission/:patientId
+// @desc get the most recent abs submisison for a patient
+// @access Public
+router.get('/lastSubmission/:patientId', async (req, res) => {
+  ABSSubmission.find({ patient: req.params.patientId })
+    .sort([['date_of_submission', -1]])
+    .limit(1)
+    .exec((err, submission) => {
+      if (err) {
+        res.status(400).json({ msg: err.message });
+        return;
+      }
+      res.status(200).json(submission);
+    });
+});
+
 router.post('/submit', async (req: any, res: any) => {
   let newSubmission = req.body;
   let newResponses = newSubmission.answers;

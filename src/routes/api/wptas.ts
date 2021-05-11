@@ -21,12 +21,28 @@ router.get('/submissions/:patientId', async (req: any, res: any) => {
     });
 });
 
-// @route GET api/wptas/submission/:id
+// @route GET api/wptas/submission/:patientId
 // @desc get a submission by submission id
 // @access Public
 router.get('/submission/:id', async (req, res) => {
   WPTASSubmission.findOne({ _id: req.params.id })
     .populate('responses')
+    .exec((err, submission) => {
+      if (err) {
+        res.status(400).json({ msg: err.message });
+        return;
+      }
+      res.status(200).json(submission);
+    });
+});
+
+// @route GET api/wptas/lastSubmission/:id
+// @desc get the most recent wptas submisison for a patient
+// @access Public
+router.get('/lastSubmission/:patientId', async (req, res) => {
+  WPTASSubmission.find({ patient: req.params.patientId })
+    .sort([['date_of_submission', -1]])
+    .limit(1)
     .exec((err, submission) => {
       if (err) {
         res.status(400).json({ msg: err.message });

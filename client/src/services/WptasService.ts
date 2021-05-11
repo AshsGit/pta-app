@@ -1,8 +1,9 @@
 import { WPTASSubmission } from '../types/WPTAS';
 import axios from 'axios';
 import { from, Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-import { questions, questionTitles } from '../data/wptas_questions';
+import { catchError, map, tap } from 'rxjs/operators';
+import { questionTitles } from '../data/wptas_questions';
+import { get } from 'lodash';
 
 type PatientWptasSummary = Array<
   { question: string } & {
@@ -72,6 +73,21 @@ export class WptasService {
       tap((submissions) => (this.submissions[patientId] = [...submissions])),
       // Reverse because we display history in reverse chronological order
       map((submissions) => submissions.reverse())
+    );
+  }
+
+  getLastWptasSubmissionDate(patientId: string): Observable<Date> {
+    return from(axios.get(`/api/wptas/lastSubmission/${patientId}`)).pipe(
+      catchError((err) => of(null)),
+      map((result) => {
+        let submissionDate = get(result, ['data', 0, 'date_of_submission']);
+        if (!submissionDate) {
+          return null;
+        }
+        let date = new Date(submissionDate);
+        date.setHours(0, 0, 0, 0);
+        return date;
+      })
     );
   }
 

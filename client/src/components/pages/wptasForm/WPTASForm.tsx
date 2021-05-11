@@ -124,8 +124,11 @@ const WPTASFormContent: FC<any> = ({
   const [questionResponses, setQuestionResponses] = useState<string[]>(
     new Array(question_count).fill('')
   );
+  let defaultMultiChoiceGiven = new Array(question_count).fill(false);
+  // This question is always a multiple choice question.
+  defaultMultiChoiceGiven[7] = true;
   const [multiChoiceGiven, setMultiChoiceGiven] = useState<boolean[]>(
-    new Array(question_count).fill(false)
+    defaultMultiChoiceGiven
   );
   const [initials, setInitials] = useState('');
 
@@ -144,7 +147,6 @@ const WPTASFormContent: FC<any> = ({
     questionNum: number | Array<number>,
     val: boolean
   ) => {
-    console.log('set multi choice used', questionNum, val);
     if (typeof questionNum === 'number') {
       questionNum = [questionNum];
     }

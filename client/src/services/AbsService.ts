@@ -1,8 +1,9 @@
 // import Axios from 'axios-observable';
 import axios from 'axios';
 import { from, Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import questions from '../data/abs';
+import { get } from 'lodash';
 import { ABSSubmission } from '../types/ABS';
 
 type PatientAbsSummary = Array<
@@ -102,6 +103,21 @@ export class AbsService {
       tap((submissions) => (this.submissions[patientId] = [...submissions])),
       // Reverse because we display history in reverse chronological order
       map((submissions) => submissions.reverse())
+    );
+  }
+
+  getLastAbsSubmissionDate(patientId: string): Observable<Date> {
+    return from(axios.get(`/api/abs/lastSubmission/${patientId}`)).pipe(
+      catchError((err) => of(null)),
+      map((result) => {
+        let submissionDate = get(result, ['data', 0, 'date_of_submission']);
+        if (!submissionDate) {
+          return null;
+        }
+        let date = new Date(submissionDate);
+        date.setHours(0, 0, 0, 0);
+        return date;
+      })
     );
   }
 

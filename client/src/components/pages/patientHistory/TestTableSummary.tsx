@@ -123,7 +123,7 @@ const WPTASTable = withStyles(styles)(({ classes, wptasService }: any) => {
     });
   };
 
-  if (summary.length === 0) {
+  if (!summary || summary.length === 0) {
     return (
       <Box
         display='flex'

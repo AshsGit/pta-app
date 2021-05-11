@@ -54,6 +54,15 @@ const useStyles = makeStyles((theme: Theme) =>
       color: '#eb4034',
       fontSize: 40,
     },
+    disabledSwitch: {
+      '& .MuiSwitch-colorPrimary.Mui-disabled': {
+        color: '#5c88f6',
+      },
+      '& .MuiSwitch-track': {
+        backgroundColor: '#5c88f6 !important',
+        opacity: '0.5 !important',
+      },
+    },
   })
 );
 
@@ -81,7 +90,8 @@ export const WPTASFaceQuestion = ({
   const correctAnswerIndex = image_names.indexOf(correctAnswerGenerator());
 
   const [selectedImage, setSelectedImage] = useState('');
-  const [multiChoiceGiven, setMultiChoiceGiven] = useState(false);
+  // Default this question to true, as it is always a multiple choice question.
+  const [multiChoiceGiven, setMultiChoiceGiven] = useState(true);
   const [error, setError] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const toggleShowAnswer = () => setShowAnswer(!showAnswer);
@@ -98,8 +108,10 @@ export const WPTASFaceQuestion = ({
       <Box className={classes.switch} display='flex' alignItems='center'>
         <span style={{ fontSize: '11px' }}>Multiple choice given?</span>
         <Switch
+          className={classes.disabledSwitch}
           color='primary'
           checked={multiChoiceGiven}
+          disabled={true} // This question is always a multiple choice question.
           onChange={(e) => {
             setMultiChoiceGiven(e.target.checked);
             setQuestionMultiChoiceGiven(questionNum, e.target.checked);

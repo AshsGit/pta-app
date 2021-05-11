@@ -94,7 +94,7 @@ const WPTASHistory = withStyles(styles)(
       });
     };
 
-    if (!submissions || submissions.length === 0) {
+    if (!submissions) {
       return (
         <Box
           display='flex'
@@ -174,7 +174,7 @@ const ABSHistory = withStyles(styles)(({ classes, absService }: any) => {
     });
   };
 
-  if (!submissions || submissions.length === 0) {
+  if (!submissions) {
     return (
       <Box
         display='flex'
