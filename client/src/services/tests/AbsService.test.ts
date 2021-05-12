@@ -10,6 +10,32 @@ jest.mock('axios');
 describe('Testing AbsService', () => {
   var absService;
   const patientId = 'test-patient-id';
+  const latestSubmission = {
+    _id: 'submission-2',
+    responses: [
+      { _id: '1', question_num: 1, score: 4 },
+      { _id: '2', question_num: 2, score: 4 },
+      { _id: '3', question_num: 3, score: 4 },
+      { _id: '4', question_num: 4, score: 4 },
+      { _id: '5', question_num: 5, score: 4 },
+      { _id: '6', question_num: 6, score: 4 },
+      { _id: '7', question_num: 7, score: 4 },
+      { _id: '8', question_num: 8, score: 4 },
+      { _id: '9', question_num: 9, score: 4 },
+      { _id: '10', question_num: 10, score: 4 },
+      { _id: '11', question_num: 11, score: 4 },
+      { _id: '12', question_num: 12, score: 4 },
+      { _id: '13', question_num: 13, score: 4 },
+      { _id: '14', question_num: 14, score: 4 },
+    ],
+    period_of_observation_to: '2021-04-15T012:00:00Z',
+    period_of_observation_from: '2021-04-15T04:00:00Z',
+    observation_environment: 'bed',
+    examiner_initials: 'AB',
+    date_of_submission: '2021-04-15T05:00:00Z',
+    total: 56,
+    patient: patientId,
+  };
   const data = [
     {
       _id: 'submission-1',
@@ -37,32 +63,7 @@ describe('Testing AbsService', () => {
       total: 29,
       patient: patientId,
     },
-    {
-      _id: 'submission-2',
-      responses: [
-        { _id: '1', question_num: 1, score: 4 },
-        { _id: '2', question_num: 2, score: 4 },
-        { _id: '3', question_num: 3, score: 4 },
-        { _id: '4', question_num: 4, score: 4 },
-        { _id: '5', question_num: 5, score: 4 },
-        { _id: '6', question_num: 6, score: 4 },
-        { _id: '7', question_num: 7, score: 4 },
-        { _id: '8', question_num: 8, score: 4 },
-        { _id: '9', question_num: 9, score: 4 },
-        { _id: '10', question_num: 10, score: 4 },
-        { _id: '11', question_num: 11, score: 4 },
-        { _id: '12', question_num: 12, score: 4 },
-        { _id: '13', question_num: 13, score: 4 },
-        { _id: '14', question_num: 14, score: 4 },
-      ],
-      period_of_observation_to: '2021-04-15T012:00:00Z',
-      period_of_observation_from: '2021-04-15T04:00:00Z',
-      observation_environment: 'bed',
-      examiner_initials: 'AB',
-      date_of_submission: '2021-04-15T05:00:00Z',
-      total: 56,
-      patient: patientId,
-    },
+    latestSubmission,
   ];
   const transformedData = [
     {
@@ -328,6 +329,31 @@ describe('Testing AbsService', () => {
       absService.submissions[patientId] = [];
       absService.submit(newSubmission).subscribe(() => {
         expect(absService.submissions[patientId]).toBeNull();
+      });
+    });
+  });
+
+  describe('gets the date of the latest submission', () => {
+    beforeEach(() => {
+      axios.get = jest.fn();
+      (axios.get as any).mockResolvedValue({ data: [latestSubmission] });
+      absService = new AbsService();
+    });
+
+    it('calls the /api/abs/lastSubmission endpoint', () => {
+      expect.assertions(2);
+      absService.getLastAbsSubmissionDate(patientId).subscribe((_) => {
+        expect((axios.get as any).mock.calls.length).toBe(1);
+        expect((axios.get as any).mock.calls[0][0]).toBe(
+          `/api/abs/lastSubmission/${patientId}`
+        );
+      });
+    });
+
+    it('retrieves the date of the latest abs submission', () => {
+      expect.assertions(1);
+      absService.getLastAbsSubmissionDate(patientId).subscribe((date) => {
+        expect(date).toEqual(new Date(2021, 3, 15));
       });
     });
   });

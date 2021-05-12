@@ -10,6 +10,27 @@ jest.mock('axios');
 describe('Testing WptasService', () => {
   var wptasService;
   const patientId = 'test-patient-id';
+  const latestSubmission = {
+    _id: 'submission-2',
+    patient: patientId,
+    examiner_initials: 'AB',
+    responses: [
+      { _id: '1', question_num: 1, multiple_choice_given: false, score: 1 },
+      { _id: '2', question_num: 2, multiple_choice_given: false, score: 1 },
+      { _id: '3', question_num: 3, multiple_choice_given: false, score: 1 },
+      { _id: '4', question_num: 4, multiple_choice_given: false, score: 1 },
+      { _id: '5', question_num: 5, multiple_choice_given: false, score: 1 },
+      { _id: '6', question_num: 6, multiple_choice_given: false, score: 1 },
+      { _id: '7', question_num: 7, multiple_choice_given: false, score: 1 },
+      { _id: '8', question_num: 8, multiple_choice_given: false, score: 1 },
+      { _id: '9', question_num: 9, multiple_choice_given: false, score: 1 },
+      { _id: '10', question_num: 10, multiple_choice_given: false, score: 1 },
+      { _id: '11', question_num: 11, multiple_choice_given: false, score: 1 },
+      { _id: '12', question_num: 12, multiple_choice_given: false, score: 1 },
+    ],
+    date_of_submission: '2021-04-15T05:00:00Z',
+    total: 12,
+  };
   const data = [
     {
       _id: 'submission-1',
@@ -32,27 +53,7 @@ describe('Testing WptasService', () => {
       date_of_submission: '2021-04-14T05:00:00Z',
       total: 7,
     },
-    {
-      _id: 'submission-2',
-      patient: patientId,
-      examiner_initials: 'AB',
-      responses: [
-        { _id: '1', question_num: 1, multiple_choice_given: false, score: 1 },
-        { _id: '2', question_num: 2, multiple_choice_given: false, score: 1 },
-        { _id: '3', question_num: 3, multiple_choice_given: false, score: 1 },
-        { _id: '4', question_num: 4, multiple_choice_given: false, score: 1 },
-        { _id: '5', question_num: 5, multiple_choice_given: false, score: 1 },
-        { _id: '6', question_num: 6, multiple_choice_given: false, score: 1 },
-        { _id: '7', question_num: 7, multiple_choice_given: false, score: 1 },
-        { _id: '8', question_num: 8, multiple_choice_given: false, score: 1 },
-        { _id: '9', question_num: 9, multiple_choice_given: false, score: 1 },
-        { _id: '10', question_num: 10, multiple_choice_given: false, score: 1 },
-        { _id: '11', question_num: 11, multiple_choice_given: false, score: 1 },
-        { _id: '12', question_num: 12, multiple_choice_given: false, score: 1 },
-      ],
-      date_of_submission: '2021-04-15T05:00:00Z',
-      total: 12,
-    },
+    latestSubmission,
   ];
   const transformedData = [
     {
@@ -283,6 +284,31 @@ describe('Testing WptasService', () => {
       wptasService.submissions[patientId] = [];
       wptasService.submit(newSubmission).subscribe(() => {
         expect(wptasService.submissions[patientId]).toBeNull();
+      });
+    });
+  });
+
+  describe('gets the date of the latest submission', () => {
+    beforeEach(() => {
+      axios.get = jest.fn();
+      (axios.get as any).mockResolvedValue({ data: [latestSubmission] });
+      wptasService = new WptasService();
+    });
+
+    it('calls the /api/wptas/lastSubmission endpoint', () => {
+      expect.assertions(2);
+      wptasService.getLastWptasSubmissionDate(patientId).subscribe((_) => {
+        expect((axios.get as any).mock.calls.length).toBe(1);
+        expect((axios.get as any).mock.calls[0][0]).toBe(
+          `/api/wptas/lastSubmission/${patientId}`
+        );
+      });
+    });
+
+    it('retrieves the date of the latest wptas submission', () => {
+      expect.assertions(1);
+      wptasService.getLastWptasSubmissionDate(patientId).subscribe((date) => {
+        expect(date).toEqual(new Date(2021, 3, 15));
       });
     });
   });
