@@ -1,1 +1,0 @@
-# Everything within this directory models a MongoDB entity (Patient.ts is an example) 

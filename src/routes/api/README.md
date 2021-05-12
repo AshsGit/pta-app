@@ -1,1 +1,0 @@
-# This directory contains web server api route handlers (patients.ts is an example)

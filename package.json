@@ -4,11 +4,12 @@
   "description": "FIT3162 PTA app final year project",
   "main": "server.js",
   "scripts": {
-    "client-install": "npm i --prefix client",
     "start": "tsc && node dist/server.js",
     "server": "nodemon --watch src/server.ts --exec \"npm run start\"",
     "client": "npm start --prefix client",
-    "test": "npm test --prefix client",
+    "test": "jest",
+    "client-test": "npm test --prefix client",
+    "client-install": "npm i --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "repository": {
