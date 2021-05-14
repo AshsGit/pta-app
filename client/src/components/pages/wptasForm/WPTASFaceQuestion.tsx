@@ -11,6 +11,7 @@ import {
   Switch,
   Radio,
   FormHelperText,
+  Hidden,
 } from '@material-ui/core';
 import React, { ChangeEvent, useState } from 'react';
 import { face_images } from '../../../data/wptas_images';
@@ -71,6 +72,7 @@ export const WPTASFaceQuestion = ({
   setQuestionMultiChoiceGiven,
   setQuestionCorrect,
   getResponseOnChange,
+  error_,
 }: {
   question: WPTASFaceQuestionType;
   setQuestionMultiChoiceGiven: (
@@ -78,25 +80,33 @@ export const WPTASFaceQuestion = ({
     val: boolean
   ) => void;
   setQuestionCorrect: (
-    questoinNum: number | Array<number>,
+    questionNum: number | Array<number>,
     val: boolean
   ) => void;
   getResponseOnChange: (
     q_index: number
-  ) => (event: ChangeEvent<HTMLInputElement>) => void;
+  ) => (event: ChangeEvent<HTMLInputElement> | string) => void;
+  error_: boolean;
 }) => {
   const classes = useStyles();
   const { title, questionNum, image_names, correctAnswerGenerator } = question;
   const correctAnswerIndex = image_names.indexOf(correctAnswerGenerator());
 
   const [selectedImage, setSelectedImage] = useState('');
+
   // Default this question to true, as it is always a multiple choice question.
   const [multiChoiceGiven, setMultiChoiceGiven] = useState(true);
-  const [error, setError] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const toggleShowAnswer = () => setShowAnswer(!showAnswer);
 
-  const onChangeResponse = getResponseOnChange(questionNum);
+  const handleSelectImage = (value: string) => {
+    setSelectedImage(value);
+    getResponseOnChange(questionNum)(value);
+    setQuestionCorrect(
+      questionNum,
+      value === correctAnswerIndex.toString()
+    );
+  }
 
   return (
     <Box
@@ -105,21 +115,8 @@ export const WPTASFaceQuestion = ({
       alignItems='stretch'
       className={classes.imageQuestion}
     >
-      <Box className={classes.switch} display='flex' alignItems='center'>
-        <span style={{ fontSize: '11px' }}>Multiple choice given?</span>
-        <Switch
-          className={classes.disabledSwitch}
-          color='primary'
-          checked={multiChoiceGiven}
-          disabled={true} // This question is always a multiple choice question.
-          onChange={(e) => {
-            setMultiChoiceGiven(e.target.checked);
-            setQuestionMultiChoiceGiven(questionNum, e.target.checked);
-          }}
-        />
-      </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
-      <FormControl component='fieldset' fullWidth error={error}>
+      <FormControl component='fieldset' fullWidth error={error_}>
         <GridList cols={3}>
           {image_names
             .filter((_, i) => i < 3)
@@ -131,7 +128,7 @@ export const WPTASFaceQuestion = ({
               >
                 <img
                   src={face_images[img_name]}
-                  onClick={(_) => setSelectedImage(`${index}`)}
+                  onClick={(_) => handleSelectImage(`${index}`)}
                   style={
                     showAnswer && selectedImage !== `${index}`
                       ? { opacity: 0.4 }
@@ -157,12 +154,7 @@ export const WPTASFaceQuestion = ({
           value={selectedImage}
           row
           onChange={(event) => {
-            setSelectedImage((event.target as HTMLInputElement).value);
-            onChangeResponse(event);
-            setQuestionCorrect(
-              questionNum,
-              event.target.value === correctAnswerIndex.toString()
-            );
+            handleSelectImage((event.target as HTMLInputElement).value);
           }}
         >
           <Grid container direction='row' justify='space-around'>
@@ -189,7 +181,7 @@ export const WPTASFaceQuestion = ({
             </Grid>
           </Grid>
         </RadioGroup>
-        {error ? (
+        {error_ ? (
           <FormHelperText>This question must be answered!</FormHelperText>
         ) : null}
         <Grid container justify='flex-end'>

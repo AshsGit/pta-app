@@ -141,7 +141,7 @@ const WPTASFormContent: FC<any> = ({
   // Change handlers
   const initialsOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInitials(event.target.value);
-    setErrors({ ...errors, initialsError: event.target.value === '' });
+    setErrors(errors => ({ ...errors, initialsError: event.target.value === '' }));
   };
   const setQuestionMultiChoiceGiven = (
     questionNum: number | Array<number>,
@@ -153,8 +153,8 @@ const WPTASFormContent: FC<any> = ({
     //used by all questions
     const temp = [...multiChoiceGiven];
     questionNum.forEach((num: number) => (temp[num - 1] = val));
-    // temp[questionNum - 1] = val;
     setMultiChoiceGiven(temp);
+
   };
   const setQuestionCorrect = (
     questionNum: number | Array<number>,
@@ -170,13 +170,22 @@ const WPTASFormContent: FC<any> = ({
     const temp = [...answeredCorrectlyInput];
     questionNum.forEach((num: number, i) => (temp[num - 1] = val[i]));
     setAnsweredCorrectlyInput(temp);
+
+    const tempQErrors = [...errors.answerErrors];
+    questionNum.forEach((num: number) => tempQErrors[num - 1] = false);
+    setErrors({ ...errors, answerErrors: tempQErrors });
+
   };
   const getResponseOnChange = (questionNum: number) => (
     //used by non-image questions
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement> | string
   ) => {
     const temp = [...questionResponses];
-    temp[questionNum - 1] = event.target.value;
+    temp[questionNum - 1] = (
+      typeof event === "string"
+      ? event
+      : event.target.value);
+
     setQuestionResponses(temp);
   };
 
@@ -190,22 +199,13 @@ const WPTASFormContent: FC<any> = ({
       initialsError: initials === '',
     };
 
-    // multiChoiceGiven.forEach((mc_given, q_index) => {
-    //   if (mc_given) {
-    //     //TODO compare multi-choice answer to correct answer
-    //     newErrors.answerErrors[q_index] = true; //Error always for now
-    //   } else {
-    //     newErrors.answerErrors[q_index] = answeredCorrectlyInput[q_index];
-    //   }
-    // });
+    multiChoiceGiven.forEach((mc_given, q_index) => {
+      newErrors.answerErrors[q_index] = answeredCorrectlyInput[q_index] === null;
+    });
 
     // TODO: throw an error if (not multiChoice and answered correctly is null) OR (multiChoice and response.length)
 
-    console.log('answered correctly', answeredCorrectlyInput);
-    console.log('question responses', questionResponses);
-    console.log('multichoice given', multiChoiceGiven);
-
-    const formIncomplete = false; //hasError(newErrors);
+    const formIncomplete = hasError(newErrors);
 
     if (formIncomplete) {
       setErrors(newErrors);
@@ -272,24 +272,19 @@ const WPTASFormContent: FC<any> = ({
           ),
       };
 
-      console.log('submission', submission);
-      console.log('submission', JSON.stringify(submission));
 
       wptasService.submit(submission).subscribe(
         (result) => {
-          console.log('submit done', result);
           setLoading(false);
           setSubmitted(true);
         },
         (err) => {
-          console.log('Error:', err);
           setLoading(false);
           // TODO: provide a ui error
         }
       );
     }
   };
-
   return (
     <ThemeProvider theme={WPTASTheme}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -322,6 +317,11 @@ const WPTASFormContent: FC<any> = ({
                         }
                         setQuestionCorrect={setQuestionCorrect}
                         getResponseOnChange={getResponseOnChange}
+                        error_={submitPressed && (
+                          typeof question.questionNum === "number" 
+                          ? errors.answerErrors[question.questionNum-1]
+                          : question.questionNum.some(q => errors.answerErrors[q-1]))
+                        }
                       />
                     ))}
                     <Box
@@ -341,7 +341,7 @@ const WPTASFormContent: FC<any> = ({
                         label='Initials...'
                         placeholder=''
                         size='medium'
-                        error={errors.initialsError}
+                        error={submitPressed && errors.initialsError}
                       />
                       {loading ? (
                         <CircularProgress />

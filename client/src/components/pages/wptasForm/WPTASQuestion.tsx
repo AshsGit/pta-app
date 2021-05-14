@@ -22,6 +22,7 @@ export const WPTASQuestion: FC<any> = ({
   getResponseOnChange: (
     q_index: number
   ) => (event: ChangeEvent<HTMLInputElement>) => void;
+  error_: boolean;
 }) => {
   switch (question.questionType) {
     case 'face_question':

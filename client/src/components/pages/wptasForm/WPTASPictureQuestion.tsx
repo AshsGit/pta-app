@@ -66,6 +66,7 @@ export const WPTASPictureQuestion = ({
   question,
   setQuestionMultiChoiceGiven,
   setQuestionCorrect,
+  error_,
 }: {
   question: WPTASPicturesQuestion;
   setQuestionMultiChoiceGiven: (
@@ -79,6 +80,7 @@ export const WPTASPictureQuestion = ({
   getResponseOnChange: (
     q_index: number
   ) => (event: ChangeEvent<HTMLInputElement>) => void;
+  error_: boolean;
 }) => {
   const classes = useStyles();
   const {
@@ -116,7 +118,6 @@ export const WPTASPictureQuestion = ({
     ],
   });
 
-  const [error, setError] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const toggleShowAnswer = () => setShowAnswer(!showAnswer);
   const [showTomorrowsPics, setShowTomorrowsPics] = useState(false);
@@ -127,7 +128,6 @@ export const WPTASPictureQuestion = ({
   const multiChoiceToggle = (e) => {
     setIsMultiChoice(e.target.checked);
     setQuestionMultiChoiceGiven(questionNum, e.target.checked);
-    // console.log(questionNum);
     // questionNum.forEach((num, index) =>
     // );
   };
@@ -144,8 +144,6 @@ export const WPTASPictureQuestion = ({
     }, []);
 
   const onClickImage = (x: number, y: number) => (_) => {
-    console.log('onclickimage');
-    console.log('x, y', x, ', ', y);
     if (selected.total < 3 || selected.arr[x][y] === true) {
       // const questionNum =
       // 1 + correctCoordQuestionNum.findIndex((val) => val === `${x} ${y}`);
@@ -165,9 +163,42 @@ export const WPTASPictureQuestion = ({
         correct,
         arr,
       });
-      console.log('selected total, correct, arr', total, correct, arr);
-      console.log('queswtionNum', questionNum);
+
+      var setQuestionCorrectVals;
+
       switch (correct) {
+        case 0:
+          setQuestionCorrectVals = [false, false, false];
+          break;
+        case 1:
+          setQuestionCorrectVals = [true, false, false];
+          break;
+        case 2:
+          setQuestionCorrectVals = [true, true, false];
+          break;
+        case 3:
+          setQuestionCorrectVals = [true, true, true];
+          break;
+      }
+
+      switch (total) {
+        case 0:
+          setQuestionCorrectVals = [null, null, null];
+          break;
+        case 1:
+          setQuestionCorrectVals[1] = null;
+          setQuestionCorrectVals[2] = null;
+          break;
+        case 2:
+          setQuestionCorrectVals[2] = null;
+          break;
+        case 3:
+          break;
+      }
+
+      setQuestionCorrect(questionNum, setQuestionCorrectVals);
+
+      /*switch (correct) {
         case 1:
           setQuestionCorrect(questionNum, [true, false, false]);
           break;
@@ -180,7 +211,7 @@ export const WPTASPictureQuestion = ({
         default:
           setQuestionCorrect(questionNum, false);
           break;
-      }
+      }*/
     }
   };
 
@@ -200,7 +231,7 @@ export const WPTASPictureQuestion = ({
         />
       </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
-      <FormControl component='fieldset' fullWidth error={error}>
+      <FormControl component='fieldset' fullWidth error={error_}>
         {showTomorrowsPics ? (
           <WPTASNextWeekPics
             nextWeeksQuestions={
@@ -261,7 +292,7 @@ export const WPTASPictureQuestion = ({
                 </Grid>
               ))}
             </Grid>
-            {error ? (
+            {error_ ? (
               <FormHelperText>This question must be answered!</FormHelperText>
             ) : null}
           </React.Fragment>

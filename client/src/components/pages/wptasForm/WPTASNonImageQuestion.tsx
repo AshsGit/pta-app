@@ -12,6 +12,7 @@ import {
   Input,
   MenuItem,
   Select,
+  FormHelperText,
 } from '@material-ui/core';
 import { KeyboardDatePicker } from '@material-ui/pickers';
 import React, { ChangeEvent, useState } from 'react';
@@ -46,6 +47,7 @@ export const WPTASNonImageQuestion = ({
   setQuestionMultiChoiceGiven,
   setQuestionCorrect,
   getResponseOnChange,
+  error_,
 }: {
   question: WPTASNonImageQuestionType;
   correctAnswerPositionOverride: number;
@@ -57,6 +59,7 @@ export const WPTASNonImageQuestion = ({
   getResponseOnChange: (
     q_index: number
   ) => (event: ChangeEvent<HTMLInputElement>) => void;
+  error_: boolean;
 }) => {
   const classes = useStyles();
   const { title, questionNum, correctAnswerGenerator } = question;
@@ -72,6 +75,7 @@ export const WPTASNonImageQuestion = ({
     setAnsweredCorrectly((event.target as HTMLInputElement).value);
     setQuestionCorrect(questionNum, event.target.value === 'yes');
   };
+  const correctAnswer = question.correctAnswerGenerator();
 
   return (
     <Box
@@ -92,21 +96,28 @@ export const WPTASNonImageQuestion = ({
         />
       </Box>
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
-      {isMultiChoice ? (
-        <WPTASMultiChoiceQuestion
-          choices={question.multichoiceGenerator(
-            question.correctAnswerGenerator(),
-            correctAnswerPositionOverride
-          )}
-          onChangeResponse={getResponseOnChange(questionNum)}
-        />
-      ) : (
-        <WPTASDefaultQuestion
-          answeredCorrectly={answeredCorrectly}
-          answeredCorrectlyChanged={answeredCorrectlyChanged}
-          question={question}
-        />
-      )}
+      <FormControl component='fieldset' fullWidth error={error_}>
+        {isMultiChoice ? (
+          <WPTASMultiChoiceQuestion
+            choices={question.multichoiceGenerator(
+              correctAnswer,
+              correctAnswerPositionOverride
+            )}
+            onChangeResponse={getResponseOnChange(questionNum)}
+            setQuestionCorrect={(correct: boolean)=>setQuestionCorrect(question.questionNum, correct)}
+            correctAnswer={correctAnswer}
+          />
+        ) : (
+          <WPTASDefaultQuestion
+            answeredCorrectly={answeredCorrectly}
+            answeredCorrectlyChanged={answeredCorrectlyChanged}
+            question={question}
+          />
+        )}
+        {error_ ? (
+          <FormHelperText>This question must be answered!</FormHelperText>
+        ) : null}
+      </FormControl>
       <div className={classes.correctAnswer}>
         {`Correct answer: ${correctAnswerGenerator()}`}
       </div>
@@ -162,9 +173,13 @@ const WPTASDefaultQuestion = ({
 const WPTASMultiChoiceQuestion = ({
   choices,
   onChangeResponse,
+  setQuestionCorrect,
+  correctAnswer
 }: {
   choices: Array<string>;
   onChangeResponse: (event: ChangeEvent<HTMLInputElement>) => void;
+  setQuestionCorrect: (correct: boolean) => void;
+  correctAnswer: string;
 }) => {
   const [selectedMultiChoice, setSelectedMultiChoice] = useState('');
   const classes = useStyles();
@@ -175,6 +190,7 @@ const WPTASMultiChoiceQuestion = ({
       onChange={(event) => {
         setSelectedMultiChoice((event.target as HTMLInputElement).value);
         onChangeResponse(event);
+        setQuestionCorrect((event.target as HTMLInputElement).value === correctAnswer)
       }}
       className={classes.multiChoiceRadioGroup}
     >
