@@ -297,7 +297,9 @@ export const ABSForm: FunctionComponent = () => {
                           size='medium'
                           error={errors.initialsError}
                           helperText={
-                            errors.initialsError ? 'Please enter your initials' : ''
+                            errors.initialsError
+                              ? 'Please enter your initials'
+                              : ''
                           }
                         />
                         {loading ? (
@@ -322,7 +324,7 @@ export const ABSForm: FunctionComponent = () => {
                         error={hasError(errors)}
                       >
                         {hasError(errors) && submitPressed
-                          ? 'Please complete all fields'
+                          ? 'Please resolve all errors'
                           : ''}
                       </FormHelperText>
                     </Box>

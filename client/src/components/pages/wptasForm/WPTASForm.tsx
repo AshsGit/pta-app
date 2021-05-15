@@ -6,6 +6,7 @@ import {
   IconButton,
   Paper,
   TextField,
+  FormHelperText,
   Typography,
 } from '@material-ui/core';
 import {
@@ -340,6 +341,11 @@ const WPTASFormContent: FC<any> = ({
                         placeholder=''
                         size='medium'
                         error={submitPressed && errors.initialsError}
+                        helperText={
+                          submitPressed && errors.initialsError
+                            ? 'Please enter your initials'
+                            : ''
+                        }
                       />
                       {loading ? (
                         <CircularProgress />
@@ -358,6 +364,19 @@ const WPTASFormContent: FC<any> = ({
                         </FilledButton>
                       )}
                     </Box>
+                  </Box>
+                  <Box
+                    justifyContent='flex-end'
+                    style={{ padding: '0 20px 10px 20px' }}
+                  >
+                    <FormHelperText
+                      style={{ textAlign: 'end' }}
+                      error={hasError(errors)}
+                    >
+                      {hasError(errors) && submitPressed
+                        ? 'Please complete all fields'
+                        : ''}
+                    </FormHelperText>
                   </Box>
                 </form>
               )}
