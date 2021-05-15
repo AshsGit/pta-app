@@ -2,10 +2,7 @@ import { Button, Theme, withStyles } from '@material-ui/core';
 import { Styles } from '@material-ui/core/styles/withStyles';
 import React, { useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -95,60 +92,62 @@ const styles: Styles<Theme, any> = (theme: any) => ({
   },
 });
 
-const exportWptas = () => {};
+// Unused until feature is implemented:
 
-const exportAbs = () => {};
+// const exportWptas = () => {};
 
-const options = [
-  { label: 'Export WPTAS data', callback: exportWptas },
-  { label: 'Export ABS data', callback: exportAbs },
-];
+// const exportAbs = () => {};
 
-const ExportMenu = withStyles(styles)(({ classes }: any) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+// const options = [
+//   { label: 'Export WPTAS data', callback: exportWptas },
+//   { label: 'Export ABS data', callback: exportAbs },
+// ];
 
-  const handleMenuClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
+// const ExportMenu = withStyles(styles)(({ classes }: any) => {
+//   const [anchorEl, setAnchorEl] = useState(null);
+//   const open = Boolean(anchorEl);
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+//   const handleMenuClick = (event: any) => {
+//     setAnchorEl(event.currentTarget);
+//   };
 
-  const handleMenuItemClick = (event: any, index: number) => {
-    options[index].callback();
-    setAnchorEl(null);
-  };
+//   const handleMenuClose = () => {
+//     setAnchorEl(null);
+//   };
 
-  return (
-    <div>
-      <IconButton
-        aria-label='more'
-        aria-controls='long-menu'
-        aria-haspopup='true'
-        onClick={handleMenuClick}
-      >
-        <MoreVertIcon classes={{ root: classes.menuIcon }} />
-      </IconButton>
-      <Menu
-        anchorEl={anchorEl}
-        keepMounted
-        open={open}
-        onClose={handleMenuClose}
-      >
-        {options.map((option, index) => (
-          <MenuItem
-            key={option.label}
-            onClick={(event) => handleMenuItemClick(event, index)}
-          >
-            {option.label}
-          </MenuItem>
-        ))}
-      </Menu>
-    </div>
-  );
-});
+//   const handleMenuItemClick = (event: any, index: number) => {
+//     options[index].callback();
+//     setAnchorEl(null);
+//   };
+
+//   return (
+//     <div>
+//       <IconButton
+//         aria-label='more'
+//         aria-controls='long-menu'
+//         aria-haspopup='true'
+//         onClick={handleMenuClick}
+//       >
+//         <MoreVertIcon classes={{ root: classes.menuIcon }} />
+//       </IconButton>
+//       <Menu
+//         anchorEl={anchorEl}
+//         keepMounted
+//         open={open}
+//         onClose={handleMenuClose}
+//       >
+//         {options.map((option, index) => (
+//           <MenuItem
+//             key={option.label}
+//             onClick={(event) => handleMenuItemClick(event, index)}
+//           >
+//             {option.label}
+//           </MenuItem>
+//         ))}
+//       </Menu>
+//     </div>
+//   );
+// });
 
 const Header = withStyles(styles)(({ testType, setTestType, classes }: any) => {
   const { id } = useParams() as any;

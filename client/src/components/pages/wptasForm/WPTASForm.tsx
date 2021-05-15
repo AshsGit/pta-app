@@ -15,11 +15,7 @@ import {
   ThemeProvider,
 } from '@material-ui/core/styles';
 import { WPTASTheme } from '../../../themes';
-import {
-  questions,
-  correct_answers,
-  question_count,
-} from '../../../data/wptas_questions';
+import { questions, question_count } from '../../../data/wptas_questions';
 import { WptasService } from '../../../services/WptasService';
 import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -141,7 +137,10 @@ const WPTASFormContent: FC<any> = ({
   // Change handlers
   const initialsOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInitials(event.target.value);
-    setErrors(errors => ({ ...errors, initialsError: event.target.value === '' }));
+    setErrors((errors) => ({
+      ...errors,
+      initialsError: event.target.value === '',
+    }));
   };
   const setQuestionMultiChoiceGiven = (
     questionNum: number | Array<number>,
@@ -154,7 +153,6 @@ const WPTASFormContent: FC<any> = ({
     const temp = [...multiChoiceGiven];
     questionNum.forEach((num: number) => (temp[num - 1] = val));
     setMultiChoiceGiven(temp);
-
   };
   const setQuestionCorrect = (
     questionNum: number | Array<number>,
@@ -172,19 +170,16 @@ const WPTASFormContent: FC<any> = ({
     setAnsweredCorrectlyInput(temp);
 
     const tempQErrors = [...errors.answerErrors];
-    questionNum.forEach((num: number) => tempQErrors[num - 1] = false);
+    questionNum.forEach((num: number) => (tempQErrors[num - 1] = false));
     setErrors({ ...errors, answerErrors: tempQErrors });
-
   };
   const getResponseOnChange = (questionNum: number) => (
     //used by non-image questions
     event: ChangeEvent<HTMLInputElement> | string
   ) => {
     const temp = [...questionResponses];
-    temp[questionNum - 1] = (
-      typeof event === "string"
-      ? event
-      : event.target.value);
+    temp[questionNum - 1] =
+      typeof event === 'string' ? event : event.target.value;
 
     setQuestionResponses(temp);
   };
@@ -200,7 +195,8 @@ const WPTASFormContent: FC<any> = ({
     };
 
     multiChoiceGiven.forEach((mc_given, q_index) => {
-      newErrors.answerErrors[q_index] = answeredCorrectlyInput[q_index] === null;
+      newErrors.answerErrors[q_index] =
+        answeredCorrectlyInput[q_index] === null;
     });
 
     // TODO: throw an error if (not multiChoice and answered correctly is null) OR (multiChoice and response.length)
@@ -272,7 +268,6 @@ const WPTASFormContent: FC<any> = ({
           ),
       };
 
-
       wptasService.submit(submission).subscribe(
         (result) => {
           setLoading(false);
@@ -317,10 +312,13 @@ const WPTASFormContent: FC<any> = ({
                         }
                         setQuestionCorrect={setQuestionCorrect}
                         getResponseOnChange={getResponseOnChange}
-                        error_={submitPressed && (
-                          typeof question.questionNum === "number" 
-                          ? errors.answerErrors[question.questionNum-1]
-                          : question.questionNum.some(q => errors.answerErrors[q-1]))
+                        error_={
+                          submitPressed &&
+                          (typeof question.questionNum === 'number'
+                            ? errors.answerErrors[question.questionNum - 1]
+                            : question.questionNum.some(
+                                (q) => errors.answerErrors[q - 1]
+                              ))
                         }
                       />
                     ))}

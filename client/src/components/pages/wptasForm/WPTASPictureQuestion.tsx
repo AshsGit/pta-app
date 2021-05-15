@@ -17,7 +17,6 @@ import { FilledButton } from '../../layout/Buttons';
 import CorrectIcon from '@material-ui/icons/CheckCircleTwoTone';
 import IncorrectIcon from '@material-ui/icons/CancelTwoTone';
 import { question_count } from '../../../data/wptas_questions';
-import { truncate } from 'node:fs';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -128,8 +127,6 @@ export const WPTASPictureQuestion = ({
   const multiChoiceToggle = (e) => {
     setIsMultiChoice(e.target.checked);
     setQuestionMultiChoiceGiven(questionNum, e.target.checked);
-    // questionNum.forEach((num, index) =>
-    // );
   };
 
   const rows = image_names
@@ -145,12 +142,6 @@ export const WPTASPictureQuestion = ({
 
   const onClickImage = (x: number, y: number) => (_) => {
     if (selected.total < 3 || selected.arr[x][y] === true) {
-      // const questionNum =
-      // 1 + correctCoordQuestionNum.findIndex((val) => val === `${x} ${y}`);
-      // if (questionNum > 0) {
-      // setQuestionCorrect(questionNum, selected.arr[x][y] === false);
-      // }
-
       const total = selected.total + (selected.arr[x][y] === true ? -1 : 1);
       const correct = correctAnswerCoords[x][y]
         ? selected.correct + (selected.arr[x][y] ? -1 : 1)
@@ -197,21 +188,6 @@ export const WPTASPictureQuestion = ({
       }
 
       setQuestionCorrect(questionNum, setQuestionCorrectVals);
-
-      /*switch (correct) {
-        case 1:
-          setQuestionCorrect(questionNum, [true, false, false]);
-          break;
-        case 2:
-          setQuestionCorrect(questionNum, [true, true, false]);
-          break;
-        case 3:
-          setQuestionCorrect(questionNum, true);
-          break;
-        default:
-          setQuestionCorrect(questionNum, false);
-          break;
-      }*/
     }
   };
 
@@ -275,6 +251,7 @@ export const WPTASPictureQuestion = ({
                             ? { opacity: 0.5 }
                             : {}
                         }
+                        alt={`${img_name}`}
                       />
                       {showAnswer ? (
                         correctAnswerCoords[x][y] ? (
@@ -363,7 +340,7 @@ const WPTASNextWeekPics = ({ nextWeeksQuestions }) => {
     <GridList cols={3}>
       {nextWeeksQuestions.map((img_name, index) => (
         <GridListTile key={img_name} cols={1} className={classes.image_wrapper}>
-          <img src={photo_question_images[img_name]} />
+          <img src={photo_question_images[img_name]} alt={`${img_name}`} />
         </GridListTile>
       ))}
     </GridList>

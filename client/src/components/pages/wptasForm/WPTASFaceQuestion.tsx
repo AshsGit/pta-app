@@ -8,10 +8,8 @@ import {
   GridListTile,
   RadioGroup,
   Grid,
-  Switch,
   Radio,
   FormHelperText,
-  Hidden,
 } from '@material-ui/core';
 import React, { ChangeEvent, useState } from 'react';
 import { face_images } from '../../../data/wptas_images';
@@ -69,7 +67,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const WPTASFaceQuestion = ({
   question,
-  setQuestionMultiChoiceGiven,
   setQuestionCorrect,
   getResponseOnChange,
   error_,
@@ -95,18 +92,14 @@ export const WPTASFaceQuestion = ({
   const [selectedImage, setSelectedImage] = useState('');
 
   // Default this question to true, as it is always a multiple choice question.
-  const [multiChoiceGiven, setMultiChoiceGiven] = useState(true);
   const [showAnswer, setShowAnswer] = useState(false);
   const toggleShowAnswer = () => setShowAnswer(!showAnswer);
 
   const handleSelectImage = (value: string) => {
     setSelectedImage(value);
     getResponseOnChange(questionNum)(value);
-    setQuestionCorrect(
-      questionNum,
-      value === correctAnswerIndex.toString()
-    );
-  }
+    setQuestionCorrect(questionNum, value === correctAnswerIndex.toString());
+  };
 
   return (
     <Box
@@ -134,6 +127,7 @@ export const WPTASFaceQuestion = ({
                       ? { opacity: 0.4 }
                       : {}
                   }
+                  alt={`Face ${index}}`}
                 />
                 {showAnswer ? (
                   correctAnswerIndex === index ? (
