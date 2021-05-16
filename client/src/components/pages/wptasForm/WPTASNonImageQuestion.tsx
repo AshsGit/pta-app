@@ -38,6 +38,9 @@ const useStyles = makeStyles((theme: Theme) =>
     correctAnswer: {
       fontWeight: 500,
     },
+    answeredCorrectlyRadioGroup: {
+      marginBottom: '1rem',
+    },
   })
 );
 
@@ -104,7 +107,9 @@ export const WPTASNonImageQuestion = ({
               correctAnswerPositionOverride
             )}
             onChangeResponse={getResponseOnChange(questionNum)}
-            setQuestionCorrect={(correct: boolean)=>setQuestionCorrect(question.questionNum, correct)}
+            setQuestionCorrect={(correct: boolean) =>
+              setQuestionCorrect(question.questionNum, correct)
+            }
             correctAnswer={correctAnswer}
           />
         ) : (
@@ -134,7 +139,7 @@ const WPTASDefaultQuestion = ({
 
   return (
     <React.Fragment>
-      <FormControl>
+      <FormControl className={classes.answeredCorrectlyRadioGroup}>
         <FormLabel className={classes.questionLabel}>
           Answered correctly?
         </FormLabel>
@@ -174,7 +179,7 @@ const WPTASMultiChoiceQuestion = ({
   choices,
   onChangeResponse,
   setQuestionCorrect,
-  correctAnswer
+  correctAnswer,
 }: {
   choices: Array<string>;
   onChangeResponse: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -190,7 +195,9 @@ const WPTASMultiChoiceQuestion = ({
       onChange={(event) => {
         setSelectedMultiChoice((event.target as HTMLInputElement).value);
         onChangeResponse(event);
-        setQuestionCorrect((event.target as HTMLInputElement).value === correctAnswer)
+        setQuestionCorrect(
+          (event.target as HTMLInputElement).value === correctAnswer
+        );
       }}
       className={classes.multiChoiceRadioGroup}
     >
