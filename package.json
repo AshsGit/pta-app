@@ -10,7 +10,8 @@
     "test": "jest",
     "client-test": "npm test --prefix client",
     "client-install": "npm i --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm i --prefix client && npm run build --prefix client"
   },
   "repository": {
     "type": "git",
