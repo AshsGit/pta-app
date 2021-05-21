@@ -61,6 +61,7 @@ export const WPTASNonImageQuestion = ({
   setQuestionMultiChoiceGiven,
   setQuestionCorrect,
   getResponseOnChange,
+  showCorrectAnswer,
   error_,
 }: {
   question: WPTASNonImageQuestionType;
@@ -73,6 +74,7 @@ export const WPTASNonImageQuestion = ({
   getResponseOnChange: (
     q_index: number
   ) => (event: ChangeEvent<HTMLInputElement>) => void;
+  showCorrectAnswer: boolean;
   error_: boolean;
 }) => {
   const classes = useStyles();
@@ -138,7 +140,10 @@ export const WPTASNonImageQuestion = ({
           <FormHelperText>This question must be answered!</FormHelperText>
         ) : null}
       </FormControl>
-      <div className={classes.correctAnswer}>
+      <div
+        style={{ visibility: showCorrectAnswer ? 'visible' : 'hidden' }}
+        className={classes.correctAnswer}
+      >
         {`Correct answer: ${correctAnswerGenerator()}`}
       </div>
     </Box>

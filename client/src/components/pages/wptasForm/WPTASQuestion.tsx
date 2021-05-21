@@ -6,11 +6,13 @@ import { WPTASQuestion as WPTASQuestionType } from '../../../types/WPTAS';
 
 export const WPTASQuestion: FC<any> = ({
   question,
+  showCorrectAnswer,
   correctAnswerPositionOverride,
   ...rest
 }: {
   question: WPTASQuestionType;
   correctAnswerPositionOverride?: number;
+  showCorrectAnswer: boolean;
   setQuestionMultiChoiceGiven: (
     q_index: number | Array<number>,
     val: boolean
@@ -32,6 +34,7 @@ export const WPTASQuestion: FC<any> = ({
     default:
       return (
         <WPTASNonImageQuestion
+          showCorrectAnswer={showCorrectAnswer}
           correctAnswerPositionOverride={correctAnswerPositionOverride}
           question={question}
           {...rest}

@@ -8,6 +8,7 @@ import {
   TextField,
   FormHelperText,
   Typography,
+  Button,
 } from '@material-ui/core';
 import {
   createStyles,
@@ -44,6 +45,20 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '18rem',
       top: 0,
       backgroundColor: 'var(--color-primary-dark)',
+    },
+    correctAnswerBtn: {
+      position: 'fixed',
+      padding: '1rem',
+      color: 'white',
+      bottom: '1rem',
+      right: '1rem',
+      textTransform: 'none',
+      zIndex: 10,
+      backgroundColor: 'var(--color-primary-dark)',
+      borderRadius: '100px',
+      '&:hover': {
+        backgroundColor: 'var(--color-primary-dark)',
+      },
     },
     questionsContainer: {
       '&>*': { marginBottom: '1.5rem' },
@@ -109,6 +124,7 @@ const WPTASFormContent: FC<any> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [submitPressed, setSubmitPressed] = useState<boolean>(false);
+  const [showCorrectAnswers, setShowCorrectAnswers] = useState<boolean>(true);
 
   // Form input states
 
@@ -286,6 +302,12 @@ const WPTASFormContent: FC<any> = ({
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <CssBaseline />
         <Background />
+        <Button
+          className={classes.correctAnswerBtn}
+          onClick={() => setShowCorrectAnswers(!showCorrectAnswers)}
+        >
+          {showCorrectAnswers ? 'Hide answers' : 'Show answers'}
+        </Button>
         <div className={classes.page}>
           <Paper variant='outlined' className={classes.root_content}>
             <Header />
@@ -313,6 +335,7 @@ const WPTASFormContent: FC<any> = ({
                         }
                         setQuestionCorrect={setQuestionCorrect}
                         getResponseOnChange={getResponseOnChange}
+                        showCorrectAnswer={showCorrectAnswers}
                         error_={
                           submitPressed &&
                           (typeof question.questionNum === 'number'
