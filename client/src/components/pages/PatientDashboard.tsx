@@ -199,14 +199,18 @@ export const PatientDashboard = withStyles(styles)(({ classes }: any) => {
               onClick={WPTASTest}
             >
               <NoteAddIcon className={`${classes.icon} ${classes.wptasIcon}`} />
-              <span className={classes.label}>Start WPTAS</span>
+              <span className={classes.label}>
+                {wptasDisabled === true ? 'WPTAS Completed' : 'Start WPTAS'}
+              </span>
             </DashboardButton>
             <DashboardButton
               disabled={absDisabled === null ? true : absDisabled}
               onClick={ABSTest}
             >
               <NoteAddIcon className={`${classes.icon} ${classes.absIcon}`} />
-              <span className={classes.label}>Start ABS</span>
+              <span className={classes.label}>
+                {absDisabled === true ? 'ABS Completed' : 'Start ABS'}
+              </span>
             </DashboardButton>
             <DashboardButton onClick={PatientHistory}>
               <HistoryIcon

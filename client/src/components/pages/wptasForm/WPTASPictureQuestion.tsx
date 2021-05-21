@@ -18,12 +18,14 @@ import CorrectIcon from '@material-ui/icons/CheckCircleTwoTone';
 import IncorrectIcon from '@material-ui/icons/CancelTwoTone';
 import { question_count } from '../../../data/wptas_questions';
 
+const mobile_screen_media_query = '@media only screen and (max-width:600px)';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     switch: {
-      position: 'absolute',
-      right: 0,
-      top: '1rem',
+      flexGrow: 0,
+      flexShrink: 0,
+      display: 'flex',
+      justifyContent: 'flex-end',
     },
     imageQuestion: {
       '&>*': { marginBottom: '1.5rem' },
@@ -57,6 +59,17 @@ const useStyles = makeStyles((theme: Theme) =>
     incorrect: {
       color: '#eb4034',
       fontSize: 40,
+    },
+    header: {
+      display: 'flex',
+      flexDirection: 'row',
+      [mobile_screen_media_query]: {
+        flexDirection: 'column',
+      },
+    },
+    title: {
+      flexGrow: 1,
+      flexShrink: 0,
     },
   })
 );
@@ -198,15 +211,20 @@ export const WPTASPictureQuestion = ({
       alignItems='stretch'
       className={classes.imageQuestion}
     >
-      <Box className={classes.switch} display='flex' alignItems='center'>
-        <span style={{ fontSize: '11px' }}>Multiple choice given?</span>
-        <Switch
-          color='primary'
-          checked={isMultiChoice}
-          onChange={multiChoiceToggle}
-        />
+      <Box className={classes.header}>
+        <Box className={classes.title}>
+          <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
+        </Box>
+        <Box className={classes.switch} display='flex' alignItems='center'>
+          <span style={{ fontSize: '11px' }}>Multiple choice given?</span>
+          <Switch
+            color='primary'
+            checked={isMultiChoice}
+            onChange={multiChoiceToggle}
+          />
+        </Box>
       </Box>
-      <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
+      <span>Tell me the pictures you were shown yesterday.</span>
       <FormControl component='fieldset' fullWidth error={error_}>
         {showTomorrowsPics ? (
           <WPTASNextWeekPics

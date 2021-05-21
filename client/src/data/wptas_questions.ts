@@ -3,7 +3,7 @@ import { WPTASQuestion } from '../types/WPTAS';
 const CORRECT_AGE = '22';
 const CORRECT_DOB = new Date(1999, 0, 25);
 const CORRECT_LOCATION = 'Epworth Hospital';
-const CORRECT_NAME = 'Lungile';
+const CORRECT_NAME = 'Becky';
 
 export const questions: Array<WPTASQuestion> = [
   {
@@ -391,8 +391,8 @@ export const questions: Array<WPTASQuestion> = [
     title: 'Face',
     questionNum: 8,
     questionType: 'face_question',
-    image_names: ['lungile', 'florence', 'rin'],
-    correctAnswerGenerator: () => 'lungile',
+    image_names: ['becky', 'brian', 'brock'],
+    correctAnswerGenerator: () => CORRECT_NAME.toLowerCase(),
   },
   {
     title: 'Name',
@@ -401,7 +401,7 @@ export const questions: Array<WPTASQuestion> = [
     multichoiceGenerator: (
       c: string,
       correctAnswerPositionOverride?: 0 | 1 | 2
-    ): Array<string> => [c, 'Steve', 'Bobby'],
+    ): Array<string> => [c, 'Brian', 'Brock'],
     correctAnswerGenerator: (): string => CORRECT_NAME,
   },
 

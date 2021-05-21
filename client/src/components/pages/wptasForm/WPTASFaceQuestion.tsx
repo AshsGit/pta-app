@@ -109,6 +109,7 @@ export const WPTASFaceQuestion = ({
       className={classes.imageQuestion}
     >
       <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
+      <span>Pick the face you were asked to remember.</span>
       <FormControl component='fieldset' fullWidth error={error_}>
         <GridList cols={3}>
           {image_names

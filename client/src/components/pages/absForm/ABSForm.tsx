@@ -21,15 +21,14 @@ import {
   ThemeProvider,
 } from '@material-ui/core/styles';
 import { ABSTheme } from '../../../themes';
-import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
+import Home from '@material-ui/icons/Home';
 import { ABSAnswer, ABSSubmission } from '../../../types/ABS';
 import { ABSQuestion as ABSQuestionComponent } from './ABSQuestion';
 import { useHistory, useParams } from 'react-router-dom';
 import questions from '../../../data/abs';
 import { AbsService } from '../../../services/AbsService';
-import { InsertInvitation } from '@material-ui/icons';
 import { FilledButton } from '../../layout/Buttons';
 
 export const useStyles = makeStyles((theme: Theme) =>
@@ -86,19 +85,12 @@ const Background: FunctionComponent = () => {
 
 // Error handling
 type InputErrors = {
-  toDateError: boolean;
-  fromDateError: boolean;
-  obsEnvError: boolean;
   answerErrors: boolean[];
   initialsError: boolean;
 };
 
 const hasError = (e: InputErrors): boolean =>
-  e.toDateError ||
-  e.fromDateError ||
-  e.obsEnvError ||
-  e.initialsError ||
-  e.answerErrors.some((v) => v);
+  e.initialsError || e.answerErrors.some((v) => v);
 
 const questionError = (index: number, e: InputErrors) => e.answerErrors[index];
 
@@ -114,9 +106,6 @@ export const ABSForm: FunctionComponent = () => {
   const [submitPressed, setSubmitPressed] = useState<boolean>(false);
 
   // Form input states
-  const [toDate, setToDate] = useState<Date | null>(null);
-  const [fromDate, setFromDate] = useState<Date | null>(null);
-  const [obsEnv, setObsEnv] = useState('');
   const [initials, setInitials] = useState('');
   const [questionAnswers, setQuestionAnswers] = useState<string[]>(
     new Array(questions.length).fill('')
@@ -124,26 +113,11 @@ export const ABSForm: FunctionComponent = () => {
 
   // Error handling
   const [errors, setErrors] = useState<InputErrors>({
-    toDateError: false,
-    fromDateError: false,
-    obsEnvError: false,
     initialsError: false,
     answerErrors: new Array(questions.length).fill(false),
   });
 
   // Change handlers
-  const obsEnvOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setObsEnv(event.target.value);
-    setErrors({ ...errors, obsEnvError: event.target.value === '' });
-  };
-  const toDateOnChange = (d: Date | null) => {
-    setToDate(d);
-    setErrors({ ...errors, toDateError: false });
-  };
-  const fromDateOnChange = (d: Date | null) => {
-    setFromDate(d);
-    setErrors({ ...errors, fromDateError: false });
-  };
   const initialsOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInitials(event.target.value);
     setErrors({ ...errors, initialsError: event.target.value === '' });
@@ -166,18 +140,10 @@ export const ABSForm: FunctionComponent = () => {
     setSubmitPressed(true);
 
     const newErrors: InputErrors = {
-      toDateError: false,
-      fromDateError: false,
-      obsEnvError: false,
       answerErrors: new Array(questions.length).fill(false),
       initialsError: false,
     };
 
-    if (toDate === null) newErrors.toDateError = true;
-    if (fromDate === null) newErrors.fromDateError = true;
-    if (fromDate !== null && toDate !== null && fromDate > toDate)
-      newErrors.toDateError = true;
-    if (obsEnv === '') newErrors.obsEnvError = true;
     if (initials === '') newErrors.initialsError = true;
 
     questionAnswers.forEach((val, index) => {
@@ -191,13 +157,18 @@ export const ABSForm: FunctionComponent = () => {
     } else {
       // Submit form if no errors
       setLoading(true);
+      let startDate = new Date();
+      let endDate = new Date();
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+      addDays(endDate, 1);
+
       const submission: ABSSubmission = {
         patientId: id,
         submissionId: '',
         examinerInitials: initials,
-        periodOfObs_to: toDate as Date,
-        periodOfObs_from: fromDate as Date,
-        obsEnv,
+        periodOfObs_to: startDate as Date,
+        periodOfObs_from: endDate as Date,
         answers: questionAnswers.map(
           (score, i) =>
             ({
@@ -236,7 +207,7 @@ export const ABSForm: FunctionComponent = () => {
                   className={classes.backButton}
                   onClick={() => history.push(`/${id}`)}
                 >
-                  <ArrowBackSharpIcon fontSize='large' />
+                  <Home fontSize='large' />
                 </IconButton>
                 <Grid item>
                   <Typography variant='h1' color='textPrimary' align='center'>
@@ -252,17 +223,7 @@ export const ABSForm: FunctionComponent = () => {
                 ) : (
                   <React.Fragment>
                     <Grid item container direction='column' spacing={5}>
-                      <ABSMetadata
-                        {...{
-                          errors,
-                          fromDate,
-                          fromDateOnChange,
-                          toDate,
-                          toDateOnChange,
-                          obsEnv,
-                          obsEnvOnChange,
-                        }}
-                      />
+                      <ABSInfoText />
                     </Grid>
                     <br />
                     <Grid item container spacing={8} direction='column'>
@@ -339,128 +300,38 @@ export const ABSForm: FunctionComponent = () => {
   );
 };
 
-const ABSMetadata = ({
-  errors,
-  fromDate,
-  fromDateOnChange,
-  toDate,
-  toDateOnChange,
-  obsEnv,
-  obsEnvOnChange,
-}) => {
-  const classes = useStyles();
-
-  return (
-    <React.Fragment>
-      <Grid item container direction='column'>
-        <Typography className={classes.headerQuestion} variant='h3'>
-          Period of Observation
-        </Typography>
-        <Grid item container direction='row' spacing={10} wrap='nowrap'>
-          <Grid item xs={5}>
-            <FormControl
-              component='fieldset'
-              fullWidth
-              error={errors.fromDateError}
-            >
-              <FormLabel>From:</FormLabel>
-              <DateTimePicker
-                margin='normal'
-                value={fromDate}
-                onChange={fromDateOnChange}
-                error={errors.fromDateError}
-                showTodayButton
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position='end'>
-                      <IconButton>
-                        <InsertInvitation />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <FormHelperText>
-                {errors.fromDateError ? 'This field is compulsory!' : ' '}
-              </FormHelperText>
-            </FormControl>
-          </Grid>
-          <Grid item xs={5}>
-            <FormControl
-              component='fieldset'
-              fullWidth
-              error={errors.toDateError}
-            >
-              <FormLabel>To:</FormLabel>
-              <DateTimePicker
-                margin='normal'
-                value={toDate}
-                onChange={toDateOnChange}
-                error={errors.toDateError}
-                showTodayButton
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position='end'>
-                      <IconButton>
-                        <InsertInvitation />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <FormHelperText>
-                {!errors.toDateError
-                  ? ' '
-                  : fromDate !== null && toDate !== null && fromDate > toDate
-                  ? "'To' date cannot be less than 'From' date!"
-                  : 'This field is compulsory!'}
-              </FormHelperText>
-            </FormControl>
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid item>
-        <Typography className={classes.headerQuestion} variant='h3'>
-          Observation Environment
-        </Typography>
-        <FormControl component='fieldset' fullWidth error={errors.obsEnvError}>
-          <Input
-            placeholder='e.g. hospital ward bed'
-            fullWidth
-            inputProps={{ 'aria-label': 'description' }}
-            onChange={obsEnvOnChange}
-          />
-          <FormHelperText>
-            {errors.obsEnvError ? 'This field is compulsory!' : ' '}
-          </FormHelperText>
-        </FormControl>
-      </Grid>
-      <Grid item>
-        <ABSInfoText />
-      </Grid>
-    </React.Fragment>
-  );
-};
-
 const ABSInfoText = () => (
-  <Typography variant='body2'>
-    At the end of the observation period indicate whether the behavior described
-    in each item was present and, if so, to what degree: slight, moderate or
-    extreme. Use the following numerical values and criteria for your ratings.
-    <br />
-    <br />
-    <b>1 = absent:</b> the behavior is not present. <br />
-    <b>2 = present to a slight degree:</b> the behavior is present but does not
-    prevent the conduct of other, contextually appropriate behavior. (The
-    individual may redirect spontaneously, or the continuation of the agitated
-    behavior does not disrupt appropriate behavior.)
-    <br />
-    <b>3 = present to a moderate degree:</b> the individual needs to be
-    redirected from an agitated to an appropriate behavior, but benefits from
-    such cueing.
-    <br />
-    <b>4 = present to an extreme degree:</b> the individual is not able to
-    engage in appropriate behavior due to the interference of the agitated
-    behavior, even when external cueing or redirection is provided.
-  </Typography>
+  <Box style={{ padding: '20px' }}>
+    <Typography variant='body2'>
+      At the end of the observation period indicate whether the behavior
+      described in each item was present and, if so, to what degree: slight,
+      moderate or extreme. Use the following numerical values and criteria for
+      your ratings.
+      <br />
+      <br />
+      Ratings are for the last 24 hour period, and measure the behaviour at its
+      highest level even if this was not evident the entire time.
+      <br />
+      <br />
+      <b>1 = absent:</b> the behavior is not present. <br />
+      <b>2 = present to a slight degree:</b> the behavior is present but does
+      not prevent the conduct of other, contextually appropriate behavior. (The
+      individual may redirect spontaneously, or the continuation of the agitated
+      behavior does not disrupt appropriate behavior.)
+      <br />
+      <b>3 = present to a moderate degree:</b> the individual needs to be
+      redirected from an agitated to an appropriate behavior, but benefits from
+      such cueing.
+      <br />
+      <b>4 = present to an extreme degree:</b> the individual is not able to
+      engage in appropriate behavior due to the interference of the agitated
+      behavior, even when external cueing or redirection is provided.
+    </Typography>
+  </Box>
 );
+
+const addDays = (date, days) => {
+  var result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+};

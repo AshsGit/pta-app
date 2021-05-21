@@ -2,7 +2,7 @@ export interface ABSSubmission {
   submissionDate?: Date;
   periodOfObs_to: Date;
   periodOfObs_from: Date;
-  obsEnv: string;
+  obsEnv?: string;
   examinerInitials?: string; //is this needed for ABS??
   patientId: string;
   answers: Array<ABSAnswer>;

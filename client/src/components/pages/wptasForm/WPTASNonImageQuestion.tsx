@@ -18,28 +18,39 @@ import { KeyboardDatePicker } from '@material-ui/pickers';
 import React, { ChangeEvent, useState } from 'react';
 import { WPTASNonImageQuestion as WPTASNonImageQuestionType } from '../../../types/WPTAS';
 
-const WPTAS_QUESTION_HEIGHT = '260px';
+const mobile_screen_media_query = '@media only screen and (max-width:600px)';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     questionLabel: { marginBottom: '0.5rem', fontWeight: 500 },
     question: {
-      '&>*:not(:last-child)': { marginBottom: '1.5rem' },
+      '&>*:not(:last-child)': { marginBottom: '0.5rem' },
       position: 'relative',
-      height: WPTAS_QUESTION_HEIGHT,
     },
     multiChoiceRadioGroup: {
       '&>*:not(:last-child)': { marginBottom: '1rem' },
     },
     switch: {
-      position: 'absolute',
-      right: 0,
-      top: '1rem',
+      flexGrow: 0,
+      flexShrink: 0,
+      display: 'flex',
+      justifyContent: 'flex-end',
     },
     correctAnswer: {
       fontWeight: 500,
     },
     answeredCorrectlyRadioGroup: {
       marginBottom: '1rem',
+    },
+    title: {
+      flexGrow: 1,
+      flexShrink: 0,
+    },
+    header: {
+      display: 'flex',
+      flexDirection: 'row',
+      [mobile_screen_media_query]: {
+        flexDirection: 'column',
+      },
     },
   })
 );
@@ -87,18 +98,22 @@ export const WPTASNonImageQuestion = ({
       alignItems='stretch'
       className={classes.question}
     >
-      <Box className={classes.switch} display='flex' alignItems='center'>
-        <span style={{ fontSize: '11px' }}>Multiple choice?</span>
-        <Switch
-          color='primary'
-          checked={isMultiChoice}
-          onChange={(e) => {
-            setIsMultiChoice(e.target.checked);
-            setQuestionMultiChoiceGiven(questionNum, e.target.checked);
-          }}
-        />
+      <Box className={classes.header}>
+        <Box className={classes.title}>
+          <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
+        </Box>
+        <Box className={classes.switch} display='flex' alignItems='center'>
+          <span style={{ fontSize: '11px' }}>Multiple choice?</span>
+          <Switch
+            color='primary'
+            checked={isMultiChoice}
+            onChange={(e) => {
+              setIsMultiChoice(e.target.checked);
+              setQuestionMultiChoiceGiven(questionNum, e.target.checked);
+            }}
+          />
+        </Box>
       </Box>
-      <h3 style={{ fontSize: '18px' }}>{`${questionNum}. ${title}`}</h3>
       <FormControl component='fieldset' fullWidth error={error_}>
         {isMultiChoice ? (
           <WPTASMultiChoiceQuestion

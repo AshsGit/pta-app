@@ -18,7 +18,7 @@ import {
 import { WPTASTheme } from '../../../themes';
 import { questions, question_count } from '../../../data/wptas_questions';
 import { WptasService } from '../../../services/WptasService';
-import ArrowBackSharpIcon from '@material-ui/icons/ArrowBackSharp';
+import Home from '@material-ui/icons/Home';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import DateFnsUtils from '@date-io/date-fns';
@@ -399,7 +399,7 @@ const Header: FunctionComponent = () => {
         className={classes.backButton}
         onClick={() => history.push(`/${id}`)}
       >
-        <ArrowBackSharpIcon fontSize='large' />
+        <Home fontSize='large' />
       </IconButton>
       <Box flexGrow={1} style={{ textAlign: 'center' }}>
         <Typography variant='h1' color='textPrimary' align='center'>
