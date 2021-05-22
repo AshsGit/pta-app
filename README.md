@@ -60,6 +60,26 @@ To run the entire test suite:
 npm test
 ```
 
+## Deploying
+
+A Heroku account is required and the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-command-line) should be installed. Please contact one of the authors to be added as a collaborator.
+
+If you have not done so already, clone the repository.
+
+```
+heroku git:clone -a cryptic-journey-73026
+```
+
+In the repository's root directory run the following to deploy changes.
+
+```
+git add .
+git commit -am "<message>"
+git push heroku main
+```
+
+Your changes will be deployed to https://cryptic-journey-73026.herokuapp.com/.
+
 ## Authors
 
 - Erica Son
