@@ -34,24 +34,32 @@ Open http://localhost:3000 to view it in the browser.
 
 ## Project Structure
 
-All files outside of the `client` folder is used by the express server.
+All files outside of the `client` folder are used by the express server.
 
-- `server.ts` is the entry script for the server.
+- `index.ts` is the entry script for the server.
+- `app.ts` creates and configures the express app.
+- `mongoose_init.ts` sets the mongoose global variables.
 - The directory `routes\api` contains the actual server functions and logic.
 - The `models` directory contains our database schemas.
 
 Everything within the `client` folder is related to the React client.
 
-- The `components` directory contain `.tsx` component files.
+- The `components` directory contains the `.tsx` component files.
 - The `data` directory contains static application information including the WPTAS and ABS test questions.
 - The `services` directory contains services which facilitate communication between the React frontend and Express server.
 
 ## Testing
 
-To run client side tests: only
+To run client side tests only:
 
 ```
 npm run client-test
+```
+
+To run server side tests only:
+
+```
+npm run server-test
 ```
 
 To run the entire test suite:
