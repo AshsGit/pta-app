@@ -123,7 +123,7 @@ describe('Testing AbsService', () => {
   const dataSummary = [
     {
       question:
-        'Short attention span, easy distractability, inability to concentrate',
+        'Short attention span, easy distractibility, inability to concentrate',
       '14/4/2021': 3,
       '15/4/2021': 4,
     },

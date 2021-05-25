@@ -3,7 +3,7 @@ import { ABSQuestion } from '../types/ABS';
 const questions: Array<ABSQuestion> = [
   {
     title:
-      'Short attention span, easy distractability, inability to concentrate',
+      'Short attention span, easy distractibility, inability to concentrate',
     questionNum: 1,
   },
   {
