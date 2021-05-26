@@ -8,6 +8,8 @@ Our app can be used to administer the Westmead PTA Scale (WPTAS) and Agitated Be
 
 Follow these instructions to run the app locally.
 
+**NOTE: All scripts should be executed from the project’s root directory.**
+
 ### Install Dependencies
 
 Install server dependencies
