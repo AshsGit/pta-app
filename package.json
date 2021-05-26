@@ -7,7 +7,7 @@
     "start": "tsc && node dist/server.js",
     "server": "nodemon --watch src/server.ts --exec \"npm run start\"",
     "client": "npm start --prefix client",
-    "test": "npm run server-test && npm run client-test",
+    "test": "npm run client-test && npm run server-test",
     "server-test": "./node_modules/.bin/jest",
     "client-test": "npm test --prefix client",
     "client-install": "npm i --prefix client",

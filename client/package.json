@@ -51,9 +51,9 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^26.0.22",
     "@types/luxon": "^1.26.2",
     "@types/react-router-dom": "^5.1.7",
-    "ts-jest": "^26.5.5"
+    "ts-jest": "^26.5.5",
+    "jest": "26.6.0"
   }
 }
