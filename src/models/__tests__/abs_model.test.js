@@ -54,7 +54,7 @@ describe('ABS model tests', () => {
         const create_response_data = () => {
             const response_data = [...Array(14).keys()].map(key=>({
                 question_num: key+1,
-                score: (key+1) % 4,
+                score: 1 + key % 4,
             }));
             const total = response_data.reduce((cur, response)=>cur + response.score, 0);
             return {response_data, total};
@@ -84,6 +84,26 @@ describe('ABS model tests', () => {
                 responses: expect.arrayContaining(responses)
             }));
         }); 
+        it("Ensure 'insert' fails when field values are invalid.", async done => {
+            const submission_data = { 
+                period_of_observation_to: new Date(2019, 12, 20),
+                period_of_observation_from: new Date(2019, 12, 18),
+                observation_environment: "test",
+                examiner_initials: "TT",
+                date_of_submission: new Date(2019, 12, 20), 
+                total: "bad input",
+                responses: [],
+            };
+
+            const submission = new ABSSubmission(submission_data);
+            var flag = 1;
+            await submission
+                .validate(_ => flag=1)
+
+            if (flag) done()
+            else done.fail("model.save should have failed with invalid input.")
+            
+        });
         it('get a submission', async () => {
             const {response_data, total} = create_response_data();
             const responses = await ABSResponse.insertMany(response_data);
@@ -112,5 +132,6 @@ describe('ABS model tests', () => {
             expect(responses.map(({_id}) => _id)).toEqual(
                 expect.arrayContaining(get_submission.responses));
         }); 
+        
     });
 });

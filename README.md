@@ -36,7 +36,7 @@ Open http://localhost:3000 to view it in the browser.
 
 All files outside of the `client` folder are used by the express server.
 
-- `index.ts` is the entry script for the server.
+- `server.ts` is the entry script for the server.
 - `app.ts` creates and configures the express app.
 - `mongoose_init.ts` sets the mongoose global variables.
 - The directory `routes\api` contains the actual server functions and logic.

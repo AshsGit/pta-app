@@ -69,5 +69,8 @@
   },
   "exclude": [
     "./client/**/*"
+  ],
+  "include": [
+    "./src/**/*"
   ]
 }

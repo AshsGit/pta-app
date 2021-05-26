@@ -54,9 +54,9 @@ describe('WPTAS model tests', () => {
     
     describe('WPTASSubmission model tests', () => {
         const create_response_data = () => {
-            const response_data = [...Array(14).keys()].map(key=>({
+            const response_data = [...Array(12).keys()].map(key=>({
                 question_num: key+1,
-                score: (key+1) % 4,
+                score: 1+ key % 4,
                 multiple_choice_given: (key+1) % 2 === 0,
             }));
             const total = response_data.reduce((cur, response)=>cur + response.score, 0);
@@ -84,6 +84,23 @@ describe('WPTAS model tests', () => {
                 responses: expect.arrayContaining(responses)
             }));
         }); 
+        it("Ensure 'insert' fails when field values are invalid.", async done => {
+            const submission_data = { 
+                examiner_initials: "TT",
+                date_of_submission: new Date(2019, 12, 20), 
+                responses: [],
+                total: "bad data",
+            };
+
+            const submission = new WPTASSubmission(submission_data);
+            var flag = 1;
+            await submission
+                .validate(_ => flag=1)
+
+            if (flag) done()
+            else done.fail("model.save should have failed with invalid input.")
+            
+        });
         it('get a submission', async () => {
             const {response_data, total} = create_response_data();
             const responses = await WPTASResponse.insertMany(response_data);
