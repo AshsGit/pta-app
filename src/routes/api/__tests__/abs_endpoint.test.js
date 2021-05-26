@@ -59,10 +59,10 @@ describe('ABS endpoint tests', () => {
             new Date().getDay()
           );
           expect(response.body.period_of_observation_from.toString()).toMatch(
-            '2020-01-17T13:00:00.000Z'
+            '2020-01-17T14:00:00.000Z'
           );
           expect(response.body.period_of_observation_to.toString()).toMatch(
-            '2020-01-19T13:00:00.000Z'
+            '2020-01-19T14:00:00.000Z'
           );
           expect(response.body.responses.length).toBe(14);
         });
@@ -115,10 +115,10 @@ describe('ABS endpoint tests', () => {
                 new Date().getDay()
               );
               expect(submission.period_of_observation_from.toString()).toMatch(
-                '2020-01-17T13:00:00.000Z'
+                '2020-01-17T14:00:00.000Z'
               );
               expect(submission.period_of_observation_to.toString()).toMatch(
-                '2020-01-19T13:00:00.000Z'
+                '2020-01-19T14:00:00.000Z'
               );
               expect(submission.responses.length).toBe(14);
             });
@@ -167,10 +167,10 @@ describe('ABS endpoint tests', () => {
                 new Date().getDay()
               );
               expect(submission.period_of_observation_from.toString()).toMatch(
-                '2020-01-17T13:00:00.000Z'
+                '2020-01-17T14:00:00.000Z'
               );
               expect(submission.period_of_observation_to.toString()).toMatch(
-                '2020-01-19T13:00:00.000Z'
+                '2020-01-19T14:00:00.000Z'
               );
               expect(submission.responses.length).toBe(14);
               expect(submission.responses.map(({ _id }) => _id)).toEqual(

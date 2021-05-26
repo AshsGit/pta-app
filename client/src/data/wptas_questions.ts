@@ -450,10 +450,4 @@ const getRandom = (max) => {
   return Math.floor(Math.random() * max);
 };
 
-export const correct_answers = questions.flatMap((question) => {
-  if (question.questionType === 'pictures_question')
-    return question.correctAnswerGenerator();
-  else return [question.correctAnswerGenerator()];
-});
-
-export const question_count = correct_answers.length;
+export const question_count = 12;
