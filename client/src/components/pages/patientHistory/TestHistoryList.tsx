@@ -76,19 +76,29 @@ export const TestHistoryList = withStyles(styles)(
   }
 );
 
-const WPTASHistory = withStyles(styles)(
+/**
+ * WPTAS history component. 
+ * Component is reached from the patient Dashboard via the "View Patient History" button.
+ * @param wptasService: The WPTASService object used to interact with the database.
+ * @returns React Component
+ */
+const WPTASHistory = withStyles(styles)( 
+  // withStyles is used to create a component with custom styles (specified 
+  // by the `styles` global variable)
   ({ classes, wptasService, ...other }: any) => {
-    const { id } = useParams() as any;
+    const { id } = useParams() as any; // id = patient ID
 
     const [submissions, setSubmissions] = useState([]);
 
     useEffect(() => {
       if (!submissions || !submissions.length) {
+        //get patient WPTAS test submissions when the component first renders 
         getWptasSubmissions();
       }
     });
 
     const getWptasSubmissions = async () => {
+      //get patient WPTAS test submissions from the database via the WPTASService. 
       wptasService.getWptasSubmissions(id).subscribe((submissions) => {
         setSubmissions(submissions);
       });
@@ -107,8 +117,6 @@ const WPTASHistory = withStyles(styles)(
       );
     }
 
-    console.log(submissions);
-
     return (
       <div {...other} className={classes.historyContainer}>
         <h4>WPTAS Test History</h4>
@@ -124,6 +132,7 @@ const WPTASHistory = withStyles(styles)(
               </TableRow>
             </TableHead>
             <TableBody>
+
               {submissions.map((row, i) => (
                 <TableRow
                   className={`${i % 2 === 0 ? classes.even : classes.odd}`}
@@ -134,19 +143,6 @@ const WPTASHistory = withStyles(styles)(
                   </TableCell>
                   <TableCell>{row.examinerInitials || '-'}</TableCell>
                   <TableCell>{row.total}</TableCell>
-                  {/* TODO: View individual submission: */}
-                  {/* <TableCell className={classes.btnCell}>
-                  <OutlineButton
-                    style={{ maxWidth: '150px' }}
-                    onClick={() => {
-                      history.push(
-                        `/${id}/wptas?submission=${row.submissionId}`
-                      );
-                    }}
-                  >
-                    View
-                  </OutlineButton>
-                </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

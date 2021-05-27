@@ -5,14 +5,22 @@ const router = express.Router();
 
 const { WPTASSubmission, WPTASResponse } = require('../../models/WPTAS');
 
-// @route GET api/wptas/submissions/:id
-// @desc get submissions for a patient id
-// @access Public
+/** 
+ * @route GET api/wptas/submissions/:id
+ * @desc get all submissions for a given patient id
+ * @bodyParam patientId: The ID string of a patient within the database.
+ * @access Public
+*/
 router.get('/submissions/:patientId', async (req: any, res: any) => {
-  WPTASSubmission.find({ patient: req.params.patientId })
+  // search MongoDB for submissions from patient
+  WPTASSubmission.find({ patient: req.params.patientId }) 
     .sort([['date_of_submission', 1]])
-    .populate('responses')
+    // Replace list of response IDs stored in the `responses` attribute with a list of 
+    // MongoDB documents fetched from the WPTASResponse collection.
+    .populate('responses') 
     .exec((err, submissions) => {
+      // execute the created query on MongoDB. 
+      // return HTTP status 400 if the query fails, else return 200.
       if (err) {
         res.status(400).json({ msg: err.message });
         return;

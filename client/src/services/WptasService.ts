@@ -62,12 +62,27 @@ export class WptasService {
     );
   }
 
+  /**
+   * Get all WPTAS test submissions completed by the given patient.
+   * @param patientId: The ID of a patient within the database.
+   * @returns Observable array of all WPTAS test submissions completed by the given patient.
+  */
   getWptasSubmissions(patientId: string): Observable<Array<WPTASSubmission>> {
+    //Check if the submissions from the given patient are already cached.
     if (this.submissions[patientId]) {
+      /* Return the cached patient submissions as an Observable.
+         We return it as an Observable as components calling this service are expecting
+         it to contact the server asynchronously and return the request as an observable. 
+         The `submissions` cache is an implementation detail which we hide by always 
+         returning an Observable. */
       return of(this.submissions[patientId]);
     }
+    /* Asynchronously request the patient's submissions from the server via the server API
+       and return the result as an Observable. */
     return from(axios.get(`/api/wptas/submissions/${patientId}`)).pipe(
+      //get data from axios response
       map((result) => result.data),
+      //convert database WPTAS submission type to client WPTASSubmission type
       map(this.dbWptasSubmissionsToWptasSubmissions),
       // Cache submissions
       tap((submissions) => (this.submissions[patientId] = [...submissions])),
